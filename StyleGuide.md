@@ -24,3 +24,5 @@ Field access should be one descriptive adjective or noun, and be camelCase when 
 
 ____________________
 If there are many variables/shapes/lists being declared right next to eachother at once, i.e. a bunch of related terms for a math equation, all of the body parts for hangman, different lists of strings/ints, then a single comment explaining what they are and how they are related shall be sufficient instead of making a comment for each one. 
+
+All long term variables should be a minimum of 5 letters long. Examples include variables defined before runtime that are used in serveral places in the code, while short-lived variables such as loop iterators or temp lists can be shorter in length
