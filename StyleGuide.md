@@ -6,7 +6,7 @@ ________________________________________________________________
 *Please Review and make alterations/suggetsions as you see fit*
 ________________________________________________________________
 
-Functions should have comment blocks directly above or docstrings inside, explaining what their purose is as well as their general expected input(s) and output(s)
+Functions should have comment blocks directly above or docstrings inside, explaining what their purpose is as well as their general expected input(s) and output(s)
 
 All shapes directly created prior to runtime must be named
 
