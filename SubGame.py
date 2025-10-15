@@ -299,7 +299,6 @@ def spawn_handling():
     '''
     Takes no arguments and returns no values
     Handles all of the spawning events for depth charges, mines, warning labels, and powerups
-    
     '''
     if(app.timer%(app.stepsPerSecond*25) == 0):
         for i in range(7):
@@ -670,6 +669,7 @@ sub.toFront()
 AcheivementNote.toFront()
 starter_mines()
 fullInfoList[7]+=1
+fullInfoList[1]+=1
 update_stats()
     
 if(fullInfoList[2] == 1):
