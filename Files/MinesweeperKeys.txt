@@ -1,0 +1,11 @@
+WonEasy
+AttemptedEasy
+WonMedium
+AttemptedMedium
+WonHard
+AttemptedHard
+WonTotal
+AttemptedTotal
+Achievement1
+FlagsUsed
+TimesLaunched
