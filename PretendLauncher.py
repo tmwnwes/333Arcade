@@ -30,6 +30,7 @@ unknownGames = []
 
 UnknownGameKeys = ["Unknown Game"]
 
+### Default Values, Keys, Simple Stat Display Keys, Display Values, and General Info about each known and created game. Must update for each additional game made. Add to the known game list and create the necessary values below
 SubGameDefault = [0,0,0,0,0,0,0,0,0]
 SubGameKeys = ["HighScore", "GamesPlayed", "YellowSubAch", "MinesBlownUp", "TorpsFired", "TorpsHit" ,"PowerUpsCollected", "TimesLaunched", "HideStartScreen"] 
 SubGameDisplay = ["High Score", "Games Played", "Mines Destroyed" , "Accuracy", "Powerups Collected"] 
@@ -61,9 +62,18 @@ AsteroidsKeys = ["Shots", "Hits", "HighScore", "GamesPlayed", "TimesLaunched"]
 AsteroidsDisplay = ["Accuracy", "High Score"]
 AsteroidsStatsDisplay = []
 AsteroidsInfoFull =[]
+### Default Values, Keys, Simple Stat Display Keys, Display Values, and General Info about each known and created game. Must update for each additional game made. Add to the known game list and create the necessary values above
 
 
 def file_checking(path, default, gameInfo):
+    '''
+    Takes 3 args, path for which file to look for, 
+    default is the default info for the game, 
+    gameInfo is a list to put the values from the file into
+    returns no values but does update lists
+    Looks for necessary game files. Creates and populates the files if they are not found in the expected directory
+    Takes the values from the files, whether already existing or new and puts the values into a list for use later
+    '''
     if not os.path.exists(path):
         with open(path, 'w') as f:
                 f.seek(0)
@@ -79,6 +89,10 @@ def file_checking(path, default, gameInfo):
  
 
 def find_files_by_extension(directory, extension):
+    '''
+    Takes 2 args, directory and extension, which are self-explanatory
+    Returns a list of strings representing files of the requested extension in the requested directory
+    '''
     found_files = []
     for item in os.listdir(directory):
         full_path = os.path.join(directory, item)
@@ -103,6 +117,9 @@ app.games = len(games)
 
 
 def find_favorite_firework_color():
+    '''
+    Takes no arguments and returns a string representing the most often used color in the fireworks game
+    '''
     fav = 0
     for i in range(len(FireworksColors)):
         if FireworksInfoFull[i] > FireworksInfoFull[fav]:
@@ -125,12 +142,27 @@ tempList = [SubGameStatsDisplay, HangmanStatsDisplay, MinesweeperStatsDisplay, F
 
 
 def accuracy_check(indexYes, indexTotal, source, destination, destIndex):
+    '''
+    Takes 5 args and returns no values, does ipdate lists
+    source = list containing raw game info
+    destination = list containing abbreviated info
+    indexYes = index in source containing hits
+    indexTotal = index in source containing attempts
+    destIndex = index in destination to store accuracy value
+    This function us used to display updated accuracy and avoid division by 0
+    '''
     if(source[indexTotal] == 0):
         destination[destIndex] = "0%"
     else:
         destination[destIndex] = ((str)((int)(source[indexYes])*100/ (int)(source[indexTotal]))+"%")
         
 def create_all_paths_and_game_buttons(gamesAvailable):
+    '''
+    Takes 1 argument and returns no values but updates many lists
+    gamesAvailable should be a list of strings representing available known games
+    This function will iterate through that list and create file paths for stats and keys, 
+    create clickable buttons for later launching of the games, and ensure that all lists representing stats are filled in the right order
+    '''
     for i in range(len(gamesAvailable)):
         gamePath = gamesAvailable[i]
         data = gamePath[:-3]
@@ -159,16 +191,16 @@ def create_all_paths_and_game_buttons(gamesAvailable):
         file_checking(keyPaths[i], realKeys[i], [])
 
 
-   
 create_all_paths_and_game_buttons(games)
 
+## Simple Stats
 SubGameStatsDisplay+=[SubGameInfoFull[0], SubGameInfoFull[1], SubGameInfoFull[3], 0, SubGameInfoFull[6]]
 HangmanStatsDisplay+=[HangmanInfoFull[0], HangmanInfoFull[1], 0]
 MinesweeperStatsDisplay+=[MinesweeperInfoFull[6],MinesweeperInfoFull[7],MinesweeperInfoFull[9]]
 FireworksStatsDisplay+=[find_favorite_firework_color(), FireworksInfoFull[9], FireworksInfoFull[10]]
 ColorGameStatsDisplay+=[0, ColorGameInfoFull[2]]
 AsteroidsStatsDisplay+=[0, AsteroidsInfoFull[2]]
-
+## Simple Stats
 
 accuracy_check(5, 4, SubGameInfoFull, SubGameStatsDisplay, 3)
 accuracy_check(0,1,HangmanStatsDisplay, HangmanStatsDisplay, 2)
@@ -176,7 +208,13 @@ accuracy_check(0,1,ColorGameInfoFull, ColorGameStatsDisplay, 0)
 accuracy_check(1, 0, AsteroidsInfoFull, AsteroidsStatsDisplay, 0)
 
 
-def create_buttons_for_unKnown_games():
+def create_buttons_for_unknown_games():
+    '''
+    Takes no args and returns no values
+    For any .py files found in the diractory that are not known games, 
+    this function will create a clickable button to run that file, and a label with the name of the file
+    Since it is an unknown file, there are no available stats for it so this launcher will display that the game is unknown in place of stats
+    '''
     for i in range(len(unknownGames)):
         gamePath = unknownGames[i]
         data = gamePath[:-3]
@@ -188,32 +226,19 @@ def create_buttons_for_unKnown_games():
         unknownLabel = Label(UnknownGameKeys[0], newButton.left, (1/4)*app.width+10, size = 20, align = 'left')
         unknownStats.add(unknownLabel)
 
-
-create_buttons_for_unKnown_games()
-
-
-
-
-
+create_buttons_for_unknown_games()
 
 statsButton = Rect(0,app.bottom-40, app.width/10, 20, fill = None, border = 'black')
 statsLabel = Label("Show Advanced Stats", statsButton.centerX, statsButton.centerY)
 sliderLine = Line(0,app.height-10, app.width, app.height-10, fill='grey', lineWidth = 20)
 slider = Rect(0, statsButton.bottom, (4/(app.games+len(unknownGames)))*app.width, 20) 
 
-
-
-
-
-
-
-
-
-
-
-
-
 def post_advanced_stats():
+    '''
+    Takes no args, returns no values, but does update a group of shapes
+    Displays all stats stored for each known game, under the games clickable launch button, exactly according to the keys
+    Does not beautufy or simplify the stats in any way
+    '''
     for i in range(len(realGameInfoPaths)):
         for j in range(len(realGameInfoPaths[i])):
             new = Label(realKeys[i][j] + ":", buttons[i].left, 1/4*app.width + 10 + j*20, align = 'left', size = 20) ## Used to be realKeys[i][j]
@@ -221,6 +246,11 @@ def post_advanced_stats():
             shownStats.add(new, new2)
 
 def post_simple_stats():
+    '''
+    Takes no args, returns no values, but does update a group of shapes
+    Displays simplified stats stored for each known game, under the games clickable launch button
+    Makes the stats prettier, more polished, and readable. Default option in the launcher
+    '''
     for i in range(len(displays)):
         for j in range(len(displays[i])):
             new = Label(displays[i][j] + ":", buttons[i].left, 1/4*app.width + 10 + j*20, align = 'left', size = 20)
@@ -228,6 +258,10 @@ def post_simple_stats():
             shownStats.add(new, new2)
 
 def onMousePress(x,y):
+    '''
+    CMU built in function to accept mouse press coordinates
+    For this script, a press either toggles stats or launches a game, or simply does nothing if no buttons were pressed
+    '''
     if (statsButton.contains(x,y)):
         toggle_stats()
     for button in buttons:
@@ -236,6 +270,10 @@ def onMousePress(x,y):
             sys.exit(0)
           
 def onMouseDrag(x,y):
+    '''
+    Built in CMU function to accept mouse dragging action and coordinates
+    For this script, it is used exclusively to control the slider at the bottom of the screen.
+    '''
     if(slider.contains(x,y)):
         app.slider = True
     if(app.slider == True):
@@ -262,11 +300,20 @@ def onMouseDrag(x,y):
     app.lastX = x
         
 def onMouseRelease(x,y):
+    '''
+    Built in CMU function to accept coordinates of a mouse release
+    For this script, used as a disjointed helper for onMouseDrag for slider use
+    '''
     app.lastX = x
     app.recentDir = None
     app.slider = False
 
 def toggle_stats():
+    '''
+    Takes no args and returns no values
+    If the simple stats are visible, remove and show advanced stats
+    Same is true in reverse
+    '''
     if app.advanced == True:
         app.advanced = False
         shownStats.clear()
