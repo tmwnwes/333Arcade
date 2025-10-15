@@ -50,9 +50,10 @@ visibleScores = Group()
 explosion = Group()
 
 def update_high_score():
-    if app.score>fullInfoList[0]:
+    if app.score>fullInfoList[2]:
         fullInfoList[2] = app.score
         hiScore.value = "High Score: %09d" %fullInfoList[2]
+        update_stats()
 
 
 def update_stats():
@@ -169,14 +170,6 @@ def spawn_asteroids(num):
         if(size == 2):
             asteroids.add(big(randX, randY))
         if(size ==3):
-            if(randX<=0):
-                randX = -400
-            if(randX>=app.width):
-                randX = app.width+400
-            if(randY<=0):
-                randY = -400
-            if(randY>=app.height):
-                randY = app.height+400
             asteroids.add(massive(randX, randY))
         
     
@@ -195,9 +188,9 @@ def ship_vs_asteroids():
 
 def decrease_health_ship():
     if ship.health <=1:
+        update_stats()
         ship.health = 0
         app.play = False
-        update_stats()
     else:
         ship.health-=1
     health.value = "Health %1d" %ship.health
@@ -240,13 +233,13 @@ def balls_vs_asteroids():
 
 def asteroids_vs_space():
     for ast in asteroids:
-        if(ast.centerX>asteroidBase.right):
+        if(ast.centerX>asteroidBase.right+100):
             asteroids.remove(ast)
-        elif(ast.centerX< asteroidBase.left):
+        elif(ast.centerX< asteroidBase.left-100):
             asteroids.remove(ast)
-        elif(ast.centerY<asteroidBase.top):
+        elif(ast.centerY<asteroidBase.top-100):
             asteroids.remove(ast)        
-        elif(ast.centerY>asteroidBase.bottom):
+        elif(ast.centerY>asteroidBase.bottom+100):
             asteroids.remove(ast)
             
 def hit_detection():
