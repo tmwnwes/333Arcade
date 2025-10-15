@@ -86,7 +86,7 @@ def move_charges():
     '''
     for charge in depthCharges:
         charge.centerY+=3
-        if charge.centerY>=charge.depth:
+        if charge.centerY>=charge.depth or charge.bottom>=ocean.bottom-10:
             explode_object(charge)
             depthCharges.remove(charge)
             score.value +=3
@@ -544,6 +544,7 @@ def game_over():
     gameOverHighScore.value=highScore.value
     gameOverHighScore.visible=True
     app.failed=True
+    app.pause = True
     update_stats()
     
 def restartGame():
@@ -579,6 +580,7 @@ def restartGame():
     sub.health = 3
     hp.value = sub.health
     app.failed=False
+    app.pause = False
     starter_mines()
     fullInfoList[1]+=1
     update_stats()
@@ -597,7 +599,7 @@ def onKeyPress(key):
     if(key=='enter'):
         if(app.failed == True):
             restartGame()
-    if(app.paused == False):
+    if(app.pause == False):
         if(torpedoes.value>0):
             if(key=='right' or key == 'left'): 
                 launch_torpedo(sub.centerX, sub.centerY, key)
