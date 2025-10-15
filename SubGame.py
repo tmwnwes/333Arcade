@@ -26,7 +26,6 @@ app.achShowing = False
 app.timer = 0
 app.stepsPerSecond=30
 app.powerCounter = 0
-app.explosionCounter = 0
 app.removeAchTimer = 200
 app.yellow = False
 
@@ -359,13 +358,21 @@ def power_timing(num, time):
                 powerUpTimers.remove(timer)
 
 
+    
+
 def unlockAcheivement(type):
-    app.achShowing = True
-    box = Rect(app.width/2, sky.centerY, 1/2*app.width, sky.height, fill = None, border = 'black', align = 'center')
-    app.removeAchTimer = 200
-    name = Label("You unlocked the" + type + " Acheivement", box.centerX, box.centerY-10, size = app.width/75)
-    instruction = Label("Press y to toggle your " + type, name.centerX, name.centerY + 25, size = app.width/75)
-    AcheivementNote.add(box, name, instruction)
+    if(app.infoShowing == False):
+        app.achShowing = True
+        box = Rect(app.width/2, sky.centerY, 1/2*app.width, sky.height, fill = None, border = 'black', align = 'center')
+        app.removeAchTimer = 200
+        name = Label("You unlocked the" + type + " Acheivement", box.centerX, box.centerY-10, size = app.width/75)
+        instruction = Label("Press y to toggle your " + type, name.centerX, name.centerY + 25, size = app.width/75)
+        AcheivementNote.add(box, name, instruction)
+    else:
+        while(app.infoShowing == True):
+            None
+        unlockAcheivement(type)
+
                 
 def power_ups_time_management_and_collision():
     '''
@@ -405,7 +412,7 @@ def power_ups_time_management_and_collision():
                 score.value += mines.count
                 fullInfoList[3]+=mines.count
                 score.value += 100
-                mines.count = 0 
+                mines.count = 0
             powerUps.remove(power)
 
 def torps_destroying_mines():
@@ -644,16 +651,16 @@ def onKeyHold(keys):
     if(app.failed==False and app.pause == False):
         if(sub.left>0):    
             if('a' in keys):
-                sub.centerX-=(1/2+sub.health/2)  
+                sub.centerX-=2.5
         if(sub.right<app.width):
             if('d' in keys):
-                sub.centerX+=(1/2+sub.health/2)  
+                sub.centerX+=2.5
         if(sub.top>ocean.top+4):
             if('w' in keys):
-                sub.centerY-=(1/2+sub.health/2)  
+                sub.centerY-=2.5  
         if(sub.bottom<ocean.bottom-5):
             if('s' in keys):
-                sub.centerY+=(1/2+sub.health/2)  
+                sub.centerY+=2.5
         safetyShield.centerX = sub.centerX
         safetyShield.centerY = sub.centerY
         
