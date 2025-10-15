@@ -33,5 +33,11 @@ If you delete the files or the entire Files folder, then the launcher will remak
 
 If you delete the files containing your stats, your progress is erased for that game (or all games if you delete the Files folder)
 
+Additionally, each game script can be run on its own under the following 2 conditions:
+1. The game is in the same diractory as the launcher and (more importantly) the cmu_praphics folder
+2. The stats files exist and are populated (running the launcher once will accomplish this)
+
+If both conditions are met, the game files can be run directly, bypassing the launcher.
+
 
 
