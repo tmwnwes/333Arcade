@@ -283,10 +283,10 @@ def fail():
     
 def unlockAcheivement(type):
     app.achShowing = True
-    box = Rect(app.width/2,  1/2*app.width, 8*app.squareSize, 4*app.squareSize, fill = None, border = 'black', align = 'center')
-    app.removeAchTimer = 200
-    name = Label("You unlocked the" + type + " Acheivement", box.centerX, box.centerY-10, size = app.width/75)
-    instruction = Label("Press (y) to toggle flag color in future games" , name.centerX, name.centerY + 25, size = app.width/75)
+    box = Rect(app.width/2,  1/2*app.width, 8*app.squareSize, 4*app.squareSize, fill = None, border = 'black', align = 'center', borderWidth = 4)
+    app.removeAchTimer = app.stepsPerSecond*15
+    name = Label("You unlocked the" + type + " Acheivement", box.centerX, box.centerY-10, size = app.width/60)
+    instruction = Label("Press (y) to toggle flag color in future games" , name.centerX, name.centerY + 25, size = app.width/60)
     AcheivementNote.add(box, name, instruction)
     
     
@@ -303,7 +303,7 @@ def win():
         fullInfoList[4]+=1
     fullInfoList[6]+=1
     gameOverScreen.add(Rect(app.width/4, 2*app.height/5, app.width/2, app.height/5, fill = None, border = 'black'))
-    gameOverScreen.add(Label("Press Escape to Try Again", app.width/2, app.height/2 + 20, opacity = 0, size = 25))
+    gameOverScreen.add(Label("Press Escape to Try Again", app.width/2, app.height/2 + 20, size = 25))
     gameOverScreen.add(Label("You're a Winner", app.width/2, (app.height/2)-20, size = 50))
     if(app.noFlags == True):
         fullInfoList[8] = 1
@@ -435,10 +435,10 @@ def onKeyPress(key):
             reset()
     if(key == 'y' or key =="Y"):
         if(fullInfoList[8]==1):
-            if(app.flagsCol == 'orange'):
-                app.flahsCol = "white"
+            if(app.flagCol == 'orange'):
+                app.flagCol = "white"
             else:
-                app.flagsCol = "orange"
+                app.flagCol = "orange"
             toggle_flags_color()
 
 def clean_pre_game():
@@ -490,6 +490,7 @@ bombs.toFront()
 buttons.toFront()
 buttonLabels.toFront()
 gameOverScreen.toFront()
+AcheivementNote.toFront()
 create_front_screen()
 update_stats()
 
