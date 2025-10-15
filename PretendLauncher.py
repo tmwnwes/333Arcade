@@ -35,33 +35,33 @@ SubGameDefault = [0,0,0,0,0,0,0,0,0]
 SubGameKeys = ["HighScore", "GamesPlayed", "YellowSubAch", "MinesBlownUp", "TorpsFired", "TorpsHit" ,"PowerUpsCollected", "TimesLaunched", "HideStartScreen"] 
 SubGameDisplay = ["High Score", "Games Played", "Mines Destroyed" , "Accuracy", "Powerups Collected"] 
 SubGameStatsDisplay = []
-SubGameInfoFull = []
+SubGameInfoFull = [0,0,0,0,0,0,0,0,0]
 HangmanDefault = [0,0,0,0,0,0,0]
 HangmanKeys = ["Solved", "Attempted", "ShortestLengthWordSolved", "ShortestLengthWordFailed", "LongestLengthWordSolved", "LongestLengthWordFailed", "TimesLaunched"]
 HangmanDisplay = ["Solved", "Attempted", "Success Rate"]
 HangmanStatsDisplay = []
-HangmanInfoFull =[]
+HangmanInfoFull =[0,0,0,0,0,0,0]
 MinesweeperDefault = [0,0,0,0,0,0,0,0,0,0,0]
 MinesweeperKeys = ["WonEasy", "AttemptedEasy", "WonMedium", "AttemptedMedium", "WonHard", "AttemptedHard" ,"WonTotal", "AttemptedTotal", "Achievement1", "FlagsUsed", "TimesLaunched"]
 MinesweeperDisplay = ["Total Wins", "Total Attempts", "Total Flags Used"]
 MinesweeperStatsDisplay = []
-MinesweeperInfoFull = []
+MinesweeperInfoFull = [0,0,0,0,0,0,0,0,0,0,0]
 FireworksDefault = [0,0,0,0,0,0,0,0,0,0,0]
 FireworksColors = ["White", "Pink", "Red", "Yellow", "Orange", "Green", "Cyan", "Blue", "Magenta"]
 FireworksKeys = ["white", "pink", "red", "yellow", "orange", "green", "cyan", "blue", "magenta", "totalPopped", "TimesLaunched"]
 FireworksDisplay = ["Favorite Color", "Total Popped", "Times Launched"]
 FireworksStatsDisplay = []
-FireworksInfoFull =[]
+FireworksInfoFull =[0,0,0,0,0,0,0,0,0,0,0]
 ColorGameDefault = [0,0,0,0,0]
 ColorGameKeys = ["Correct", "TotalAttempts", "Longest", "GamesPlayed", "TimesLaunched"]
 ColorGameDisplay = ["Accuracy", "Longest Run"]
 ColorGameStatsDisplay = []
-ColorGameInfoFull =[]
+ColorGameInfoFull =[0,0,0,0,0]
 AsteroidsDefault = [0,0,0,0,0]
 AsteroidsKeys = ["Shots", "Hits", "HighScore", "GamesPlayed", "TimesLaunched"]
 AsteroidsDisplay = ["Accuracy", "High Score"]
 AsteroidsStatsDisplay = []
-AsteroidsInfoFull =[]
+AsteroidsInfoFull =[0,0,0,0,0]
 ### Default Values, Keys, Simple Stat Display Keys, Display Values, and General Info about each known and created game. Must update for each additional game made. Add to the known game list and create the necessary values above
 
 
@@ -74,18 +74,24 @@ def file_checking(path, default, gameInfo):
     Looks for necessary game files. Creates and populates the files if they are not found in the expected directory
     Takes the values from the files, whether already existing or new and puts the values into a list for use later
     '''
-    if not os.path.exists(path):
-        with open(path, 'w') as f:
+    counter = 0
+    directory = "Files"
+    properPath = os.path.join(directory, path)
+    if(not os.path.exists(directory)):
+        os.makedirs(directory, exist_ok=True)
+    if not os.path.exists(properPath):
+        with open(properPath, 'w') as f:
                 f.seek(0)
                 for i in range(len(default)):
                     f.write((str)(default[i])+"\n")
-    for info in open(path, "r+"):
+    for info in open(properPath, "r+"):
         if "Keys" in path:
             None
         else:
             info = info.strip()
             if info != '':
-                gameInfo.append((int)(info))
+                gameInfo[counter] = ((int)(info))
+                counter+=1
  
 
 def find_files_by_extension(directory, extension):
@@ -166,8 +172,8 @@ def create_all_paths_and_game_buttons(gamesAvailable):
     for i in range(len(gamesAvailable)):
         gamePath = gamesAvailable[i]
         data = gamePath[:-3]
-        dataPath = "Files/"+data+"Stats.txt"
-        keyPath = "Files/"+data+"Keys.txt"
+        dataPath = data+"Stats.txt"
+        keyPath = data+"Keys.txt"
         dataPaths.append(dataPath)
         keyPaths.append(keyPath)
         newButton = Rect(app.left + (i/4)*app.width, app.top, app.width/4,app.width/4, fill = 'gray', border = 'black')
