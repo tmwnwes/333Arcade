@@ -425,6 +425,8 @@ def onStep():
         score.value = "Score: %09d" %app.score
         if(app.timer%app.asteroidTimer==0 and app.enemy==False):
             spawn_asteroids(randrange(4,10))
+        elif(app.timer%app.asteroidTimer==0 and app.enemy == True):
+            spawn_asteroids(randrange(1,4))
         for saucer in saucers:
             enemy_firing(saucer)
         app.saucerSpawn+=1
