@@ -89,7 +89,7 @@ def remove_scores():
     
 def small(x, y):
     r = angleTo(x, y, randrange((int)(app.width/4),(int)((3/4)*app.width)), randrange((int)(app.height/4),(int)((3/4)*app.height)))
-    new = Polygon(10, 15, 24, 8, 34, 10, 31, 21, 41, 25, 38, 35, 30, 35, 25, 42, 13, 36, 8, 26, 10, 15, fill = None, border = 'white', opacity = 0)
+    new = Polygon(10, 15, 24, 8, 34, 10, 31, 21, 41, 25, 38, 35, 30, 35, 25, 42, 13, 36, 8, 26, 10, 15, fill = None, border = 'white', opacity = 0, borderWidth = 3)
     new.centerX = x
     new.centerY = y
     new.opacity = 100
@@ -104,7 +104,7 @@ def small(x, y):
 
 def med(x,y):
     r = angleTo(x, y, randrange((int)(app.width/4),(int)((3/4)*app.width)), randrange((int)(app.height/4),(int)((3/4)*app.height)))
-    new = Polygon(21, 30, 48, 16, 68, 21, 62, 42, 82, 50, 76, 70, 60, 70, 50, 84, 26, 72, 15, 52, 21, 30, fill = None, border = 'white', opacity = 0)
+    new = Polygon(21, 30, 48, 16, 68, 21, 62, 42, 82, 50, 76, 70, 60, 70, 50, 84, 26, 72, 15, 52, 21, 30, fill = None, border = 'white', opacity = 0, borderWidth = 3)
     new.centerX = x
     new.centerY = y
     new.opacity = 100
@@ -119,7 +119,7 @@ def med(x,y):
 
 def big(x,y):
     r = angleTo(x, y, randrange((int)(app.width/4),(int)((3/4)*app.width)), randrange((int)(app.height/4),(int)((3/4)*app.height)))
-    new = Polygon(42, 60, 96, 32, 134, 42, 124, 84, 164, 100, 154, 140, 120, 140, 102, 168, 52, 144, 30, 104, 42, 60, fill = None, border = 'white', opacity = 0)
+    new = Polygon(42, 60, 96, 32, 134, 42, 124, 84, 164, 100, 154, 140, 120, 140, 102, 168, 52, 144, 30, 104, 42, 60, fill = None, border = 'white', opacity = 0, borderWidth = 3)
     new.centerX = x
     new.centerY = y
     new.opacity = 100
@@ -134,7 +134,7 @@ def big(x,y):
 
 def massive(x,y):
     r = angleTo(x, y, randrange((int)(app.width/4),(int)((3/4)*app.width)), randrange((int)(app.height/4),(int)((3/4)*app.height)))    
-    new = Polygon(84, 120, 192, 64, 268, 84, 248, 168, 328, 200, 308, 280, 240, 280, 204, 336, 104, 288, 60, 208, 84, 120, fill = None, border = 'white', opacity = 0)
+    new = Polygon(84, 120, 192, 64, 268, 84, 248, 168, 328, 200, 308, 280, 240, 280, 204, 336, 104, 288, 60, 208, 84, 120, fill = None, border = 'white', opacity = 0, borderWidth = 3)
     new.centerX = x
     new.centerY = y
     new.opacity = 100
@@ -154,6 +154,17 @@ def move_asteroids():
         ast.centerX, ast.centerY = ast.next
         ast.next = getPointInDir(ast.centerX, ast.centerY, ast.rotateAngle, ast.speed)
     
+def spawn_enemy_saucer():
+    None ## To be implemented later
+    
+def enemy_firing():
+    None ## To be implemented later
+    
+def move_enemy_shots():
+    None ## To be implemented later
+    
+def balls_versus_enemy():
+    None ## To be implemented later
     
     
 def spawn_asteroids(num):
