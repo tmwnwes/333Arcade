@@ -24,7 +24,7 @@ app.score = 0
 app.generalSpeed = 8
 app.play = True
 screen = Rect(0,0,app.width, app.height)
-asteroidBase = Rect(-400, -400, app.width+400, app.height+400)
+asteroidBase = Rect(-400, -400, app.width+800, app.height+800)
 score = Label("Score: %09d" %app.score, 5, 20, size = 20, fill='white', align = 'left')
 hiScore = Label("High Score: %09d" %hi, app.width-2, score.centerY, size =20, fill='white', align='right')
 
@@ -35,8 +35,8 @@ app.Yspeed = 0
 app.Xspeed = 0
 app.rotationSpeed = 0
 app.timer = 0
-app.asteroidTimer = app.stepsPerSecond*6
-app.ballSpeed = 10
+app.asteroidTimer = app.stepsPerSecond*4.5
+app.ballSpeed = 9
 app.launchSpeed = 5
 app.timeSince = 0
 app.asteroidSpeed = 5
@@ -48,6 +48,7 @@ balls = Group()
 asteroids = Group()
 visibleScores = Group()
 explosion = Group()
+gameOver = Group()
 
 def update_high_score():
     if app.score>fullInfoList[2]:
@@ -70,7 +71,7 @@ def get_speed(speed):
     return 0
 
 def spawn_balls(x,y,angle):
-    new = Circle(x,y,5, fill='white', rotateAngle = angle)
+    new = Circle(x,y,4, fill='white', rotateAngle = angle)
     new.next = getPointInDir(x,y,angle,app.ballSpeed)
     balls.add(new)
     fullInfoList[0]+=1
@@ -88,7 +89,7 @@ def remove_scores():
     
 def small(x, y):
     r = angleTo(x, y, randrange((int)(app.width/4),(int)((3/4)*app.width)), randrange((int)(app.height/4),(int)((3/4)*app.height)))
-    new = Polygon(10, 15, 24, 8, 34, 10, 31, 21, 41, 25, 38, 35, 30, 35, 25, 42, 13, 36, 8, 26, 10, 15, fill = None, border = 'white', opacity = 0, borderWidth = 5)
+    new = Polygon(10, 15, 24, 8, 34, 10, 31, 21, 41, 25, 38, 35, 30, 35, 25, 42, 13, 36, 8, 26, 10, 15, fill = None, border = 'white', opacity = 0)
     new.centerX = x
     new.centerY = y
     new.opacity = 100
@@ -103,7 +104,7 @@ def small(x, y):
 
 def med(x,y):
     r = angleTo(x, y, randrange((int)(app.width/4),(int)((3/4)*app.width)), randrange((int)(app.height/4),(int)((3/4)*app.height)))
-    new = Polygon(21, 30, 48, 16, 68, 21, 62, 42, 82, 50, 76, 70, 60, 70, 50, 84, 26, 72, 15, 52, 21, 30, fill = None, border = 'white', opacity = 0, borderWidth = 5)
+    new = Polygon(21, 30, 48, 16, 68, 21, 62, 42, 82, 50, 76, 70, 60, 70, 50, 84, 26, 72, 15, 52, 21, 30, fill = None, border = 'white', opacity = 0)
     new.centerX = x
     new.centerY = y
     new.opacity = 100
@@ -118,7 +119,7 @@ def med(x,y):
 
 def big(x,y):
     r = angleTo(x, y, randrange((int)(app.width/4),(int)((3/4)*app.width)), randrange((int)(app.height/4),(int)((3/4)*app.height)))
-    new = Polygon(42, 60, 96, 32, 134, 42, 124, 84, 164, 100, 154, 140, 120, 140, 102, 168, 52, 144, 30, 104, 42, 60, fill = None, border = 'white', opacity = 0, borderWidth = 5)
+    new = Polygon(42, 60, 96, 32, 134, 42, 124, 84, 164, 100, 154, 140, 120, 140, 102, 168, 52, 144, 30, 104, 42, 60, fill = None, border = 'white', opacity = 0)
     new.centerX = x
     new.centerY = y
     new.opacity = 100
@@ -127,13 +128,13 @@ def big(x,y):
     new.size = "big"
     new.health = 3
     new.hasHit = False
-    new.speed = app.asteroidSpeed*(3/4)
+    new.speed = app.asteroidSpeed*(7/8)
     new.next = getPointInDir(new.centerX, new.centerY, r, new.speed)
     return new    
 
 def massive(x,y):
     r = angleTo(x, y, randrange((int)(app.width/4),(int)((3/4)*app.width)), randrange((int)(app.height/4),(int)((3/4)*app.height)))    
-    new = Polygon(84, 120, 192, 64, 268, 84, 248, 168, 328, 200, 308, 280, 240, 280, 204, 336, 104, 288, 60, 208, 84, 120, fill = None, border = 'white', opacity = 0, borderWidth = 5)
+    new = Polygon(84, 120, 192, 64, 268, 84, 248, 168, 328, 200, 308, 280, 240, 280, 204, 336, 104, 288, 60, 208, 84, 120, fill = None, border = 'white', opacity = 0)
     new.centerX = x
     new.centerY = y
     new.opacity = 100
@@ -142,7 +143,7 @@ def massive(x,y):
     new.size = "massive"
     new.health = 4
     new.hasHit = False
-    new.speed = app.asteroidSpeed/2
+    new.speed = app.asteroidSpeed*(3/4)
     new.next = getPointInDir(new.centerX, new.centerY, r, new.speed)
     return new   
 
@@ -172,6 +173,27 @@ def spawn_asteroids(num):
         if(size ==3):
             asteroids.add(massive(randX, randY))
         
+def reset():
+    asteroids.clear()
+    balls.clear()
+    visibleScores.clear()
+    explosion.clear()
+    gameOver.clear()
+    app.score = 0
+    app.play = True
+    fullInfoList[3]+=1
+    score.value = "Score: %09d" %app.score
+    ship.centerX = app.width/2
+    ship.centerY = app.height/2
+    ship.rotateAngle = 0
+    app.Xspeed = 0
+    app.Yspeed = 0
+    ship.health = 3
+    health.value = "Health: %1d" %ship.health
+    update_stats()
+
+    
+    
     
 def move_balls():
     for ball in balls:
@@ -191,6 +213,7 @@ def decrease_health_ship():
         update_stats()
         ship.health = 0
         app.play = False
+        offer_replay()
     else:
         ship.health-=1
     health.value = "Health %1d" %ship.health
@@ -211,6 +234,11 @@ def decrease_health_asteroid(ast):
         asteroids.remove(ast)
     else:
         ast.health-=1
+        
+def offer_replay():
+    gameOver.add(Rect(app.width/2, app.height/2, app.width, app.height, align = 'center', fill=None, border = 'white'))  
+    gameOver.add(Label("Game Over", app.width/2, app.height/2-50, fill='white', size = app.width/20)) 
+    gameOver.add(Label("Press Enter To Play Again", app.width/2, app.height/2 + 50, fill='white', size = app.width/30))   
         
 def blow_up_balls():
     for ball in explosion:
@@ -289,6 +317,11 @@ def onStep():
         blow_up_balls()
         update_high_score()
         update_stats()
+        
+def onKeyPress(key):
+    if(key=='enter'):
+        if(app.play == False):
+            reset()
         
 
 def wrap_around():
