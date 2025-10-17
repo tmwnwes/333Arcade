@@ -112,10 +112,10 @@ targetDirectory = "."
 targetExtension = ".py"
 games = find_files_by_extension(targetDirectory, targetExtension)
 
-for file in games:
+for file in games[:]:
     if file == currentFile:
         games.remove(file)
-    elif not file in knownGames:
+    elif not (file in knownGames):
         unknownGames.append(file)
         games.remove(file)
 
