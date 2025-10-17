@@ -37,10 +37,10 @@ app.rotationSpeed = 0
 app.timer = 1
 app.multiplier = 1
 app.asteroidTimer = app.stepsPerSecond*4.5
-app.ballSpeed = 9 ## Player shots
+app.ballSpeed = 12 ## Player shots
 app.shotSpeed = 25 ## Enemy shots
 app.launchSpeed = 5
-app.enemyLaunchSpeed = app.stepsPerSecond*3
+app.enemyLaunchSpeed = app.stepsPerSecond*4
 app.timeSince = 0
 app.saucerTime = app.stepsPerSecond*9
 app.saucerSpawn = 0
@@ -310,6 +310,7 @@ def decrease_health_saucer(saucer):
         saucers.remove(saucer)
         if(len(saucers) ==0):
             app.enemy = False
+            app.multiplier+=1
     else:
         saucer.health-=1
     
@@ -541,11 +542,8 @@ def onStep():
     if(app.play==True):
         app.timer+=1
         if(app.timer%(app.stepsPerSecond*app.multiplier*60) == 1):
-            for i in range(app.multiplier):
-                if(i<=3):
-                    spawn_enemy_saucer()
-                    app.saucerSpawn= 0
-            app.multiplier += 1
+                spawn_enemy_saucer()
+                app.saucerSpawn= 0
         if(app.timeSince>0):
             app.timeSince -=1
         app.Xspeed = get_speed(app.Xspeed)
