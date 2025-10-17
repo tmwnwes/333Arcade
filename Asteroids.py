@@ -374,6 +374,7 @@ def reset():
     ship.rotateAngle = 0
     app.Xspeed = 0
     app.Yspeed = 0
+    app.rotationSpeed = 0
     app.multiplier = 1
     ship.health = 3
     health.value = "Health: %1d" %ship.health
