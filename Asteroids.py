@@ -34,7 +34,7 @@ app.decel= 1/4
 app.Yspeed = 0
 app.Xspeed = 0
 app.rotationSpeed = 0
-app.timer = 0
+app.timer = 1
 app.multiplier = 1
 app.asteroidTimer = app.stepsPerSecond*4.5
 app.ballSpeed = 9 ## Player shots
@@ -355,7 +355,7 @@ def reset():
     Full reset of the games variables and parameters to start a new game
     Should only be called if the player has had their run end.
     '''
-    app.timer = 0
+    app.timer = 1
     app.saucerSpawn = 0
     shots.clear()
     asteroids.clear()
@@ -475,7 +475,7 @@ def balls_vs_asteroids():
     '''
     for ast in asteroids:
         for ball in balls:
-            if(ast.hitsShape(ball)):
+            if(ast.hitsShape(ball) or ast.containsShape(ball)):
                 explosion.add(Circle(ball.centerX, ball.centerY, 3, fill=None, border = 'white'))
                 balls.remove(ball)
                 fullInfoList[1]+=1
