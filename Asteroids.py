@@ -542,7 +542,7 @@ def onStep():
     '''
     if(app.play==True):
         app.timer+=1
-        if(app.timer%(app.stepsPerSecond*app.multiplier*60) == 1):
+        if(app.timer%(app.stepsPerSecond*app.multiplier*60) == 0):
                 spawn_enemy_saucer()
                 app.saucerSpawn= 0
         if(app.timeSince>0):
