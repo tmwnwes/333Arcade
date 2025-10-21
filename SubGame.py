@@ -361,17 +361,16 @@ def power_timing(num, time):
     
 
 def unlockAcheivement(type):
-    if(app.infoShowing == False):
-        app.achShowing = True
-        box = Rect(app.width/2, sky.centerY, 1/2*app.width, sky.height, fill = None, border = 'black', align = 'center')
-        app.removeAchTimer = 200
-        name = Label("You unlocked the" + type + " Acheivement", box.centerX, box.centerY-10, size = app.width/75)
-        instruction = Label("Press y to toggle your " + type, name.centerX, name.centerY + 25, size = app.width/75)
-        AcheivementNote.add(box, name, instruction)
-    else:
-        while(app.infoShowing == True):
-            None
-        unlockAcheivement(type)
+    '''
+    Takes 1 argument, a string representing the unlocked acheivement. 
+    Displays acheivement for a short time
+    '''
+    app.achShowing = True
+    box = Rect(app.width/2, sky.centerY, 1/2*app.width, sky.height, fill = None, border = 'black', align = 'center')
+    app.removeAchTimer = app.stepsPerSecond*5
+    name = Label("You unlocked the" + type + " Acheivement", box.centerX, box.centerY-10, size = app.width/75)
+    instruction = Label("Press y to toggle your " + type, name.centerX, name.centerY + 25, size = app.width/75)
+    AcheivementNote.add(box, name, instruction)
 
                 
 def power_ups_time_management_and_collision():

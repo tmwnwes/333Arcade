@@ -14,11 +14,8 @@ for thing in gameInfo:
     if thing != '':
         fullInfoList.append((int)(thing))
 
-
-
 app.width = width
 app.height = height
-
 
 app.setMaxShapeCount(100000)
 
@@ -70,7 +67,6 @@ def create_front_screen():
     buttons.add(easyButton, mediumButton, hardButton)
     buttonLabels.add(label1, label2, label3)
     preGame.add(frontScreen, label4, label5)
-
 
 def create_board():
     '''
@@ -125,8 +121,6 @@ def update_stats():
     for i in range(len(fullInfoList)):
         gameInfo.write((str)(fullInfoList[i])+"\n")
 
-
-
 def create_bombs_end_game():
     '''
     Takes no arguments and returns no values
@@ -137,8 +131,6 @@ def create_bombs_end_game():
         if sq.bomb == True:
             bombs.add(Star(sq.centerX, sq.centerY, 1, 30, fill= 'red', border = 'yellow'))
             sq.bomb = False
-
-
 
 def plant_bombs(blocks):
     '''
@@ -252,9 +244,6 @@ def searchDownRight(i,j):
 
 ###### The Preceding 8 Functions are helpers called by bomb_check_algorithm() and will search in the direction implied by the name, sourced from the given values ######
 
-
-
-
 def explode_bombs():
     '''
     Takes no arguments and returns no values
@@ -269,8 +258,6 @@ def explode_bombs():
             fail()
             app.mode = None
     
-
-
 def fail():
     '''
     Takes no arguments and returns no values
@@ -288,7 +275,6 @@ def unlockAcheivement(type):
     name = Label("You unlocked the" + type + " Acheivement", box.centerX, box.centerY-10, size = app.width/60)
     instruction = Label("Press (y) to toggle flag color in future games" , name.centerX, name.centerY + 25, size = app.width/60)
     AcheivementNote.add(box, name, instruction)
-    
     
 def win():
     '''
@@ -353,8 +339,6 @@ def reset():
     create_front_screen()
     app.mode = None
     app.noFlags = True
-    
-    
 
 def toggle_flag(x,y, real):
     '''
@@ -378,7 +362,6 @@ def toggle_flag(x,y, real):
                                 app.noFlags = False
                                 fullInfoList[9] +=1
 
-
 def fancy_first_click(x,y):
     '''
     Takes 2 positional arguments and returns no values
@@ -393,7 +376,6 @@ def fancy_first_click(x,y):
     disappear(x-app.squareSize,y)
     disappear(x-app.squareSize, y-app.squareSize)
     disappear(x-app.squareSize, y+app.squareSize)
-    
     
 def checkWin():
     '''
@@ -470,12 +452,11 @@ def onMousePress(x,y,button):
                 app.firstClick = False
             else:
                 disappear(x,y)
-
-
-        
+ 
 def onStep():
     '''
-    Built in CMU function, runs the code below app.stepsPerSecond times every second. Used to explode bombs in failure and hide acheivement over time
+    Built in CMU function, runs the code below app.stepsPerSecond times every second. 
+    Used to explode bombs in failure and hide acheivement over time
     '''
     if(app.failed == True):
         explode_bombs()

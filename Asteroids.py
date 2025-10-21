@@ -34,15 +34,15 @@ app.decel= 1/4
 app.Yspeed = 0
 app.Xspeed = 0
 app.rotationSpeed = 0
-app.timer = 0
+app.timer = 1
 app.multiplier = 1
 app.asteroidTimer = app.stepsPerSecond*4.5
-app.ballSpeed = 9 ## Player shots
+app.ballSpeed = 12 ## Player shots
 app.shotSpeed = 25 ## Enemy shots
 app.launchSpeed = 5
-app.enemyLaunchSpeed = app.stepsPerSecond*3
+app.enemyLaunchSpeed = app.stepsPerSecond*4
 app.timeSince = 0
-app.saucerTime = app.stepsPerSecond*9
+app.saucerTime = app.stepsPerSecond*15
 app.saucerSpawn = 0
 app.asteroidSpeed = 5
 app.enemy = False
@@ -59,6 +59,12 @@ shots = Group()
 saucers = Group()
 
 def update_high_score():
+    ''' 
+    Takes no args and returns no values
+    Updates high score if current score is higher than high score
+    Forces stats update in that case
+    
+    '''
     if app.score>fullInfoList[2]:
         fullInfoList[2] = app.score
         hiScore.value = "High Score: %09d" %fullInfoList[2]
@@ -66,11 +72,19 @@ def update_high_score():
 
 
 def update_stats():
+    '''
+    Takes no arguments and returns no values
+    Updates stores stats in the associated text file
+    '''
     gameInfo.seek(0)
     for i in range(len(fullInfoList)):
         gameInfo.write((str)(fullInfoList[i])+"\n")  
         
 def shots_vs_asteroids():
+    '''
+    No args, no returns
+    Handles collision between enemy shots and asteroids
+    '''
     for shot in shots:
         for ast in asteroids:
             if(shot.hitsShape(ast) or ast.containsShape(shot)):
@@ -79,6 +93,11 @@ def shots_vs_asteroids():
 
 
 def get_speed(speed):
+    '''
+    Takes 1 arg, and returns 1 value
+    speed should be a number representing the speed of some shape
+    returns the next speed of the item
+    '''
     if(speed<0):
         return speed + app.decel
     elif(speed>0):
@@ -86,12 +105,20 @@ def get_speed(speed):
     return 0
 
 def spawn_balls(x,y,angle):
+    '''
+    Takes 3 args, 2 positional, and 1 directional
+    Returns no values but does add a shape to a relevant group    
+    '''
     new = Circle(x,y,4, fill='white', rotateAngle = angle)
     new.next = getPointInDir(x,y,angle,app.ballSpeed)
     balls.add(new)
     fullInfoList[0]+=1
     
 def spawn_shots(x,y,angle):
+    '''
+    Takes 3 args, 2 positional, and 1 directional
+    Returns no values but does add shapes to a relevant group    
+    '''
     new = Oval(x,y,2,20, fill='white', rotateAngle = angle)
     new.next = getPointInDir(x,y,angle,app.shotSpeed)
     new2 = Oval(x,y,2,20, fill='white', rotateAngle = angle+10)
@@ -105,15 +132,25 @@ def spawn_shots(x,y,angle):
     shots.add(new, new2, new3, new4, new5)
     
 def create_scores(x,y,val):
+    '''
+    Takes 3 args, 2 positional and 1 value to display
+    Returns no values but does create a shape and add it to a relevant group    
+    '''
     visibleScores.add(Label("+ %3d" %val, x, y, fill=None, border = 'white', size = 14))
     
 def remove_scores():
+    '''
+    no args, no returns
+    slowly grows and fades scores from destroying asteroids, then removes once invisible
+    '''
     for score in visibleScores:
         if(score.opacity<=0):
             visibleScores.remove(score)
         else:
             score.opacity-=5
             score.size+=2
+    
+### The following 4 functions are used to create asteroids of different sizes, aim them, set their hp, and score values    
     
 def small(x, y):
     r = angleTo(x, y, randrange((int)(app.width/4),(int)((3/4)*app.width)), randrange((int)(app.height/4),(int)((3/4)*app.height)))
@@ -175,7 +212,14 @@ def massive(x,y):
     new.next = getPointInDir(new.centerX, new.centerY, r, new.speed)
     return new   
 
+### The preceding 4 functions are used to create asteroids of different sizes, aim them, set their hp, and score values   
+
 def move_asteroids():
+    '''
+    no args, no returns
+    moves the asteroids based on their aim points, sets next point based on aiming direction
+    also deletes asteroids if they are off of the screen
+    '''
     for ast in asteroids:
         if(not(asteroidBase.containsShape(ast))):
             asteroids.remove(ast)
@@ -183,6 +227,11 @@ def move_asteroids():
         ast.next = getPointInDir(ast.centerX, ast.centerY, ast.rotateAngle, ast.speed)
     
 def create_saucer(left, top, right, bottom):
+    '''
+    Takes 4 args relating to acceptable spawning zone for the saucer
+    Creates a saucer group and places it in the acceptable spawning zone
+    returns the saucer group
+    '''
     new = Group()
     new.health = app.multiplier
     new.score = 500*app.multiplier
@@ -199,12 +248,19 @@ def create_saucer(left, top, right, bottom):
     
     
 def shots_vs_ship():
+    '''
+    no args, no returns
+    handles collisions between enemy shots and the player ship
+    '''
     for shot in shots:
         if(shot.hitsShape(ship)):
             shots.remove(shot)
             decrease_health_ship()
     
 def spawn_enemy_saucer():
+    '''
+    no args, no returns, adds a new saucer to the saucers group after selecting spawning zone
+    '''
     location = randrange(4)
     saucer = None
     if(location == 0):
@@ -219,11 +275,20 @@ def spawn_enemy_saucer():
     app.enemy = True
     
 def enemy_firing(saucer):
+    '''
+    takes 1 argument representing a shape group of a saucer
+    returns no values but will spawn shots aimed at the player ship
+    '''
     if(app.enemy == True and app.timer%app.enemyLaunchSpeed == 0):
         spawn_shots(saucer.centerX, saucer.centerY, angleTo(saucer.centerX, saucer.centerY, ship.centerX, ship.centerY))
     
     
 def move_enemy_shots():
+    '''
+    no args, no returns
+    move enemy shots based on chosen aiming points. 
+    Remove if they are outside of the screen
+    '''
     for shot in shots:
         shot.centerX, shot.centerY = shot.next
         shot.next = getPointInDir(shot.centerX,shot.centerY,shot.rotateAngle, app.shotSpeed)
@@ -232,19 +297,28 @@ def move_enemy_shots():
     
     
 def decrease_health_saucer(saucer):
+    '''
+    Takes 1 argument, representing a saucer shape group
+    Meant to be called when a saucer is shot. Will remove a saucer if health has depleted
+    '''
     if saucer.health<=1:
-        create_scores(saucer.centerX, saucer.centerY, saucer.score)
-        app.score+=saucer.score
+        create_scores(saucer.centerX, saucer.centerY, saucer.score*app.multiplier)
+        app.score+=saucer.score*app.multiplier
         explosion.add(Star(saucer.centerX, saucer.centerY, 12, 12, fill = None, border = 'white'))
         explosion.add(Star(saucer.centerX, saucer.centerY, 8, 12, fill = None, border = 'white'))
         explosion.add(Star(saucer.centerX, saucer.centerY, 4, 12, fill = None, border = 'white'))
         saucers.remove(saucer)
         if(len(saucers) ==0):
             app.enemy = False
+            app.multiplier+=1
     else:
         saucer.health-=1
     
 def balls_vs_enemy():
+    '''
+    no args, no returns
+    handles collision between player fired shots and enemy saucers
+    '''
     for saucer in saucers:
         for ball in balls:
             if(saucer.hitsShape(ball)):
@@ -255,6 +329,11 @@ def balls_vs_enemy():
     
     
 def spawn_asteroids(num):
+    '''
+    Takes 1 argument, num, representing how many asteroids to spawn
+    Makes own choices about size and location
+    no return values, but shapes added to appropriate groups    
+    '''
     for i in range(num):
         size = randrange(0,4)
         randX = randrange(asteroidBase.left, asteroidBase.right)
@@ -272,7 +351,12 @@ def spawn_asteroids(num):
             asteroids.add(massive(randX, randY))
         
 def reset():
-    app.timer = 0
+    '''
+    no args, no returns
+    Full reset of the games variables and parameters to start a new game
+    Should only be called if the player has had their run end.
+    '''
+    app.timer = 1
     app.saucerSpawn = 0
     shots.clear()
     asteroids.clear()
@@ -290,6 +374,7 @@ def reset():
     ship.rotateAngle = 0
     app.Xspeed = 0
     app.Yspeed = 0
+    app.rotationSpeed = 0
     app.multiplier = 1
     ship.health = 3
     health.value = "Health: %1d" %ship.health
@@ -300,6 +385,11 @@ def reset():
     
     
 def move_balls():
+    '''
+    no args, no returns
+    moves shots fired by the player based on their aiming point.
+    removes them if they eave the screen.
+    '''
     for ball in balls:
         ball.centerX, ball.centerY = ball.next
         ball.next = getPointInDir(ball.centerX,ball.centerY,ball.rotateAngle, app.ballSpeed)
@@ -307,12 +397,21 @@ def move_balls():
             balls.remove(ball)
 
 def ship_vs_asteroids():
+    '''
+    no args, no returns
+    handles collision between ship and asteroids
+    '''
     for ast in asteroids:
         if(ast.hitsShape(ship) and ast.hasHit == False):
             decrease_health_ship()
             ast.hasHit = True
 
 def decrease_health_ship():
+    '''
+    no args, no returns
+    Only called when the ship has impacted another object
+    Can end the game depending on ship health
+    '''
     if ship.health <=1:
         update_stats()
         ship.health = 0
@@ -323,6 +422,11 @@ def decrease_health_ship():
     health.value = "Health %1d" %ship.health
 
 def decrease_health_asteroid(ast, scoring):
+    '''
+    Takes 2 args, 1 representing an asteroid shape, the other a boolean determining whether a hit counts for scoring
+    Returns no values but adds and removes shapes from approrpate groups. 
+    Increases score based on asteroid size and whether or not the player was the destroyer
+    '''
     if ast.health<=1:
         if(scoring == True):
             create_scores(ast.centerX, ast.centerY, ast.score*app.multiplier)
@@ -343,11 +447,21 @@ def decrease_health_asteroid(ast, scoring):
         ast.health-=1
         
 def offer_replay():
+    '''
+    No args, no returns, but adds shapes to approproate group
+    Should only be called if the game is over. 
+    provides replay instructions
+    '''
     gameOver.add(Rect(app.width/2, app.height/2, app.width, app.height, align = 'center', fill=None, border = 'white'))  
     gameOver.add(Label("Game Over", app.width/2, app.height/2-50, fill='white', size = app.width/20)) 
     gameOver.add(Label("Press Enter To Play Again", app.width/2, app.height/2 + 50, fill='white', size = app.width/30))   
         
 def blow_up_balls():
+    '''
+    no args, no returns
+    expands and fades balls until invisble, then removes them from the game
+    Only impacted balls are those which have collided with a game object
+    '''
     for ball in explosion:
         if ball.opacity<=0:
             explosion.remove(ball)
@@ -357,9 +471,13 @@ def blow_up_balls():
     
     
 def balls_vs_asteroids():
+    '''
+    no args, no returns
+    handles collisions between player shots and asteroids
+    '''
     for ast in asteroids:
         for ball in balls:
-            if(ast.hitsShape(ball)):
+            if(ast.hitsShape(ball) or ast.containsShape(ball)):
                 explosion.add(Circle(ball.centerX, ball.centerY, 3, fill=None, border = 'white'))
                 balls.remove(ball)
                 fullInfoList[1]+=1
@@ -367,6 +485,10 @@ def balls_vs_asteroids():
                 
 
 def asteroids_vs_space():
+    '''
+    no args, no returns
+    removes asteroids that exit the screen
+    '''
     for ast in asteroids:
         if(ast.centerX>asteroidBase.right+100):
             asteroids.remove(ast)
@@ -378,6 +500,10 @@ def asteroids_vs_space():
             asteroids.remove(ast)
             
 def hit_detection():
+    '''
+    no args and no returns
+    Handles all collisions
+    '''
     ship_vs_asteroids()
     balls_vs_asteroids()
     asteroids_vs_space()
@@ -387,6 +513,10 @@ def hit_detection():
 
 
 def onKeyHold(keys):
+    '''
+    Built in CMU function which takes a list of currently held keys as an argument
+    In this script, it is used to move the ship and fire shots
+    '''
     if('a' in keys or "A" in keys):
         app.Xspeed = -app.generalSpeed 
     if('w' in keys or "W" in keys):
@@ -405,14 +535,16 @@ def onKeyHold(keys):
             app.timeSince = app.launchSpeed
         
 def onStep():  
+    '''
+    Built in CMU function
+    All code in this function is run app.stepsPerSecond many times every second
+    In this script, it causes all motion
+    '''
     if(app.play==True):
         app.timer+=1
-        if(app.timer%(app.stepsPerSecond*app.multiplier*60) == 1):
-            for i in range(app.multiplier):
-                if(i<=3):
-                    spawn_enemy_saucer()
-                    app.saucerSpawn= 0
-            app.multiplier += 1
+        if(app.timer%(app.stepsPerSecond*app.multiplier*60) == 0):
+                spawn_enemy_saucer()
+                app.saucerSpawn= 0
         if(app.timeSince>0):
             app.timeSince -=1
         app.Xspeed = get_speed(app.Xspeed)
@@ -445,12 +577,23 @@ def onStep():
         update_stats()
         
 def onKeyPress(key):
+    '''
+    Built-in CMU function
+    Takes are argument each key press
+    In this script, used to reset the game after a run ends
+    '''
     if(key=='enter'):
         if(app.play == False):
             reset()
         
 
 def wrap_around():
+    '''
+    no args and no returns
+    Moves the ship to the other side of the screen if it flies off of the edge
+    Such that you pop up on the left if you flew off of the right side, at the top if you exited at the bottom, etc.
+    Deterministic relocation, not randomized. Speed is retained
+    '''
     if not(screen.containsShape(ship)):
         if(ship.centerX>=app.width):
             ship.centerX = 0
