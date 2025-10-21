@@ -5,11 +5,16 @@ ________
 **Python 3.14 is not currently supported. Please use Python 3.9 - 3.13**
 
 
-**In order to run the launcher in its current state, the cmu_graphics folder must be in the same directory as the launcher. For convenienvce, it is included in the repository.**
+**In order to run the launcher and games in their current state, the cmu_graphics folder must be in the same directory as the launcher.**
 
- **Addititionally, since the games were built upon the cmu_graphics library, they must also be in the same directory to run**
+**For your safety, you must download the graphics library yourself. It can be found at the following link**
+
+https://academy.cs.cmu.edu/desktop
+
 
 Download this entire Repository as a zip file and unpack it in whatever directory you wish. 
+Download the CMU graphics library directly from the source. Take the "cmu_graphics" folder from that download (not the entire installer folder, just the cmu_graphics folder) and put it in the same directory as the files from this repository, 
+
 
 If you are on MacOS, you have 3 options for running the launcher:
 1. Open with VS code, and run through the play button at the top right 
@@ -40,11 +45,9 @@ Additionally, each game script can be run on its own under the following 2 condi
 If both conditions are met, the game files can be run directly, bypassing the launcher.
 
 
- If you encounter issues running the launcher while being on the correct python version and following all steps, the proximal cause is likely a security issue raised regarding the cmu_graphics library. This issue is only present on MacOS. For now, there are 2 workarounds.
- 
- 1. Completely disabling security warnings about files from unknown developers. This comes with some risks unassociated with this program and project. This can be accomplished via first running the "sudo spctl --master-disable" command in terminal and then going to Settings -> Privacy & Security -> Security -> Allow Applications and selecting "Anywhere."
+Finally, you must download the graphics installer directly from Carnegie Mellon University. The download can be found at https://academy.cs.cmu.edu/desktop 
 
-2. For users who do not wish to invite this risk, simply delete the cmu_graphics folder and download the graphics installer directly from Carnegie Mellon University. The download can be found at https://academy.cs.cmu.edu/desktop After downloading the installer (it is a zip file) extract the contents and place the cmu_graphics folder in the same directory as your launcher and games from this project. Note that it needs to be specifically the cmu_graphics folder, not the entire installer folder.
+After downloading the installer (it is a zip file) extract the contents and place the cmu_graphics folder (not the installer folder, but the cmu_graphics folder) in the same directory as your launcher and games from this project. Note once again that it needs to be specifically the cmu_graphics folder, not the entire installer folder.
 
 This issue was documented on the repository: https://github.com/tmwnwes/333Arcade/issues/7#issue-3518942044
 
