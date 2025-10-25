@@ -61,7 +61,7 @@ warningLabel = Label("Please Select at Least 1 Color to Continue", app.width/2, 
 screenSaverButton = Rect(0, (1/15 * app.height), (1/7) * app.width,(1/20)* app.height, border = 'gray', fill = None)
 screenSaverLabel = Label("Screensaver Mode Inactive", screenSaverButton.centerX, screenSaverButton.centerY, fill = "gray", size = (1/100)*app.width, bold = True)
 starryNightButton = Rect((6/7)*app.width, (1/15 * app.height), (1/7) * app.width,(1/20)* app.height, border = 'gray', fill = None)
-starryNightLabel = Label("starry Night Mode Inactive", starryNightButton.centerX, starryNightButton.centerY, fill = "gray", size = (1/100)*app.width, bold = True)
+starryNightLabel = Label("Starry Night Mode Inactive", starryNightButton.centerX, starryNightButton.centerY, fill = "gray", size = (1/100)*app.width, bold = True)
 twinkleButton = Rect((6/7)*app.width, (2/15 * app.height), (1/7) * app.width,(1/20)* app.height, border = 'gray', fill = None)
 twinkleLabel = Label("Twinkle Mode Inactive", twinkleButton.centerX, twinkleButton.centerY, fill = "gray", size = (1/100)*app.width, bold = True)
 clearStarsButton = Rect(0, (2/15 * app.height), (1/7) * app.width,(1/20)* app.height, border = 'gray', fill = None)
