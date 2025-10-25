@@ -108,6 +108,7 @@ def make_city(x, j):
     city = Group()
     lastWidth = 0
     city.id = j
+    city.health = 4
     cityids.append(city.id)
     for i in range(12):
         tall = randrange(5,80)
@@ -572,6 +573,23 @@ def missiles_vs_bat(type):
                 bat.repairTimer += 30*app.stepsPerSecond
                 if bat == app.bat: app.bat = select_next_bat(app.bat)
                 bat_color_update()
+                
+def bombs_vs_bat(type):
+    '''
+    Takes 1 arg and returns no values
+    type represents the shape group being checked against hitting the missile batteries
+    Crucial function, withouth this function, enemies will not affect player missile batteries
+    This function differs from missiles_vs_bat in that it shortens the impact as it is only meant to be used regarding smaller enemy munitions
+    '''
+    for missile in type:
+        for bat in batteries:
+            if(missile.hitsShape(bat) or bat.containsShape(missile)):
+                explode_object(missile)
+                type.remove(missile)
+                bat.broken = True
+                bat.repairTimer += 10*app.stepsPerSecond
+                if bat == app.bat: app.bat = select_next_bat(app.bat)
+                bat_color_update()
 
 def missile_vs_ground(type):
     '''
@@ -601,6 +619,35 @@ def missiles_vs_cities(type):
                 cities.remove(city)
                 app.cities-=1
                 fullInfoList[5]+=1
+                
+def bombs_vs_cities(type):
+    '''
+    Takes 1 arg and returns no values
+    type represents the shape group being checked against hitting the cities
+    Crucial function, withouth this function, enemies will not affect cities and the game could never end
+    This function differs from missiles_vs_cities in that it does small damage to cities instead of full damage, to reflect the smaller munitions
+    '''
+    for bomb in type:
+        for city in cities:
+            if(city.health<=1):
+                if(bomb.hitsShape(city)):
+                    for building in city.children:
+                        explode_object(building)
+                    explode_object(bomb)
+                    type.remove(bomb)
+                    cityids.remove(city.id)
+                    cities.remove(city)
+                    app.cities-=1
+                    fullInfoList[5]+=1    
+            else:
+                for building in city:
+                    if(bomb.hitsShape(building)):
+                        explode_object(building)
+                        explode_object(bomb)
+                        type.remove(bomb)
+                        city.remove(building)
+                        city.health-=1
+
     
 def missiles_vs_anti_missiles(type):
     '''
@@ -631,14 +678,14 @@ def hit_detection():
     Possibly the most crucial function as scoring, destruction failing would be impossible without it
     '''
     missiles_vs_bat(basicMissiles)
-    missiles_vs_bat(bombs)
+    bombs_vs_bat(bombs)
     missiles_vs_bat(ufoShots)
     missiles_vs_bat(nonbasicMissiles)
-    missiles_vs_bat(multiBombPostSplit)
+    bombs_vs_bat(multiBombPostSplit)
     missiles_vs_cities(basicMissiles) 
-    missiles_vs_cities(bombs) 
+    bombs_vs_cities(bombs) 
     missiles_vs_cities(ufoShots)
-    missiles_vs_cities(multiBombPostSplit)
+    bombs_vs_cities(multiBombPostSplit)
     missiles_vs_cities(nonbasicMissiles)
     missiles_vs_anti_missiles(basicMissiles)
     missiles_vs_anti_missiles(ufoShots)
@@ -692,7 +739,7 @@ def check_loss():
     Checks if the player has met the conditions to lose the game
     Will clear all enemies and create a game over screen in that case
     '''
-    if(app.cities == 0):
+    if(len(cities) == 0):
         app.play = False
         targets.clear()
         defense.clear()
@@ -780,14 +827,19 @@ def spawn_shots(x, y, angle):
     '''
     new = Oval(x,y,2,20, fill='white', rotateAngle = angle)
     new.next = getPointInDir(x,y,angle,app.ufoProjectileSpeed)
+    new.score = 1000
     new2 = Oval(x,y,2,20, fill='white', rotateAngle = angle+10)
     new2.next = getPointInDir(x,y,angle+10,app.ufoProjectileSpeed)
+    new2.score = 1000
     new3 = Oval(x,y,2,20, fill='white', rotateAngle = angle-10)
     new3.next = getPointInDir(x,y,angle-10,app.ufoProjectileSpeed)
+    new3.score = 1000
     new4 = Oval(x,y,2,20, fill='white', rotateAngle = angle+5)
     new4.next = getPointInDir(x,y,angle+5,app.ufoProjectileSpeed)
+    new4.score = 1000
     new5 = Oval(x,y,2,20, fill='white', rotateAngle = angle-5)
     new5.next = getPointInDir(x,y,angle-5,app.ufoProjectileSpeed)
+    new5.score = 1000
     ufoShots.add(new, new2, new3, new4, new5)        
 
 def move_ufo():
