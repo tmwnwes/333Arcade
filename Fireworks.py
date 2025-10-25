@@ -95,12 +95,12 @@ helpBackground = Rect((1/10)*app.width, (1/10)*app.height, (4/5)*app.width, (4/5
 helpTitle = Label("Help Menu", helpBackground.centerX, helpBackground.top + (1/20)*app.height, size = (1/40)*app.width, fill = "white")
 helpText0 = Label("After selecting color(s), and pressing go, click the screen anywhere. This will launch a firework towards that location.", helpBackground.left+2, helpBackground.top + (1/10)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
 helpText1 = Label("Screensaver Mode causes the program to act as a screensaver, picking places at random to launch fireworks.", helpBackground.left+2, helpBackground.top + (3/20)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
-helpText2 = Label("starry Night Mode causes remnants of the firework rocket to remain, over time creating a colorful starry night.", helpBackground.left+2, helpBackground.top + (1/5)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
-helpText3 = Label("Twinkle Mode can only be active alongside starry Night mode, and it will allow random twinkling of the firework remnants.", helpBackground.left+2, helpBackground.top + (1/4)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
+helpText2 = Label("Starry Night Mode causes remnants of the firework rocket to remain, over time creating a colorful tarry night.", helpBackground.left+2, helpBackground.top + (1/5)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
+helpText3 = Label("Twinkle Mode can only be active alongside Starry Night Mode, and it will allow random twinkling of the firework remnants.", helpBackground.left+2, helpBackground.top + (1/4)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
 helpText4 = Label("You can reselect colors and settings at any time by pressing escape outside of the help menu.", helpBackground.left+2, helpBackground.top + (3/10)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
-helpText4a = Label("Returning to the menu will retain your stars if you were in starry night mode but delete fireworks that have been spawned or are exploding.", helpBackground.left+2, helpBackground.top + (7/20)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
+helpText4a = Label("Returning to the menu will retain your stars if you were in Starry Night Mode but delete fireworks that have been spawned or are exploding.", helpBackground.left+2, helpBackground.top + (7/20)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
 helpText5 = Label("You can clear your stars at any time by pressing 'c' or by returning to the settings screen and pressing the clear stars button.", helpBackground.left+2, helpBackground.top + (2/5)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
-helpText6 = Label("Disabling starry Night Mode will not remove your stars unless you additionally choose to clear them.", helpBackground.left+2, helpBackground.top + (9/20)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
+helpText6 = Label("Disabling Starry Night Mode will not remove your stars unless you additionally choose to clear them.", helpBackground.left+2, helpBackground.top + (9/20)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
 helpText7 = Label("Access this menu anytime by pressing 'h'. This will pause your game and retain your stars and active fireworks upon closing the menu.", helpBackground.left+2, helpBackground.top + (1/2)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
 helpText8 = Label("Firework launch frequency can be altered using the speed selector on the main page (top right), only while in screensaver mode", helpBackground.left+2, helpBackground.top + (11/20)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
 helpText8a = Label("Please note that frequency is measured in 'Fireworks per Minute,' ranges from 1 to 100, The dafault, 20, launches 1 firework every 3 seconds", helpBackground.left+2, helpBackground.top + (3/5)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
@@ -237,13 +237,13 @@ def toggle_starry_night_mode():
         starryNightButton.border = "gray"
         starryNightButton.borderWidth -=3
         starryNightLabel.fill = "gray"
-        starryNightLabel.value = "starry Night Mode Inactive"
+        starryNightLabel.value = "Starry Night Mode Inactive"
     else:
         app.starryNight = True
         starryNightButton.border = "white"
         starryNightButton.borderWidth +=3
         starryNightLabel.fill = "white"
-        starryNightLabel.value = "starry Night Mode Active"
+        starryNightLabel.value = "Starry Night Mode Active"
         
 def toggle_twinkle():
     if(app.starryNight == True):
