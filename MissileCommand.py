@@ -92,10 +92,9 @@ def display_reward_extra_city():
     Used to relay information regarding a score milestone and unlocking a bonus city
     '''
     box = Rect(0, score.centerY * 2, app.width/8, app.height/10, fill=None)
-    label1 = Label("You reached a score milestone", box.centerX+20, box.top, fill='white', size = 15)
-    label2 = Label("You have unlocked a bonus city", box.centerX+20, label1.bottom+2, fill='white', align = 'top', size = 15)
+    label2 = Label("You have unlocked a bonus city", box.centerX+20, box.top, fill='white', align = 'top', size = 15)
     label3 = Label("Survive this wave to spawn your bonus city", box.centerX+20, label2.bottom+2, fill='white', align = 'top', size = 15)
-    info.add(box, label1, label2, label3)
+    info.add(box, label2, label3)
     app.infoTimer = app.stepsPerSecond*5
 
 def make_city(x, j):
@@ -391,6 +390,7 @@ def advance_stage():
     app.mult = app.level   
     app.enemiesLeftToSpawn = (app.level*7) + 5
     app.spawnTimer = app.stepsPerSecond*4
+    newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
     if(app.level>fullInfoList[7]):
         fullInfoList[7]+=1
         update_stats()
