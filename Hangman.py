@@ -10,7 +10,7 @@ root.destroy()
 app.width = width
 app.height = height
 
-wordList = open("words_alpha.txt", "r", -1) ### 370k words, incliuding names, places, plurals, and weird old english words like symphysy
+wordList = open("Files/words_alpha.txt", "r", -1) ### 370k words, incliuding names, places, plurals, and weird old english words like symphysy
 words = []
 words2 = []
 
