@@ -25,7 +25,7 @@ app.slider = False
 app.dragSpeed = (1/84)*app.width
 
 unknownStats = Group()
-knownGames = ["Asteroids.py", "ColorGame.py", "Fireworks.py", "Hangman.py", "Minesweeper.py", "SubGame.py"]
+knownGames = ["Asteroids.py", "ColorGame.py", "Fireworks.py", "Hangman.py", "Minesweeper.py", "SubGame.py", "MissileCommand.py"]
 unknownGames = []
 
 UnknownGameKeys = ["Unknown Game"]
@@ -62,6 +62,11 @@ AsteroidsKeys = ["Shots", "Hits", "HighScore", "GamesPlayed", "TimesLaunched"]
 AsteroidsDisplay = ["Accuracy", "High Score"]
 AsteroidsStatsDisplay = []
 AsteroidsInfoFull =[0,0,0,0,0]
+MissileCommandDefault = [0,0,0,0,0,0,0,0]
+MissileCommandKeys = ["HighScore", "GamesPlayed", "Shots", "Hits", "EnemiesDestroyed", "CitiesLost", "TimesLaunched", "HighestLevel"] 
+MissileCommandDisplay = ["High Score", "Enemies Destroyed" , "Accuracy", "Cities Lost", "Highest Level"] 
+MissileCommandStatsDisplay = []
+MissileCommandInfoFull = [0,0,0,0,0,0,0,0]
 ### Default Values, Keys, Simple Stat Display Keys, Display Values, and General Info about each known and created game. Must update for each additional game made. Add to the known game list and create the necessary values above
 
 
@@ -144,7 +149,7 @@ displays = []
 realKeys = []
 statsDisplay = []
 
-tempList = [SubGameStatsDisplay, HangmanStatsDisplay, MinesweeperStatsDisplay, FireworksStatsDisplay, ColorGameStatsDisplay, AsteroidsStatsDisplay]
+tempList = [SubGameStatsDisplay, HangmanStatsDisplay, MinesweeperStatsDisplay, FireworksStatsDisplay, ColorGameStatsDisplay, AsteroidsStatsDisplay, MissileCommandStatsDisplay]
 
 
 def accuracy_check(indexYes, indexTotal, source, destination, destIndex):
@@ -206,12 +211,14 @@ MinesweeperStatsDisplay+=[MinesweeperInfoFull[6],MinesweeperInfoFull[7],Mineswee
 FireworksStatsDisplay+=[find_favorite_firework_color(), FireworksInfoFull[9], FireworksInfoFull[10]]
 ColorGameStatsDisplay+=[0, ColorGameInfoFull[2]]
 AsteroidsStatsDisplay+=[0, AsteroidsInfoFull[2]]
+MissileCommandStatsDisplay+=[MissileCommandInfoFull[0], MissileCommandInfoFull[4], 0, MissileCommandInfoFull[5], MissileCommandInfoFull[7]]
 ## Simple Stats
 
 accuracy_check(5, 4, SubGameInfoFull, SubGameStatsDisplay, 3)
 accuracy_check(0,1,HangmanStatsDisplay, HangmanStatsDisplay, 2)
 accuracy_check(0,1,ColorGameInfoFull, ColorGameStatsDisplay, 0)
 accuracy_check(1, 0, AsteroidsInfoFull, AsteroidsStatsDisplay, 0)
+accuracy_check(3,2, MissileCommandInfoFull, MissileCommandStatsDisplay, 2)
 
 
 def create_buttons_for_unknown_games():
@@ -334,7 +341,4 @@ def toggle_stats():
 post_simple_stats()
 gameLabels.toFront()
 app.run()
-
-
-
 
