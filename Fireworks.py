@@ -10,7 +10,7 @@ height = root.winfo_screenheight()
 root.destroy()
 
 
-gameInfo = open("Files/FireworksFinalStats.txt", "r+")
+gameInfo = open("Files/FireworksStats.txt", "r+")
 fullInfoList = [] ## Key infomation can be found in MinesweeperStatsKeys.txt
 for thing in gameInfo:
     thing = thing.strip()
