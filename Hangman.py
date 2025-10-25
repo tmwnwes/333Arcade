@@ -14,7 +14,7 @@ wordList = open("Files/words_alpha.txt", "r", -1) ### 370k words, incliuding nam
 words = []
 words2 = []
 
-gameInfo = open("Files/CheatingHangmanStats.txt", "r+")
+gameInfo = open("Files/HangmanStats.txt", "r+")
 fullInfoList = [] ## Key infomation can be found in MinesweeperStatsKeys.txt
 for thing in gameInfo:
     thing = thing.strip()
@@ -333,9 +333,9 @@ def bodyAdd(): ## Move fail() and app.stop() up for harder game and down for eas
 failScreen = Group()
 
 def fail():
-    failScreen.add(Rect((3/20)*app.width,(3/5)*app.height,(7/20)*app.width,(3/20)*app.height, fill='None'))
+    failScreen.add(Rect((3/20)*app.width,(3/5)*app.height,(7/20)*app.width,(3/20)*app.height, fill=None))
     failScreen.add(Label("You failed", (13/40)*app.width, (21/32)*app.height, size = (1/30)*app.width))
-    failScreen.add(Label(wordy[len(wordy)-1], (13/40)*app.width, (11/16)*app.height, size = (1/30)*app.width))
+    failScreen.add(Label(wordy[len(wordy)-1], (13/40)*app.width, (23/32)*app.height, size = (1/30)*app.width))
     if(len(wordy[len(wordy)-1])>fullInfoList[5]):
         fullInfoList[5] = len(wordy[len(wordy)-1])
     if(len(wordy[len(wordy)-1])<fullInfoList[3] or fullInfoList[3] == 0):
