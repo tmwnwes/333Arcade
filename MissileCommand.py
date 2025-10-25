@@ -63,7 +63,8 @@ gameOver = Group()
 info = Group()
 visibleScores = Group()
 score = Label("Score: %05d" %app.score, leftBattery.centerX, (1/40)*app.height, size = 20, fill='white')
-stage = Label("Level: %1d" %app.level, midBattery.centerX, (1/40)*app.height, size = 20, fill = 'white')
+stage = Label("Level: %1d" %app.level, app.width*1/3 , (1/40)*app.height, size = 20, fill = 'white')
+newLevelWarning = Label("Enemies until next level: %d" % app.enemiesLeftToSpawn, app.width * 2/3, (1/40)*app.height, size = 20, fill='white')
 hiscore = Label("High Score: %05d" %app.hiscore, rightBattery.centerX, (1/40)*app.height, size = 20, fill='white')
 
 def create_scores(x,y,val):
@@ -91,10 +92,10 @@ def display_reward_extra_city():
     Used to relay information regarding a score milestone and unlocking a bonus city
     '''
     box = Rect(0, score.centerY * 2, app.width/8, app.height/10, fill=None)
-    label1 = Label("You reached a score milestone", box.centerX, box.top, fill='white', size = 15)
-    label2 = Label("You have unlocked a bonus city", box.centerX, label1.bottom+2, fill='white', align = 'top', size = 15)
-    label3 = Label("Survive this wave to spawn your bonus city", box.centerX, label2.bottom+2, fill='white', align = 'top', size = 15)
-    info.add(box, label1, label2)
+    label1 = Label("You reached a score milestone", box.centerX+20, box.top, fill='white', size = 15)
+    label2 = Label("You have unlocked a bonus city", box.centerX+20, label1.bottom+2, fill='white', align = 'top', size = 15)
+    label3 = Label("Survive this wave to spawn your bonus city", box.centerX+20, label2.bottom+2, fill='white', align = 'top', size = 15)
+    info.add(box, label1, label2, label3)
     app.infoTimer = app.stepsPerSecond*5
 
 def make_city(x, j):
@@ -880,6 +881,7 @@ def spawn_handling():
                 spawn_basic_missile(randrange(0,app.width), -10)
                 app.spawnTimer = app.stepsPerSecond * 6
                 app.enemiesLeftToSpawn -=1
+                newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
     elif(app.level <= 3): ## missiles and bomber planes
         if(app.enemiesLeftToSpawn >=1):
             if(app.spawnTimer == 0):
@@ -889,6 +891,7 @@ def spawn_handling():
                     spawn_basic_missile(randrange(0,app.width), -10)
                 app.spawnTimer = app.stepsPerSecond * 5
                 app.enemiesLeftToSpawn -=1
+                newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
     elif(app.level <= 6): ## missiles, bomber planes higher up, multi-bombs, non straight missiles
             if(app.enemiesLeftToSpawn >=1):
                 if(app.spawnTimer == 0):
@@ -902,6 +905,7 @@ def spawn_handling():
                         spawn_basic_missile(randrange(0,app.width), -10)
                     app.spawnTimer = app.stepsPerSecond * 4
                     app.enemiesLeftToSpawn -=1
+                    newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
     if(app.level <=9 ): ## all of the above, plus smart bombs
             if(app.enemiesLeftToSpawn >=1):
                 if(app.spawnTimer == 0):
@@ -917,22 +921,29 @@ def spawn_handling():
                         spawn_basic_missile(randrange(0,app.width), -10)
                     app.spawnTimer = app.stepsPerSecond * 3
                     app.enemiesLeftToSpawn -=1
+                    newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
     else: ## all of the above, plus hovering ufos which will launch devastating strikes if they are not blown up fast enough, and basic missiles can spawn at the same time as other enemy types
         if(app.enemiesLeftToSpawn >=1):
             if(app.spawnTimer == 0):
                 if(app.enemiesLeftToSpawn% 9 == 0):
                     spawn_multi_bomb(randrange(app.width), randrange(app.height//4, 3*app.height//4))
+                    app.enemiesLeftToSpawn -=1
                 if(app.enemiesLeftToSpawn%4 == 0):
                     spawn_plane(randrange(20, app.height//4))
+                    app.enemiesLeftToSpawn -=1
                 if(app.enemiesLeftToSpawn%7 == 0):
                     spawn_fun_missile()
+                    app.enemiesLeftToSpawn -=1
                 if(app.enemiesLeftToSpawn%11 == 0):
                     spawn_smart_bomb()
+                    app.enemiesLeftToSpawn -=1
                 if(app.enemiesLeftToSpawn%23): ##Rare event, on purpose
                     spawn_ufo()
+                    app.enemiesLeftToSpawn -=1
                 spawn_basic_missile(randrange(0,app.width), -10)
                 app.spawnTimer = app.stepsPerSecond * 2
                 app.enemiesLeftToSpawn -=1
+                newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
 
 def onStep():
     '''
@@ -1001,5 +1012,6 @@ app.bat.border = 'white'
 make_all_cities_new_level()
 fullInfoList[1]+=1
 fullInfoList[6]+=1
+update_stats()
 
 app.run()
