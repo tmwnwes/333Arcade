@@ -26,7 +26,7 @@ app.slider = False
 app.dragSpeed = (1/84)*app.width
 
 unknownStats = Group()
-knownGames = ["Asteroids.py", "ColorGame.py", "Fireworks.py", "Hangman.py", "Minesweeper.py", "SubGame.py", "MissileCommand.py"]
+knownGames = ["Asteroids.py", "ColorGame.py", "Fireworks.py", "Hangman.py", "Minesweeper.py", "SubGame.py", "MissileCommand.py", "FlappyBat.py"]
 unknownGames = []
 
 UnknownGameKeys = ["Unknown Game"]
@@ -68,6 +68,11 @@ MissileCommandKeys = ["HighScore", "GamesPlayed", "Shots", "Hits", "EnemiesDestr
 MissileCommandDisplay = ["High Score", "Enemies Destroyed" , "Accuracy", "Cities Lost", "Highest Level"] 
 MissileCommandStatsDisplay = []
 MissileCommandInfoFull = [0,0,0,0,0,0,0,0]
+FlappyBatDefault = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+FlappyBatKeys = ["TimesLaunched", "GamesPlayed", "GamesEasy", "GamesMed", "GamesHard", "HighScoreEasy", "HighScoreMed", "HighScoreHard", "OverallHighScore", "TotalPoints", "AvgEasy", "AvgMed", "AvgHard", "TotalEasy", "TotalMed", "TotalHard"]
+FlappyBatDisplay = ["Highest Score", "Favorite Mode", "Average Score"]
+FlappyBatStatsDisplay = []
+FlappyBatInfoFull = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 ### Default Values, Keys, Simple Stat Display Keys, Display Values, and General Info about each known and created game. Must update for each additional game made. Add to the known game list and create the necessary values above
 
 
@@ -138,7 +143,18 @@ def find_favorite_firework_color():
             fav = i
     return FireworksColors[fav]
 
-
+def find_favorite_game_mode_flappy_bat():
+    fav = "Easy"
+    if FlappyBatInfoFull[2]>FlappyBatInfoFull[3]:
+        if FlappyBatInfoFull[2]>FlappyBatInfoFull[4]:
+            fav = 'Easy'
+        else:
+            fav = "Hard"
+    elif FlappyBatInfoFull[3]>FlappyBatInfoFull[4]:
+        fav = 'Medium'
+    else:
+        fav = "Hard"
+    return fav
 
 dataPaths = []
 keyPaths = []
@@ -150,7 +166,7 @@ displays = []
 realKeys = []
 statsDisplay = []
 
-tempList = [SubGameStatsDisplay, HangmanStatsDisplay, MinesweeperStatsDisplay, FireworksStatsDisplay, ColorGameStatsDisplay, AsteroidsStatsDisplay, MissileCommandStatsDisplay]
+tempList = [SubGameStatsDisplay, HangmanStatsDisplay, MinesweeperStatsDisplay, FireworksStatsDisplay, ColorGameStatsDisplay, AsteroidsStatsDisplay, MissileCommandStatsDisplay, FlappyBatStatsDisplay]
 
 
 def accuracy_check(indexYes, indexTotal, source, destination, destIndex):
@@ -213,6 +229,7 @@ FireworksStatsDisplay+=[find_favorite_firework_color(), FireworksInfoFull[9], Fi
 ColorGameStatsDisplay+=[0, ColorGameInfoFull[2], ColorGameInfoFull[5]]
 AsteroidsStatsDisplay+=[0, AsteroidsInfoFull[2]]
 MissileCommandStatsDisplay+=[MissileCommandInfoFull[0], MissileCommandInfoFull[4], 0, MissileCommandInfoFull[5], MissileCommandInfoFull[7]]
+FlappyBatStatsDisplay+=[FlappyBatInfoFull[8], find_favorite_game_mode_flappy_bat(), (0 if FlappyBatInfoFull[9]==0 else FlappyBatInfoFull[9]/FlappyBatInfoFull[1])]
 ## Simple Stats
 
 accuracy_check(5, 4, SubGameInfoFull, SubGameStatsDisplay, 3)
