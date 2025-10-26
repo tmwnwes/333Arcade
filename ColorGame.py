@@ -18,7 +18,7 @@ for thing in gameInfo:
     thing = thing.strip()
     if thing != '':
         fullInfoList.append((int)(thing))
-app.hi = fullInfoList[2]
+app.hi = fullInfoList[5]
 
 app.time = 1000
 app.score = 0
@@ -26,6 +26,7 @@ app.stepsPerSecond = 45
 app.timeSince = app.stepsPerSecond*3
 app.att = 0
 app.failed = False
+app.currentStreak = 0
 oTime = Label("Overall Time: %1.1f" %(app.time/app.stepsPerSecond), 5, (3/80)*app.height, size = (1/40)*app.width, align = 'left')
 score = Label("Score: %1d" %app.score, app.width, (3/80)*app.height, size = (1/20)*app.width, align = 'right')
 hiScore = Label("High Score: %1d" %app.hi, app.width, (1/10)*app.height, size =(1/20)*app.width, align = 'right')
@@ -42,11 +43,13 @@ for i in range(3):
         int += 1
 
 def update_stats():
-    if app.score>fullInfoList[2]:
-        fullInfoList[2] = app.score
-        hi = app.score
+    if(app.currentStreak>fullInfoList[2]):
+        fullInfoList[2] = app.currentStreak
+    if app.score>fullInfoList[5]:
+        fullInfoList[5] = app.score
+        app.hi = app.score
         score.right = app.width
-        hiScore.rigth = app.width
+        hiScore.right = app.width
     gameInfo.seek(0)
     for i in range(len(fullInfoList)):
         gameInfo.write((str)(fullInfoList[i])+"\n")  
@@ -74,10 +77,12 @@ def check_button(colInput):
     app.att+=1
     if(colInput == thing.fill):
         app.score += 1
-        app.time += app.stepsPerSecond*3
+        app.time += app.stepsPerSecond*1.5
+        app.currentStreak+=1
         fullInfoList[0]+=1
     else:
         app.time -= app.stepsPerSecond
+        app.currentStreak = 0
     
 def onMousePress(x,y):
     for button in buttons:
@@ -94,6 +99,7 @@ def checkTime():
         app.timeSince = app.stepsPerSecond*2
         app.att += 1
         reset_word()
+        app.currentSrteak = 0
         
 def full_reset():
     fullInfoList[3]+=1
