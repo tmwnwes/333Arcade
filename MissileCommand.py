@@ -5,6 +5,7 @@ import random
 root = tk.Tk()
 width = root.winfo_screenwidth()
 height = root.winfo_screenheight()
+root.wm_attributes('-fullscreen', True) ## This line is a workaround for macOs devices with no ill effects for Windows users. It forces a new window to open in fullscreen and focus on it, before destroying it on the next line. The main canvas is then created and players will see it. Players must still maximise this window manually however
 root.destroy()
 
 gameInfo = open("Files/MissileCommandStats.txt", "r+")
@@ -354,10 +355,10 @@ def bat_color_update():
     Acheives this goal by changing border color on the batteries
     '''
     for bat in batteries:
-        if app.bat == bat:
-            bat.border = 'white'
-        elif(bat.broken == True): 
+        if(bat.broken == True):
             bat.border = 'red'
+        elif app.bat == bat:
+            bat.border = 'white'
         else:
             bat.border = 'gray'
 
