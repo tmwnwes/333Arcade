@@ -39,14 +39,6 @@ for thing in wordList:
 word = words[randrange(len(words))] # pick a word
 
 
-def checkOK(word):
-    if (len(word)>=app.minLengthWord): 
-        return word
-    else:
-        word = checkOK(words[randrange(len(words))])
-    return word
-
-word = checkOK(word) ### Comment out to allow really short words (makes it harder)
 
 wordLength = len(word)
 wordPattern = []
@@ -226,7 +218,7 @@ def reset_all():
     noLetters = []
     yesLetters = []
     wordPattern = []
-    word = checkOK(words[randrange(len(words))])
+    word = words[randrange(len(words))]
     wordy = [word]
     wordLength = len(word)
     for i in range(wordLength):
