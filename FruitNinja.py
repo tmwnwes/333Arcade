@@ -23,7 +23,9 @@ background.height = app.height
 particles = []
 partLines = []
 deleteShapes = Group()
-head = RegularPolygon(100,100,10, 3)
+app.angle = None
+head = RegularPolygon(100,100,12, 3, fill='white', rotateAngle = 90, visible = False)
+app.lastX, app.lastY = 0,0
 
 
 ## The above lines import the image of the background and stretch it to fit the window
@@ -41,35 +43,39 @@ def remove_particles():
 
 def particles_helper():
     for i in range(len(particles)-1):
-        if(particles[i].connectedBegin==False):
-            if(particles[i+1].connectedEnd == False):
-                if(particles[i].num == particles[i+1].num):
-                    new = Line(particles[i].centerX, particles[i].centerY, particles[i+1].centerX, particles[i+1].centerY, lineWidth = 20)
-                    new.life = app.stepsPerSecond*(1/2)
-                    partLines.append(new)
+        if(particles[i].num == particles[i+1].num):
+            new = Line(particles[i].centerX, particles[i].centerY, particles[i+1].centerX, particles[i+1].centerY, lineWidth = 12, fill='white')
+            new.life = particles[i].life
+            partLines.append(new)
             
 
 def spawn_particle_effects(x,y):
     new = Circle(x,y, 5, fill = None)
     new.life = app.stepsPerSecond*(1/2)
     new.num = app.num
-    new.connectedBegin = False
-    new.connectedEnd = False
     particles.append(new)
+    particles_helper()
 
 def onMousePress(x,y):
+    head.centerX, head.centerY,  = x,y
+    head.visible = True
     app.num +=1
+    app.lastX, app.lastY = x,y
 
 def onMouseDrag(x,y):
+    app.angle = angleTo(app.lastX, app.lastY, x,y)
     head.centerX, head.centerY = x,y
-    head.visible = True
+    head.rotateAngle = app.angle
+    app.lastX, app.lastY = x,y
     spawn_particle_effects(x,y)
     
+    
 def onMouseRelease(x,y):
+    app.angle = 90
     head.visible = False
+    head.centerX, head.centerY = x,y
     
 def onStep():
-    particles_helper()
     deleteShapes.clear()
     remove_particles()
     
