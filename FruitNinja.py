@@ -10,6 +10,7 @@ root.wm_attributes('-fullscreen', True) ## This line is a workaround for macOs d
 root.destroy()
 fruits = Group()
 powerups = Group()
+bombs = Group()
 app.width = width
 app.height = height
 app.stepsPerSecond = 30
@@ -20,8 +21,16 @@ app.score = 0
 app.startingYspeed = 35
 app.powerUpTimer = app.stepsPerSecond*randrange(20)
 app.bombTimer = app.stepsPerSecond*randrange(60)
+app.mult = 1
+app.frozen = False
+app.freezeTimer = app.stepsPerSecond * 3
+app.doubleTimer = app.stepsPerSecond * 5
 splits = Group()
+app.bombs = 0
+app.doubled = False
 
+doubleTime = Arc(20, 20, 40, 40, 0, 360, fill='lime', opacity = 0)
+freezeTime = Arc(20, 70, 40, 40, 0, 360, fill='cyan', opacity = 0)
 
 background = Image("Images/FruitNinjaBackground.png", 0,0) ### Give proper credit
 background.width = app.width
@@ -38,6 +47,10 @@ app.lastX, app.lastY = 0,0
 
 
 ## The above lines import the image of the background and stretch it to fit the window
+
+def update_score():
+    scoreLabel.value = "%d" %app.score
+    
 def remove_particles():
     for part in particles:
         part.life-=1
@@ -58,7 +71,12 @@ def particles_helper():
             partLines.append(new)
             
 
-
+def decrease_timers(timer, maxSteps):
+    if(timer.sweepAngle>5):
+        timer.sweepAngle -= 360/maxSteps
+    else: 
+        timer.sweepAngle = 360
+        timer.opacity = 0
 
 def spawn_particle_effects(x,y):
     new = Circle(x,y, 5, fill = None)
@@ -68,8 +86,8 @@ def spawn_particle_effects(x,y):
     particles_helper()
     
     
-def move_fruit():
-    for fruit in fruits:
+def move_fruit(type):
+    for fruit in type:
         fruit.Yspeed -=0.55
         fruit.centerX += fruit.Xspeed
         fruit.centerY -= fruit.Yspeed
@@ -77,7 +95,7 @@ def move_fruit():
         fruit.hitbox.centerX, fruit.hitbox.centerY = fruit.centerX, fruit.centerY
         fruit.hitbox.rotateAngle = fruit.rotateAngle
         if(fruit.Yspeed<0 and fruit.top>=app.height):
-            fruits.remove(fruit)
+            type.remove(fruit)
 
 def move_splits():
     for half in splits:
@@ -85,6 +103,8 @@ def move_splits():
         half.centerY -= half.Yspeed
         half.Yspeed -= 0.3
         half.rotateAngle += half.Xspeed/2
+        if(half.top> app.height):
+            splits.remove(half)
 
 def onMousePress(x,y):
     head.centerX, head.centerY,  = x,y
@@ -96,33 +116,60 @@ def slice_it(fruit):
         if fruit.name == fruit_names[i]:
             new = Image(fruit_splits[(i*2)], fruit.centerX +randrange(-10, 11, 1), fruit.centerY + randrange(-20, 0, 1))
             new2 = Image(fruit_splits[(i*2)+1], fruit.centerX +randrange(-10, 11, 1), fruit.centerY + randrange(0, 10, 1))
-            new.Xspeed = randrange(-5, 0)
-            new2.Xspeed = randrange(6)
-            new.Yspeed = fruit.Yspeed + randrange(-2,3)
-            new2.Yspeed = fruit.Yspeed + randrange(-2,3)
-            new.rotateAngle = fruit.rotateAngle
-            new2.rotateAngle = fruit.rotateAngle
-            splits.add(new, new2)
+    for i in range(len(powerups_names)):
+        if fruit.name == powerups_names[i]:
+            new = Image(powerupSplits[(i*2)], fruit.centerX +randrange(-10, 11, 1), fruit.centerY + randrange(-20, 0, 1))
+            new2 = Image(powerupSplits[(i*2)+1], fruit.centerX +randrange(-10, 11, 1), fruit.centerY + randrange(0, 10, 1))
+            if(i==0):
+                new.width/=3
+                new.height/=3
+                new2.width/=3
+                new2.height/=3
+    for i in range(len(bomb_names)):
+        if fruit.name == bomb_names[i]:
+            new = Image(bomb_splits[(i*2)], fruit.centerX +randrange(-10, 11, 1), fruit.centerY + randrange(-20, 0, 1))
+            new2 = Image(bomb_splits[(i*2)+1], fruit.centerX +randrange(-10, 11, 1), fruit.centerY + randrange(0, 10, 1))
+            
+    new.Xspeed = randrange(-5, 0)
+    new2.Xspeed = randrange(6)
+    new.Yspeed = fruit.Yspeed + randrange(-2,3)
+    new2.Yspeed = fruit.Yspeed + randrange(-2,3)
+    new.rotateAngle = fruit.rotateAngle
+    new2.rotateAngle = fruit.rotateAngle
+    splits.add(new, new2)
 
-def fruit_slicing():
-    for fruit in fruits:
+            
+def hit_bomb():
+    app.bombs +=1
+
+def fruit_slicing(type):
+    for fruit in type:
         for line in partLines:
             if(fruit.hitbox.hitsShape(line) and line.life>app.stepsPerSecond*(1/4) and fruit.sliced == False):
                 fruit.sliced = True
-                app.score+=1
+                app.score+=fruit.score * app.mult
+                if(fruit.name == 'x2'):
+                    app.mult = 2
+                    app.doubled = True
+                    app.doubleTimer = app.stepsPerSecond * 5
+                    doubleTime.opacity = 100
+                if(fruit.name == 'freeze'):
+                    app.frozen = True
+                    app.freezeTimer = app.stepsPerSecond * 3
+                    freezeTime.opacity = 100
+                if(fruit.name == 'bomb'):
+                    hit_bomb()
                 deleteShapes.add(fruit.hitbox)
-                fruits.remove(fruit)
+                type.remove(fruit)
                 slice_it(fruit)
                 
 
 def hit_detection():
-    fruit_slicing()
+    fruit_slicing(fruits)
+    fruit_slicing(powerups)
+    fruit_slicing(bombs)
 
 def onMouseDrag(x,y):
-    if(x,y != app.lastX, app.lastY):
-        head.visible = True
-    else:
-        head.visible = False
     app.angle = angleTo(app.lastX, app.lastY, x,y)
     head.centerX, head.centerY = x,y
     head.rotateAngle = app.angle
@@ -131,20 +178,41 @@ def onMouseDrag(x,y):
     
     
 def onMouseRelease(x,y):
-    head.visible = False
     app.angle = 90
     head.centerX, head.centerY = x,y
     
 def onStep():
-    head.visible=False
+    if(app.frozen == False):
+        move_fruit(fruits)
+        move_fruit(bombs)
+        move_fruit(powerups)
+        if(app.timer%app.stepsPerSecond*4 == 0):
+            spawn_fruit()
+        if(app.powerUpTimer <=0):
+            app.powerUpTimer = randrange(app.stepsPerSecond*20)
+            spawn_powerup()
+        if(app.bombTimer <=0):
+            app.bombTimer = randrange(app.stepsPerSecond*60)
+            spawn_bomb()
+    else:
+        decrease_timers(freezeTime, app.stepsPerSecond*3)
+    if(app.freezeTimer <=0):
+        app.frozen = False
+    if(app.doubleTimer <=0):
+        app.doubled = False
+        app.mult = 1
+    if(app.doubled == True):
+        decrease_timers(doubleTime, app.stepsPerSecond * 3)
     deleteShapes.clear()
     remove_particles()
     app.timer += 1
-    if(app.timer%app.stepsPerSecond*4 == 0):
-        spawn_fruit()
-    move_fruit()
+    app.powerUpTimer -=1
+    app.bombTimer -=1
+    app.freezeTimer -=1
+    app.doubleTimer-=1
     hit_detection()
     move_splits()
+    update_score()
     
 def spawn_fruit():
     howMany = randrange(1,9)
@@ -162,6 +230,7 @@ def spawn_fruit():
         fruit.hitbox.rotateAngle = fruit.rotateAngle
         fruit.hitbox.toBack()
         fruit.sliced = False
+        fruit.score = 1
         fruit.name = fruit_names[pick]
         if fruit.targetX<= fruit.centerX:
             fruit.dir = 'left' 
@@ -173,18 +242,34 @@ fruit_splits = ["Images/Splits/Banana1.png", "Images/Splits/Banana2.png", "Image
 fruit_urls = ["Images/Banana.png","Images/Cherry.png","Images/Coconut.png","Images/Dragonfruit.png","Images/Greenapple.png","Images/Kiwi.png","Images/Lemon.png","Images/Lime.png","Images/Mango.png","Images/Orange.png","Images/Passionfruit.png","Images/Peach.png","Images/Pear.png","Images/Pineapple.png","Images/Plum.png","Images/Pomegranate.png","Images/Red_Apple.png","Images/Strawberry.png","Images/Tomato.png","Images/Watermelon.png"]
 fruit_hitboxes = []
 cut_fruit_urls = []
+powerupSplits = ["Images/Splits/Score_2x_Banana1.png", "Images/Splits/Score_2x_Banana2.png" ,"Images/Splits/Freeze_Banana2.png", "Images/Splits/Freeze_Banana1.png"]
 powerups_urls = ["Images/Score_2x_Banana.png", "Images/Freeze_Banana.png"]
 powerups_hitboxes = []
+bomb_splits = ["Images/Splits/Bomb1.png", "Images/Splits/Bomb2.png", "Images/Splits/bomb101.png", "Images/Splits/bomb102.png"]
 bomb_urls = ["Images/Bomb.png", "Images/bomb10.png"]
 bomb_hitboxes = []
 fruit_names = ['Banana', 'Cherry', 'Coconut', 'Dragonfruit', 'Greenapple', 'Kiwi', 'Lemon', 'Lime', 'Mango', 'Orange', 'Passionfruit', 'Peach', 'Pear', 'Pineapple', 'Plum', 'Pomegranate', 'Red_Apple', 'Strawberry', 'Tomato', 'Watermelon']
-    
+powerups_names = ['x2', 'freeze']  
+bomb_names=['bomb', '-10']  
+
 splits.toFront()
 fruits.toFront()
+bombs.toFront()
+powerups.toFront()
+doubleTime.toFront()
+freezeTime.toFront()
 
 def spawn_powerup():
     pick = randrange(len(powerups_urls))
     new = Image(powerups_urls[pick], randrange(app.width), randrange((int)(app.height+100), (int)(app.height+300)))
+    if(pick == 0):
+        new.width /=3
+        new.height/=3
+        new.name = 'x2'
+        new.score = 10
+    else:
+        new.name = 'freeze'
+        new.score = 10
     new.Yspeed = app.startingYspeed
     new.startX = new.centerX
     new.targetX = randrange((app.width//10), 9*(app.width//10))
@@ -193,11 +278,36 @@ def spawn_powerup():
     new.hitbox.centerX, new.hitbox.centerY = new.centerX, new.centerY
     new.hitbox.rotateAngle = new.rotateAngle
     new.hitbox.toBack()
+    new.sliced = False
     if new.targetX<= new.centerX:
         new.dir = 'left' 
     else:
         new.dir = 'right'
     powerups.add(new)
+    
+def spawn_bomb():
+    pick = randrange(len(bomb_urls))
+    new = Image(bomb_urls[pick], randrange(app.width), randrange((int)(app.height+100), (int)(app.height+300)))
+    if pick == 0:
+        new.name = 'bomb'
+        new.score = 0
+    else:
+        new.name = '-10'
+        new.score = -10
+    new.Yspeed = app.startingYspeed
+    new.startX = new.centerX
+    new.targetX = randrange((app.width//10), 9*(app.width//10))
+    new.Xspeed = (new.targetX - new.centerX)/ 180
+    new.hitbox = bomb_hitboxes[pick]
+    new.hitbox.centerX, new.hitbox.centerY = new.centerX, new.centerY
+    new.hitbox.rotateAngle = new.rotateAngle
+    new.hitbox.toBack()
+    new.sliced = False
+    if new.targetX<= new.centerX:
+        new.dir = 'left' 
+    else:
+        new.dir = 'right'
+    bombs.add(new)
 
 
 fruit_hitboxes.append(Polygon(264, 202, 273, 201, 277, 209, 279, 215, 282, 226, 284, 228, 283, 263, 272, 286, 258, 303, 244, 316, 225, 325, 201, 324, 201, 315, 226, 277, 251, 236, 263, 214, 263, 200))
@@ -240,8 +350,5 @@ for thing in bomb_hitboxes:
     thing.centerX = app.width *2
     thing.centerY = app.height *2
 
-# if(DebugFruit.url == powerups_urls[0]):
-#     DebugFruit.width/=3
-#     DebugFruit.height/=3
     
 app.run()
