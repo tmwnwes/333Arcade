@@ -20,7 +20,7 @@ app.num = 0
 app.score = 0
 app.startingYspeed = 35
 app.powerUpTimer = app.stepsPerSecond*randrange(20)
-app.bombTimer = app.stepsPerSecond*randrange(60)
+app.bombTimer = app.stepsPerSecond#*randrange(60)
 app.mult = 1
 app.frozen = False
 app.freezeTimer = app.stepsPerSecond * 3
@@ -141,6 +141,7 @@ def slice_it(fruit):
             
 def hit_bomb():
     app.bombs +=1
+    Label("X", (9/10)*app.width + app.bombs*(1/40)*app.width, (1/10)*app.height, fill = 'red', border = "gray", size = 50)
 
 def fruit_slicing(type):
     for fruit in type:
@@ -159,9 +160,10 @@ def fruit_slicing(type):
                     freezeTime.opacity = 100
                 if(fruit.name == 'bomb'):
                     hit_bomb()
+                slice_it(fruit)
                 deleteShapes.add(fruit.hitbox)
                 type.remove(fruit)
-                slice_it(fruit)
+                
                 
 
 def hit_detection():
@@ -192,7 +194,8 @@ def onStep():
             app.powerUpTimer = randrange(app.stepsPerSecond*20)
             spawn_powerup()
         if(app.bombTimer <=0):
-            app.bombTimer = randrange(app.stepsPerSecond*60)
+            app.bombTimer = 30 # for debugging
+            #app.bombTimer = randrange(app.stepsPerSecond*60)
             spawn_bomb()
     else:
         decrease_timers(freezeTime, app.stepsPerSecond*3)
@@ -274,7 +277,8 @@ def spawn_powerup():
     new.startX = new.centerX
     new.targetX = randrange((app.width//10), 9*(app.width//10))
     new.Xspeed = (new.targetX - new.centerX)/ 180
-    new.hitbox = powerups_hitboxes[pick]
+    new.hitbox = Polygon(0,0,-1, -1,-2,0) ## Have to create a random useless polygon to replace
+    new.hitbox.pointList = powerups_hitboxes[pick].pointList
     new.hitbox.centerX, new.hitbox.centerY = new.centerX, new.centerY
     new.hitbox.rotateAngle = new.rotateAngle
     new.hitbox.toBack()
@@ -298,7 +302,8 @@ def spawn_bomb():
     new.startX = new.centerX
     new.targetX = randrange((app.width//10), 9*(app.width//10))
     new.Xspeed = (new.targetX - new.centerX)/ 180
-    new.hitbox = bomb_hitboxes[pick]
+    new.hitbox = Polygon(0,0,-1, -1,-2,0) ## Have to create a random useless polygon to replace
+    new.hitbox.pointList = bomb_hitboxes[pick].pointList
     new.hitbox.centerX, new.hitbox.centerY = new.centerX, new.centerY
     new.hitbox.rotateAngle = new.rotateAngle
     new.hitbox.toBack()
