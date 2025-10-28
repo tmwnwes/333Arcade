@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+cmu_graphics/
+
+Files/
+
+!FIles/words_alpha.txt
+
