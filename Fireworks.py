@@ -42,7 +42,7 @@ maxFireworkSize = (9/20) * app.width
 ## Main Screen Settings
 
 Rect(0,0,app.width,app.height) 
-allColors = ["white", "pink", "red", "yellow", "orange", "green", "cyan", "blue", "magenta"]
+allColors = ["white", "deepPink", "red", "yellow", "darkOrange", "lime", "cyan", "blue", "magenta"]
 title = Label("Fireworks", app.width/2, (7/80)*app.height, fill = "white", size = (1/8)*app.width)
 instructions = Label("Select colors & settings for the firework show" , app.width/2, (9/40)*app.height, fill = "pink", size = (1/25)*app.width)
 white = Rect((3/40 *app.width), (2/5 *app.height), (1/4 *app.width), (7/40 *app.height), fill = "white") 
