@@ -103,7 +103,7 @@ def move_splits():
         half.centerY -= half.Yspeed
         half.Yspeed -= 0.3
         half.rotateAngle += half.Xspeed/2
-        if(half.top> app.height):
+        if(half.top>= app.height):
             splits.remove(half)
 
 def onMousePress(x,y):
