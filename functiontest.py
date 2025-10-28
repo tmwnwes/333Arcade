@@ -1,5 +1,5 @@
 def this_is_a_test():
-    return 0
+    return 25
 
 def this_is_a_test_too():
     return false
