@@ -22,9 +22,12 @@ app.powerUpTimer = app.stepsPerSecond*randrange(20)
 app.bombTimer = app.stepsPerSecond*randrange(60)
 splits = Group()
 
+
 background = Image("Images/FruitNinjaBackground.png", 0,0) ### Give proper credit
 background.width = app.width
 background.height = app.height
+
+scoreLabel = Label("%d" %app.score, app.width/2, app.height/10, fill='white', bold = True, border = 'black', size = 50)
 
 particles = []
 partLines = []
