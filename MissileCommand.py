@@ -687,6 +687,8 @@ def hit_detection():
     bombs_vs_cities(bombs) 
     missiles_vs_cities(ufoShots)
     bombs_vs_cities(multiBombPostSplit)
+    missiles_vs_cities(smartMissiles)
+    missiles_vs_bat(smartMissiles)
     missiles_vs_cities(nonbasicMissiles)
     missiles_vs_anti_missiles(basicMissiles)
     missiles_vs_anti_missiles(ufoShots)
@@ -695,6 +697,7 @@ def hit_detection():
     missiles_vs_anti_missiles(multiBombPostSplit)
     missiles_vs_anti_missiles(nonbasicMissiles)
     missiles_vs_anti_missiles(planes)
+    missiles_vs_anti_missiles(smartMissiles)
     explosion_vs_bombs(bombs)
     explosion_vs_bombs(basicMissiles)
     explosion_vs_bombs(nonbasicMissiles)
@@ -703,11 +706,13 @@ def hit_detection():
     explosion_vs_bombs(multiBombs)
     explosion_vs_bombs(multiBombPostSplit)
     explosion_vs_bombs(ufoShots)
+    explosion_vs_bombs(smartMissiles)
     missile_vs_ground(basicMissiles)
     missile_vs_ground(bombs)
     missile_vs_ground(ufoShots)
     missile_vs_ground(multiBombPostSplit)
     missile_vs_ground(nonbasicMissiles)
+    missile_vs_ground(smartMissiles)
     
 def move_trail():
     '''
@@ -890,13 +895,16 @@ def move_smart_bombs():
         bomb.speed += app.gravity
         for shape in explosion:
             if(shape.centerY> bomb.centerY):
-                bomb.how_far.append((distance(bomb.centerX, bomb.centerX, shape.centerX, shape.centerY)), (angleTo(bomb.centerX, bomb.centerY, shape.centerX, shape.centerY)), shape)
-        lowestDistaceExplosionInfo = min(bomb.how_far, key=lambda t: t[0])
-        scaryAngle = lowestDistaceExplosionInfo[1]
-        if(bomb.rotateAngle <= scaryAngle):
-            bomb.rotateAngle -= 5
-        else:
-            bomb.rotateAngle +=5
+                bomb.how_far.append(((distance(bomb.centerX, bomb.centerX, shape.centerX, shape.centerY)), (angleTo(bomb.centerX, bomb.centerY, shape.centerX, shape.centerY)), shape))
+        if(len(bomb.how_far)>0):
+            lowestDistaceExplosionInfo = min(bomb.how_far, key=lambda t: t[0])
+            scaryAngle = lowestDistaceExplosionInfo[1]
+            if(bomb.rotateAngle <= scaryAngle and bomb.rotateAngle>140):
+                bomb.rotateAngle -= 2
+                bomb.speed -= (app.gravity/2)
+            elif(bomb.rotateAngle> scaryAngle and bomb.rotateAngle<220):
+                bomb.rotateAngle +=2
+                bomb.speed -= (app.gravity/2)
         bomb.next = getPointInDir(bomb.centerX, bomb.centerY, bomb.rotateAngle, bomb.speed)           
 
 def spawn_smart_bomb():
@@ -905,7 +913,7 @@ def spawn_smart_bomb():
     Creates a shape with specific attributes and adds to appropriate shape group
     '''
     new = Circle(randrange(app.width), -100, 6, fill='white')
-    new.speed = 5
+    new.speed = 3
     new.howFar = []
     new.score = 1225
     new.rotateAngle = angleTo(new.centerX, new.centerY, randrange(app.width), app.height)
