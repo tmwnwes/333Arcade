@@ -525,6 +525,12 @@ def toggle_yellow_sub():
         app.yellow = False
 
 def toggle_pause():
+    '''
+    Takes no args and returns no values
+    If game is paused, this will unpause it, 
+    If game is unpaused, this will pause it
+    Entails changing opacity of pause screen features and changing app setting
+    '''
     if(app.failed == False):
         if app.pause == True:
             app.pause = False
