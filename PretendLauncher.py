@@ -263,6 +263,8 @@ statsButton = Rect(0,app.bottom-40, app.width/10, 20, fill = None, border = 'bla
 statsLabel = Label("Show Advanced Stats", statsButton.centerX, statsButton.centerY)
 sliderLine = Line(0,app.height-10, app.width, app.height-10, fill='grey', lineWidth = 20)
 slider = Rect(0, statsButton.bottom, (4/(app.games+len(unknownGames)))*app.width, 20) 
+escapeButton = Rect(app.width, app.bottom-40, app.width/10, 20, fill=None, border = "black", align = 'top-right')
+excapeLabel = Label("ExitLauncher", escapeButton.centerX, escapeButton.centerY)
 
 def post_advanced_stats():
     '''
@@ -295,6 +297,8 @@ def onMousePress(x,y):
     '''
     if (statsButton.contains(x,y)):
         toggle_stats()
+    if (escapeButton.contains(x,y)):
+        sys.exit(0)
     for button in buttons:
         if button.contains(x,y):
             subprocess.Popen(["python3", button.game])
