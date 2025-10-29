@@ -3,6 +3,7 @@
 import sys
 from cmu_graphics import *
 import tkinter as tk
+import subprocess
 
 gameInfo = open("Files/SubGameStats.txt", "r+")
 fullInfoList = [] ## Key infomation can be found in MinesweeperStatsKeys.txt
@@ -72,7 +73,15 @@ torpedoes=Label(30, ammo.centerX, ammo.centerY+20, bold=True, size=20)
 health = Label("Health:", sky.right-30, 10, size = 20)
 hp=Label(sub.health, health.centerX, health.centerY+20, bold=True, size=20)
 
-pauseScreen = Group(Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center', opacity = 0), Label("Game Paused", app.width/2, app.height/2, size = 30, opacity = 0))
+outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center', opacity = 0)
+pauseLabel = Label("Game Paused", app.width/2, app.height/2 - 15, size = 30, opacity = 0)
+closeGameButton = Rect(outerPause.left, outerPause.centerY, outerPause.width//2, outerPause.height//2, fill=None, border = 'red', opacity = 0)
+closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15, opacity = 0)
+backToLauncher = Rect(closeGameButton.right+1, closeGameButton.top, outerPause.width//2, outerPause.height//2, fill=None, border = 'gray', opacity = 0)
+backToLauncher.game = "PretendLauncher.py"
+backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15, opacity = 0)
+
+pauseScreen = Group(outerPause, pauseLabel, closeGameButton, backToLauncher, backToLauncher.words, closeGameButton.words)
 
 ## Creating the screen and wide-scoped variables/groups/labels/objects ##
 
@@ -669,6 +678,16 @@ def onKeyHold(keys):
                 sub.centerY+=2.5
         safetyShield.centerX = sub.centerX
         safetyShield.centerY = sub.centerY
+    
+def onMousePress(x,y):
+    if(app.pause == True):
+        if(closeGameButton.contains(x,y)):
+            update_stats()
+            sys.exit(0)
+        if(backToLauncher.contains(x,y)):
+            update_stats()
+            subprocess.Popen(["python3", backToLauncher.game])
+            sys.exit(0)
         
 ## CMU Built-In Functions Used for Player Motion, Controls, Handling ##
 
@@ -683,6 +702,7 @@ mines.toFront()
 bubbles.toFront()
 sub.toFront()
 AcheivementNote.toFront()
+pauseScreen.toFront()
 starter_mines()
 fullInfoList[1]+=1
 fullInfoList[7]+=1

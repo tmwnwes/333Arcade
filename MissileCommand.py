@@ -1,6 +1,8 @@
 from cmu_graphics import *
 import tkinter as tk
 import random
+import sys
+import subprocess
 
 root = tk.Tk()
 width = root.winfo_screenwidth()
@@ -45,7 +47,15 @@ app.pause = False
 specialWarningInfo = Group()
 app.warningTimer = 0
 
-pauseScreen = Group(Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'white', borderWidth = 2, align = 'center', opacity = 0), Label("Game Paused", app.width/2, app.height/2, size = 30, opacity = 0, fill='white'))
+outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center', opacity = 0)
+pauseLabel = Label("Game Paused", app.width/2, app.height/2 -15, size = 30, opacity = 0, fill= 'white')
+closeGameButton = Rect(outerPause.left, outerPause.centerY, outerPause.width//2, outerPause.height//2, fill=None, border = 'red', opacity = 0)
+closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15, opacity = 0, fill = 'white')
+backToLauncher = Rect(closeGameButton.right+1, closeGameButton.top, outerPause.width//2, outerPause.height//2, fill=None, border = 'gray', opacity = 0)
+backToLauncher.game = "PretendLauncher.py"
+backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15, opacity = 0, fill='white')
+pauseScreen = Group(outerPause, pauseLabel, closeGameButton, backToLauncher, backToLauncher.words, closeGameButton.words)
+
 leftBattery = Rect((1/40)*app.width, (19/20)*app.height, (1/12) * app.width, (1/20)*app.height)
 midBattery = Rect(app.width/2, (19/20)*app.height, (1/12) * app.width, (1/20)*app.height, align = 'top')
 rightBattery = Rect((39/40)*app.width, (19/20)*app.height, (1/12) * app.width, (1/20)*app.height, align = 'top-right')
@@ -1159,6 +1169,14 @@ def onMousePress(x,y):
                     bat_color_update()
                 else:
                     display_mac_window_warning()
+    else:
+        if(closeGameButton.contains(x,y)):
+            update_stats()
+            sys.exit(0)
+        if(backToLauncher.contains(x,y)):
+            update_stats()
+            subprocess.Popen(["python3", backToLauncher.game])
+            sys.exit(0)
             
 def toggle_pause():
     '''
@@ -1183,6 +1201,7 @@ app.bat.border = 'white'
 make_all_cities_new_level()
 fullInfoList[1]+=1
 fullInfoList[6]+=1
+pauseScreen.toFront()
 update_stats()
 
 app.run()
