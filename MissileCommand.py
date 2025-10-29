@@ -496,15 +496,6 @@ def onKeyPress(key):
             reset()
     if(key == "escape" or key =='p' or key =='P'):
         toggle_pause() 
-    if(key == "z"):
-        batteries[0].repairTimer += 1000
-        batteries[0].broken = True
-    if(key == "x"):
-        batteries[1].repairTimer += 1000
-        batteries[1].broken = True
-    if(key == "c"):
-        batteries[2].repairTimer += 1000
-        batteries[2].broken = True
 
 def reload_all():
     '''
