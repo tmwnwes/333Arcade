@@ -1,6 +1,8 @@
 from cmu_graphics import *
 import random
 import tkinter as tk
+import sys
+import subprocess
 
 
 root = tk.Tk()
@@ -32,6 +34,12 @@ score = Label("Score: %1d" %app.score, app.width, (3/80)*app.height, size = (1/2
 hiScore = Label("High Score: %1d" %app.hi, app.width, (1/10)*app.height, size =(1/20)*app.width, align = 'right')
 words = ['blue', 'yellow', 'cow', 'dog', 'purple', 'aardvark', 'green', 'jellyfish', 'pink', 'brown', 'shark', 'black', 'piranha', 'gold', 'lime', 'lemon', 'chips', 'corkboard', 'paper', 'white', 'school', 'gray', 'magenta', 'maroon', 'orange', 'olive', 'turquoise', 'red', 'dinosuar', 'teal', 'cyan']
 colors = ['blue', 'yellow', 'purple', 'darkGreen', 'pink', 'brown', 'black', 'lime', 'maroon', 'magenta', 'darkOrange', 'turquoise', 'red', 'teal', 'cyan']
+
+escapeButton = Rect(3*app.width/8, 0, app.width/8, app.height/10, fill=None, border = 'red')
+escapeLabel = Label("Close Game", escapeButton.centerX, escapeButton.centerY, size = 15)
+backToLauncher = Rect(4*app.width/8, 0, app.width/8, app.height/10, fill=None, border = 'gray')
+backToLauncher.game = "PretendLauncher.py"
+launcherLabel = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15)
 
 thing = Label('word', app.width/2, (1/5)*app.height, size = (3/20)*app.width)
 infoLabel = Label("Current Time: %1.1f" %(app.timeSince/app.stepsPerSecond), 5, (3/40)*app.height, size = (1/40)*app.width, align = 'left')
@@ -90,6 +98,13 @@ def onMousePress(x,y):
             app.timeSince = app.stepsPerSecond*2
             check_button(button.fill)
             reset_word()
+    if(backToLauncher.contains(x,y)):
+        update_stats()
+        subprocess.Popen(["Python3", backToLauncher.game])
+        sys.exit(0)
+    if(escapeButton.contains(x,y)):
+        update_stats()
+        sys.exit(0)
     
 def checkTime():
     if(app.time <= 0):
