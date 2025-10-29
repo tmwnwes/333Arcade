@@ -3,6 +3,8 @@
 from cmu_graphics import *
 import tkinter as tk
 import random
+import sys
+import subprocess
 
 root = tk.Tk()
 width = root.winfo_screenwidth()
@@ -108,6 +110,11 @@ helpText8a = Label("Please note that frequency is measured in 'Fireworks per Min
 helpText9 = Label("Access to settings and program features are disabled in this menu. To close this menu, press escpape or the X in the top left of this window", helpBackground.left+2, helpBackground.top + (13/20)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
 closeHelpMenuButton = Rect(helpBackground.left+2, helpBackground.top+2, (1/40)*app.width, (1/40)*app.width, fill = "red")
 closeHelpMenuLabel = Label("X", closeHelpMenuButton.centerX, closeHelpMenuButton.centerY, size = (1/40)*app.width)
+closeGameButton = Rect(helpBackground.left, helpBackground.bottom, helpBackground.width/2, helpBackground.height/10, align = 'bottom-left', fill=None, border = 'red')
+closeGameLabel = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15)
+backToLauncher = Rect(closeGameButton.right, closeGameButton.top, closeGameButton.width, closeGameButton.height, fill=None, border = 'black')
+returnLabel = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15)
+backToLauncher.game = "PretendLauncher.py"
 
 ##  Help Menu
 
@@ -126,7 +133,7 @@ starterScreen = Group(colorButtons, title, instructions, goButton, goLabel, scre
                       deselectAllButton, deselectAllLabel, helpButton, helpLabel)
 starterScreen.add(speedSwitches)
 helpMenu = Group(helpBackground, helpTitle, closeHelpMenuButton, closeHelpMenuLabel, helpText0, helpText1, helpText2, helpText3, 
-                 helpText4, helpText4a, helpText5, helpText6, helpText7, helpText8, helpText8a, helpText9)
+                 helpText4, helpText4a, helpText5, helpText6, helpText7, helpText8, helpText8a, helpText9, backToLauncher, returnLabel, closeGameButton, closeGameLabel)
 helpMenu.visible = False
 
 ## Creation of Groups and Lists
@@ -294,7 +301,14 @@ def press_button(mouseX, mouseY):
             color_activation_check(mouseX, mouseY) 
     else:
         if(closeHelpMenuButton.contains(mouseX, mouseY)):
-            despawn_help_menu()        
+            despawn_help_menu()  
+        if(closeGameButton.contains(mouseX, mouseY)):
+            update_stats()
+            sys.exit(0)
+        if(backToLauncher.contains(mouseX, mouseY)):
+            update_stats()
+            subprocess.Popen(["Python3", backToLauncher.game])
+            sys.exit(0)      
 
 
 def despawn_help_menu():
@@ -432,6 +446,13 @@ def onMousePress(x, y):
         else:
             if(closeHelpMenuButton.contains(x,y)):
                 despawn_help_menu()
+            if(closeGameButton.contains(x,y)):
+                update_stats()
+                sys.exit(0)
+            if(backToLauncher.contains(x,y)):
+                update_stats()
+                subprocess.Popen(["Python3", backToLauncher.game])
+                sys.exit(0)
             
     else:
         press_button(x,y)  
