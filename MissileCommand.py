@@ -26,14 +26,14 @@ app.cities = 6
 app.gate = 3500
 app.generalReload = app.stepsPerSecond*2.5
 app.level = 1
-app.mult = 1
+app.mult = app.level
 app.shotSpeedLR = 15
 app.shotSpeedMid = 20
 app.basicMissileSpeed = 2
 app.multiBombSpeed = 3
 app.planeSpeed = 6
 app.spawnTimer = app.stepsPerSecond * 5
-app.enemiesLeftToSpawn = 10
+app.enemiesLeftToSpawn = (app.level*7) + 5
 app.bombSpeed = 8
 app.gravity = 0.05
 app.saucerSpeed = 3
@@ -41,7 +41,9 @@ app.ufoProjectileSpeed = 12
 app.timeToDropBombs = app.width//app.planeSpeed
 app.infoTimer = app.stepsPerSecond*5
 app.infoShowing = False
+app.pause = False
 
+pauseScreen = Group(Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'white', borderWidth = 2, align = 'center', opacity = 0), Label("Game Paused", app.width/2, app.height/2, size = 30, opacity = 0, fill='white'))
 leftBattery = Rect((1/40)*app.width, (19/20)*app.height, (1/12) * app.width, (1/20)*app.height)
 midBattery = Rect(app.width/2, (19/20)*app.height, (1/12) * app.width, (1/20)*app.height, align = 'top')
 rightBattery = Rect((39/40)*app.width, (19/20)*app.height, (1/12) * app.width, (1/20)*app.height, align = 'top-right')
@@ -139,6 +141,7 @@ def reset():
     Should only be called if the game has ended and the player initiates another round
     Resets all important app values, scores, ammo, health, level, spawning, and cities
     '''
+    info.clear()
     fullInfoList[1]+=1
     app.spawnTimer = app.stepsPerSecond * 5
     app.enemiesLeftToSpawn = 10
@@ -148,9 +151,11 @@ def reset():
     app.gate = 3500
     app.generalReload = app.stepsPerSecond*2.5
     app.level = 1
-    app.mult = 1
+    app.mult = app.level
     app.cities = 6
     stage.value = "Level %1d" %app.level
+    newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
+    app.pause = False
     gameOver.clear()
     for bat in batteries:
         bat.reloadTimer = 0
@@ -158,6 +163,8 @@ def reset():
         bat.ammoCount = 10
         bat.border = 'grey'
         app.bat = batteries[0]
+        bat.repairLabel.value = "Repaired in %1.1f" %bat.repairTimer
+        reload_all()
     make_all_cities_new_level()
     app.play = True
     update_stats()
@@ -413,14 +420,15 @@ def kaboom_all():
         if object.opacity == 0:
             explosion.remove(object)
 
-def explode_object(shape):
+def explode_object(shape, causedByPlayer):
     '''
-    Takes a shape as an argument, and returns no values
+    Takes a shape and bool as arguments, and returns no values
     adds a new shape to an appropriate shape group
     New shape is based on the location of the given shape
     '''
     new = Circle(shape.centerX, shape.centerY, 3, fill='yellow', border = 'orange')
     new.time = app.stepsPerSecond * 3
+    new.willScore = causedByPlayer
     explosion.add(new)
     
 def move_shots():
@@ -437,7 +445,7 @@ def move_shots():
         else:
             shot.next = getPointInDir(shot.centerX, shot.centerY, shot.rotateAngle, app.shotSpeedLR)
         if shot.centerY <= shot.target[1]:
-            explode_object(shot)
+            explode_object(shot, True)
             for target in targets:
                 if shot.num == target.num:
                     targets.remove(target)
@@ -448,14 +456,17 @@ def onKeyPress(key):
     CMU built in funciton which takes a pressed key as input
     used in this function to select firing batteries and to restart the game upon loss
     '''
-    if(key == 'right'):
-        app.bat = select_next_bat(app.bat)
-    if(key == 'left'):
-        app.bat = select_prev_bat(app.bat)
+    if(app.pause == False):
+        if(key == 'right'):
+            app.bat = select_next_bat(app.bat)
+        if(key == 'left'):
+            app.bat = select_prev_bat(app.bat)
+        bat_color_update()
     if(app.play == False):
         if(key == 'enter'):
             reset()
-    bat_color_update()
+    if(key == "escape" or key =='p' or key =='P'):
+        toggle_pause() 
 
 def reload_all():
     '''
@@ -515,12 +526,13 @@ def explosion_vs_bombs(type):
     for shape in explosion:
         for bomb in type:
             if(shape.hitsShape(bomb)):
-                points = bomb.score * app.mult
-                app.score+= points
-                create_scores(bomb.centerX, bomb.centerY, points)
-                explode_object(bomb)
+                if(shape.willScore == True):
+                    points = bomb.score * app.mult
+                    app.score+= points
+                    create_scores(bomb.centerX, bomb.centerY, points)
+                    fullInfoList[3]+=1
+                explode_object(bomb, shape.willScore)
                 type.remove(bomb)
-                fullInfoList[3]+=1
                 fullInfoList[4]+=1
                 
 def move_ufo_shots():
@@ -568,7 +580,7 @@ def missiles_vs_bat(type):
     for missile in type:
         for bat in batteries:
             if(missile.hitsShape(bat) or bat.containsShape(missile)):
-                explode_object(missile)
+                explode_object(missile, False)
                 type.remove(missile)
                 bat.broken = True
                 bat.repairTimer += 30*app.stepsPerSecond
@@ -585,7 +597,7 @@ def bombs_vs_bat(type):
     for missile in type:
         for bat in batteries:
             if(missile.hitsShape(bat) or bat.containsShape(missile)):
-                explode_object(missile)
+                explode_object(missile, False)
                 type.remove(missile)
                 bat.broken = True
                 bat.repairTimer += 10*app.stepsPerSecond
@@ -600,7 +612,7 @@ def missile_vs_ground(type):
     '''
     for missile in type:
         if missile.bottom>= app.height:
-            explode_object(missile)
+            explode_object(missile, False)
             type.remove(missile)
 
 def missiles_vs_cities(type):
@@ -614,8 +626,8 @@ def missiles_vs_cities(type):
             if(missile.hitsShape(city)):
                 cityids.remove(city.id)
                 for building in city.children:
-                    explode_object(building)
-                explode_object(missile)
+                    explode_object(building, False)
+                explode_object(missile, False)
                 type.remove(missile)
                 cities.remove(city)
                 app.cities-=1
@@ -633,8 +645,8 @@ def bombs_vs_cities(type):
             if(city.health<=1):
                 if(bomb.hitsShape(city)):
                     for building in city.children:
-                        explode_object(building)
-                    explode_object(bomb)
+                        explode_object(building, False)
+                    explode_object(bomb, False)
                     type.remove(bomb)
                     cityids.remove(city.id)
                     cities.remove(city)
@@ -643,8 +655,8 @@ def bombs_vs_cities(type):
             else:
                 for building in city:
                     if(bomb.hitsShape(building)):
-                        explode_object(building)
-                        explode_object(bomb)
+                        explode_object(building, False)
+                        explode_object(bomb, False)
                         type.remove(bomb)
                         city.remove(building)
                         city.health-=1
@@ -663,7 +675,7 @@ def missiles_vs_anti_missiles(type):
                 for target in targets:
                     if(target.num == anti.num):
                         targets.remove(target)
-                explode_object(missile)
+                explode_object(missile, True)
                 points = missile.score*app.mult*5
                 app.score+=points
                 create_scores(missile.centerX, missile.centerY, points)
@@ -685,7 +697,7 @@ def hit_detection():
     bombs_vs_bat(multiBombPostSplit)
     missiles_vs_cities(basicMissiles) 
     bombs_vs_cities(bombs) 
-    missiles_vs_cities(ufoShots)
+    bombs_vs_cities(ufoShots)
     bombs_vs_cities(multiBombPostSplit)
     missiles_vs_cities(smartMissiles)
     missiles_vs_bat(smartMissiles)
@@ -840,13 +852,7 @@ def spawn_shots(x, y, angle):
     new3 = Oval(x,y,2,20, fill='white', rotateAngle = angle-10)
     new3.next = getPointInDir(x,y,angle-10,app.ufoProjectileSpeed)
     new3.score = 1000
-    new4 = Oval(x,y,2,20, fill='white', rotateAngle = angle+5)
-    new4.next = getPointInDir(x,y,angle+5,app.ufoProjectileSpeed)
-    new4.score = 1000
-    new5 = Oval(x,y,2,20, fill='white', rotateAngle = angle-5)
-    new5.next = getPointInDir(x,y,angle-5,app.ufoProjectileSpeed)
-    new5.score = 1000
-    ufoShots.add(new, new2, new3, new4, new5)        
+    ufoShots.add(new, new2, new3)        
 
 def move_ufo():
     '''
@@ -928,7 +934,7 @@ def spawn_ufo():
     location = randrange(2)
     saucer = create_saucer(0, (app.height//10), location)
     saucer.score = 1450     
-    saucer.firing = app.level
+    saucer.firing = app.level//10 + 1
     ufos.add(saucer)              
                 
 def spawn_handling():
@@ -940,7 +946,7 @@ def spawn_handling():
         if(app.enemiesLeftToSpawn >=1):
             if(app.spawnTimer == 0):
                 spawn_basic_missile(randrange(0,app.width), -10)
-                app.spawnTimer = app.stepsPerSecond * 6
+                app.spawnTimer = app.stepsPerSecond * 4
                 app.enemiesLeftToSpawn -=1
                 newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
     elif(app.level <= 3): ## missiles and bomber planes
@@ -950,7 +956,7 @@ def spawn_handling():
                     spawn_plane(randrange(app.height//4, app.height//2))
                 else:
                     spawn_basic_missile(randrange(0,app.width), -10)
-                app.spawnTimer = app.stepsPerSecond * 5
+                app.spawnTimer = app.stepsPerSecond * 4
                 app.enemiesLeftToSpawn -=1
                 newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
     elif(app.level <= 6): ## missiles, bomber planes higher up, multi-bombs, non straight missiles
@@ -967,7 +973,7 @@ def spawn_handling():
                     app.spawnTimer = app.stepsPerSecond * 4
                     app.enemiesLeftToSpawn -=1
                     newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
-    if(app.level <=9 ): ## all of the above, plus smart bombs
+    elif(app.level <=9 ): ## all of the above, plus smart bombs
             if(app.enemiesLeftToSpawn >=1):
                 if(app.spawnTimer == 0):
                     if(app.enemiesLeftToSpawn% 9 == 0):
@@ -998,12 +1004,12 @@ def spawn_handling():
                 if(app.enemiesLeftToSpawn%11 == 0):
                     spawn_smart_bomb()
                     app.enemiesLeftToSpawn -=1
-                if(app.enemiesLeftToSpawn%23): ##Rare event, on purpose
+                if(app.enemiesLeftToSpawn%23 == 0): ##Rare event, on purpose
                     spawn_ufo()
                     app.enemiesLeftToSpawn -=1
                 spawn_basic_missile(randrange(0,app.width), -10)
-                app.spawnTimer = app.stepsPerSecond * 2
                 app.enemiesLeftToSpawn -=1
+                app.spawnTimer = app.stepsPerSecond * 3
                 newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
 
 def onStep():
@@ -1013,31 +1019,32 @@ def onStep():
     Used to show motion in this project
     '''
     if(app.play == True):
-        app.infoTimer-=1
-        app.spawnTimer -= 1
-        update_score()
-        reload_all()
-        move_shots()
-        move_smart_bombs()
-        move_ufo()
-        move_ufo_shots()
-        kaboom_all()
-        move_basic_missiles()
-        hit_detection()
-        move_trail()
-        remove_scores()
-        move_bombs(bombs)
-        move_bombs(multiBombPostSplit)
-        check_loss()
-        check_win()
-        spawn_handling()
-        move_planes()
-        bombing_logic()
-        move_multi_bomb()
-        move_fun_missiles()
-        if(app.infoTimer ==0):
-            info.clear()
-        update_stats()
+        if(app.pause == False):
+            app.infoTimer-=1
+            app.spawnTimer -= 1
+            update_score()
+            reload_all()
+            move_shots()
+            move_smart_bombs()
+            move_ufo()
+            move_ufo_shots()
+            kaboom_all()
+            move_basic_missiles()
+            hit_detection()
+            move_trail()
+            remove_scores()
+            move_bombs(bombs)
+            move_bombs(multiBombPostSplit)
+            check_loss()
+            check_win()
+            spawn_handling()
+            move_planes()
+            bombing_logic()
+            move_multi_bomb()
+            move_fun_missiles()
+            if(app.infoTimer ==0):
+                info.clear()
+            update_stats()
 
 def onMousePress(x,y):
     '''
@@ -1045,28 +1052,47 @@ def onMousePress(x,y):
     Takes mouse press locations as arguments
     In this project, used to aim munitions
     '''
-    realX, realY = x,y ## This fixed an error where the player should shoot when entering fullscreen on macOs devices
-    app.munitionCounter+=1
-    if(app.bat.broken == False):
-        if(app.bat.reloadTimer == 0 and app.bat.ammoCount>=1):
-            app.bat.ammoCount -= 1
-            app.bat.reloadTimer = app.generalReload
-            fullInfoList[2]+=1
-            make_target(realX,realY)
-            defender = Circle(app.bat.centerX, app.bat.top+5, 3, fill='white')
-            defender.rotateAngle = angleTo(defender.centerX, defender.centerY, x, y)
-            defender.target = (x,y)
-            defender.num = app.munitionCounter
-            if(app.bat == batteries[1]):
-                defender.next = getPointInDir(defender.centerX, defender.centerY, defender.rotateAngle, app.shotSpeedMid)
-                defender.loc = "mid"
-            else:
-                defender.next = getPointInDir(defender.centerX, defender.centerY, defender.rotateAngle, app.shotSpeedLR)
-                defender.loc = "edge"
-            defense.add(defender)
-            app.bat = select_next_bat(app.bat)
-            bat_color_update()
+    if(app.pause == False):
+        realX, realY = x,y ## This fixed an error where the player should shoot when entering fullscreen on macOs devices
+        app.munitionCounter+=1
+        if(app.bat.broken == False):
+            if(app.bat.reloadTimer == 0 and app.bat.ammoCount>=1):
+                app.bat.ammoCount -= 1
+                app.bat.reloadTimer = app.generalReload
+                fullInfoList[2]+=1
+                make_target(realX,realY)
+                defender = Circle(app.bat.centerX, app.bat.top+5, 3, fill='white')
+                defender.rotateAngle = angleTo(defender.centerX, defender.centerY, x, y)
+                defender.target = (x,y)
+                defender.num = app.munitionCounter
+                if(app.bat == batteries[1]):
+                    defender.next = getPointInDir(defender.centerX, defender.centerY, defender.rotateAngle, app.shotSpeedMid)
+                    defender.loc = "mid"
+                else:
+                    defender.next = getPointInDir(defender.centerX, defender.centerY, defender.rotateAngle, app.shotSpeedLR)
+                    defender.loc = "edge"
+                defense.add(defender)
+                app.bat = select_next_bat(app.bat)
+                bat_color_update()
             
+            
+def toggle_pause():
+    '''
+    Takes no args and returns no values
+    If game is paused, this will unpause it, 
+    If game is unpaused, this will pause it
+    Entails changing opacity of pause screen features and changing app setting
+    '''
+    if(app.play == True):
+        if app.pause == True:
+            app.pause = False
+            for thing in pauseScreen:
+                thing.opacity = 0
+        else:
+            app.pause = True
+            for thing in pauseScreen:
+                thing.opacity = 100
+                
 starting_bat()
 app.bat = batteries[0]
 app.bat.border = 'white'
