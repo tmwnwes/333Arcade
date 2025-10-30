@@ -1,6 +1,8 @@
 from cmu_graphics import *
 import tkinter as tk
 import random
+import sys
+import subprocess
 
 root = tk.Tk()
 width = root.winfo_screenwidth()
@@ -29,6 +31,18 @@ scoreLabel = Label("%d" %app.score, app.width/2, app.height/10, fill='white', bo
 cities = Group()
 failScreen = Group()
 stars = Group()
+app.pause = False
+
+outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center', opacity = 0)
+pauseLabel = Label("Game Paused", app.width/2, app.height/2 -15, size = 30, opacity = 0, fill= 'white')
+closeGameButton = Rect(outerPause.left, outerPause.centerY, outerPause.width//2, outerPause.height//2, fill=None, border = 'red', opacity = 0)
+closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15, opacity = 0, fill = 'white')
+backToLauncher = Rect(closeGameButton.right+1, closeGameButton.top, outerPause.width//2, outerPause.height//2, fill=None, border = 'gray', opacity = 0)
+backToLauncher.game = "PretendLauncher.py"
+backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15, opacity = 0, fill='white')
+pauseScreen = Group(outerPause, pauseLabel, closeGameButton, backToLauncher, backToLauncher.words, closeGameButton.words)
+
+
 
 def make_city(x):
     '''
@@ -60,10 +74,10 @@ def make_stars():
 
 def fail():
     score_avgs()
-    yourScoreLabel = Label("Last Score: %d" %app.score, (9/20)*app.width, (37/80)*app.height, fill='red', size = 30)
-    highScoreLabel = Label("High Score: %d" %app.hiScore, (9/20)*app.width, (43/80)*app.height, fill='red', size = 30)
-    failLabel = Label("Press ENTER to Restart", (app.width*(9/20)), (49/80)*app.height, size = 30, fill = 'red')
-    mainMenuLabel = Label("Press ESCAPE to return to main menu", (app.width*(9/20)), (55/80)*app.height, size = 30, fill = 'red' )
+    yourScoreLabel = Label("Last Score: %d" %app.score, (1/2)*app.width, (37/80)*app.height, fill='pink', size = 30)
+    highScoreLabel = Label("High Score: %d" %app.hiScore, (1/2)*app.width, (43/80)*app.height, fill='pink', size = 30)
+    failLabel = Label("Press ENTER to Restart", (app.width*(1/2)), (49/80)*app.height, size = 30, fill = 'pink')
+    mainMenuLabel = Label("Press ESCAPE to return to main menu", (app.width*(1/2)), (55/80)*app.height, size = 30, fill = 'pink' )
     failScreen.add(yourScoreLabel, highScoreLabel, failLabel, mainMenuLabel)
     app.play = False
     app.ready = False
@@ -197,6 +211,22 @@ def checkSpeed(speed):
 def movePipes(speed):
     Blocks.centerX -= speed
 
+def toggle_pause():
+    '''
+    Takes no args and returns no values
+    If game is paused, this will unpause it, 
+    If game is unpaused, this will pause it
+    Entails changing opacity of pause screen features and changing app setting
+    '''
+    if app.pause == True:
+        app.pause = False
+        for thing in pauseScreen:
+            thing.opacity = 0
+    else:
+        app.pause = True
+        for thing in pauseScreen:
+            thing.opacity = 100
+
 def onKeyPress(key):
     if(app.play==False):
         if(key =='escape'):
@@ -228,9 +258,11 @@ def onKeyPress(key):
                 fullInfoList[3]+=1
             if(app.mode == 'medium'):
                 fullInfoList[4]+=1
-    if(key=='space' and app.play == True):
+    if(key=='space' and app.play == True and app.pause == False):
         app.ballSpeed = -8
         ball.rotateAngle = -50
+    if((key =='p' or key =='P') and app.play == True):
+        toggle_pause()
 
 def reset():
     app.foo=(random.randrange(0, (int)((3/10)*app.height)))
@@ -260,6 +292,7 @@ def reset():
     scoreLabel.toBack()
     app.score = 0
     app.ready = True
+    app.pause = False
 
 def hit_detection():
     if(ball.hitsShape(Blocks)):
@@ -270,7 +303,7 @@ def hit_detection():
         fail()
     
 def onStep():
-    if(app.play==True):
+    if(app.play==True and app.pause == False):
         move_cities()
         scoring()
         hit_detection()
@@ -310,6 +343,21 @@ def onMousePress(x,y):
             scoreLabel.toFront()
             fullInfoList[1]+=1
             fullInfoList[4]+=1
+        if(backToLauncherMain.contains(x,y)):
+            update_stats()
+            subprocess.Popen(["python3", backToLauncherMain.game])
+            sys.exit(0)
+        if(closeGameButtonMain.contains(x,y)):
+            update_stats()
+            sys.exit(0)
+    else:
+        if(backToLauncher.contains(x,y) and app.pause == True):
+            update_stats()
+            subprocess.Popen(["python3", backToLauncher.game])
+            sys.exit(0)
+        if(closeGameButton.contains(x,y) and app.pause == True):
+            update_stats()
+            sys.exit(0)
 stars.toFront()
 cities.toFront()
 Blocks.toFront()
@@ -321,7 +369,14 @@ box = Rect((7/20)*app.width, (2/5)*app.height, (3/10)*app.width, (2/5)*app.heigh
 easy=Label('Easy', app.width/2, (9/20)*app.height, fill='green', size=50)
 intermediate = Label('Normal', app.width/2, (3/5)*app.height, fill='yellow', size=50)
 hard = Label('Hard', app.width/2, (3/4)*app.height, fill='red', size=50)
-mainthing = Group(cover, title, instructions, box, easy, intermediate, hard)
+mainScreenExitBox = Rect(box.left, box.bottom, box.width, app.width/20, fill=None, border = 'yellow', borderWidth = 2)
+closeGameButtonMain = Rect(mainScreenExitBox.left, mainScreenExitBox.top, mainScreenExitBox.width//2, mainScreenExitBox.height, fill=None, border = 'red')
+closeGameButtonMain.words = Label("Close Game", closeGameButtonMain.centerX, closeGameButtonMain.centerY, size = 15, fill = 'white')
+backToLauncherMain = Rect(closeGameButtonMain.right+1, closeGameButtonMain.top, mainScreenExitBox.width//2, mainScreenExitBox.height, fill=None, border = 'gray')
+backToLauncherMain.game = "PretendLauncher.py"
+backToLauncherMain.words = Label("Return to Launcher", backToLauncherMain.centerX, backToLauncherMain.centerY, size = 15, fill='white')
+mainScreenExit = Group(mainScreenExitBox, closeGameButtonMain, closeGameButtonMain.words, backToLauncherMain, backToLauncherMain.words)
+mainthing = Group(cover, title, instructions, box, easy, intermediate, hard, mainScreenExit)
 failScreen.toFront()
 make_stars()
 cities.add(make_city(0))
@@ -335,7 +390,9 @@ cities.add(make_city((7/10)*app.width))
 cities.add(make_city((8/10)*app.width))
 cities.add(make_city((9/10)*app.width))
 cities.add(make_city(app.width))
-
+pauseScreen.toFront()
 fullInfoList[0]+=1
+
+
         
 app.run()
