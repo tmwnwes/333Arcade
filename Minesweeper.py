@@ -1,6 +1,8 @@
 from cmu_graphics import *
 import tkinter as tk
 import random
+import sys
+import subprocess
 
 root = tk.Tk()
 width = root.winfo_screenwidth()
@@ -34,7 +36,7 @@ app.noFlags = True
 app.achShowing = False
 AcheivementNote = Group()
 background = Rect(0,0,app.width, app.height, fill='lightGray')
-colors = ['black', 'saddleBrown', 'darkGreen', 'seaGreen', 'blue', 'mediumSlateBlue', 'darkMagenta', 'darkRed', 'red']
+colors = ['black', 'saddleBrown', 'cornflowerBlue', 'darkCyan', 'lime', 'yellow', 'darkOrange', 'red', 'magenta']
 app.flagCol = 'orange'
 numberLabels = Group()
 buttonLabels = Group()
@@ -45,6 +47,9 @@ preGame = Group()
 bombs = Group()
 gameOverScreen = Group()
 acheivements = Group()
+escapeButtons = Group()
+helpMenu = Group()
+app.help = False
 app.removeAchTimer = 0
 
 def create_front_screen():
@@ -65,9 +70,16 @@ def create_front_screen():
     label3 = Label("Hard", hardButton.centerX, hardButton.centerY, size = (3/40)*app.width)
     label4 = Label("Minesweeper", easyButton.centerX, (1/8)*app.height, size = (1/10)*app.width, fill = 'white')
     label5 = Label("* Your first click on the board is always safe *", easyButton.centerX, (9/40)*app.height, fill = 'white', size = (1/20)*app.width)
+    closeGameButton = Rect(hardButton.left, hardButton.bottom, hardButton.width//2, app.height//10, fill=None, border = 'red')
+    closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15, fill='white')
+    closeGameButton.game = None
+    backToLauncher = Rect(closeGameButton.right, closeGameButton.top, closeGameButton.width, closeGameButton.height, fill=None, border = 'gray',)
+    backToLauncher.game = "PretendLauncher.py"
+    backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15, fill='white')
     buttons.add(easyButton, mediumButton, hardButton)
     buttonLabels.add(label1, label2, label3)
-    preGame.add(frontScreen, label4, label5)
+    preGame.add(frontScreen, label4, label5, closeGameButton.words, backToLauncher.words)
+    escapeButtons.add(closeGameButton,backToLauncher)
 
 def create_board():
     '''
@@ -90,9 +102,9 @@ def create_board():
         app.bombPercentage = 28
         fullInfoList[5]+=1
     fullInfoList[7]+=1
-    app.squareSize = (int)((1/app.blocksWide)*app.width)
-    app.rows = (int)(app.height / app.squareSize)
-    app.cols = (int)(app.width / app.squareSize)
+    app.squareSize = (int)((1/app.blocksWide)*width)
+    app.rows = (int)(height / app.squareSize)
+    app.cols = (int)(width / app.squareSize)
     for i in range(app.cols):
         for j in range(app.rows):
             if (i+j)%2 == 0:
@@ -161,20 +173,15 @@ def bombCheckAlgortihm():
         square.count+=searchDownLeft(square.i, square.j)
         square.count+=searchUpRight(square.i, square.j)
         square.count+=searchDownRight(square.i, square.j)
-    create_number_labels()
                 
-def create_number_labels():
+def create_number_label(square): 
     '''
     Takes no arguments and returns no values
     Iterates throgh each square in the game board and accesses the 'count' attribute representing the number of nearby bombs
     Creates Labels for each square that show the number of nearby bombs    
     '''
-    for square in squares:
-        if square.bomb == True:
-            new = Label("", square.centerX, square.centerY, size = app.squareSize)
-        else:
-            new = Label(square.count, square.centerX, square.centerY, fill = colors[square.count], size = app.squareSize)
-        numberLabels.add(new)
+    if square.bomb == False:
+        numberLabels.add(Label(square.count, square.centerX, square.centerY, fill = colors[square.count], size = app.squareSize))
                 
                 
 ###### The Following 8 Functions are helpers called by bomb_check_algorithm() and will search in the direction implied by the name, sourced from the given values ######                
@@ -396,6 +403,7 @@ def disappear(x,y):
     for square in squares:
         if square.contains(x,y):
             if(square.flag == False):
+                create_number_label(square)
                 if square.bomb == True and app.firstClick == False:
                     create_bombs_end_game()
                     app.failed = True
@@ -407,6 +415,37 @@ def disappear(x,y):
                     toggle_flag(x,y, False)
                 else:
                     squares.remove(square)
+        
+def create_help():
+    temp = Group()
+    helpBackground = Rect(0,0,width, height)
+    helpLabel = Label("Help", helpBackground.centerX, helpBackground.top + app.squareSize, fill='white', size = app.squareSize)
+    help1 = Label("Click on a square to reveal it. If it is a bomb, you lose", helpBackground.centerX, helpLabel.centerY + app.squareSize, fill='white', size = width//40)
+    help2 = Label("Numbers in each square represent how many adjacent squres are bombs", helpBackground.centerX, help1.centerY + app.squareSize, fill='white', size = width//40)
+    help3 = Label("Place (or remove) a flag on a square by right-clicking it", helpBackground.centerX, help2.centerY + app.squareSize, fill='white', size = width//40)
+    help4 = Label("Flags can be used to help you keep track of squares you think may be bombs", helpBackground.centerX, help3.centerY+app.squareSize, fill='white', size = width//40)
+    help5 = Label("There is no time limit and you win by clearing all non-bomb squares", helpBackground.centerX, help4.centerY + app.squareSize, fill='white', size = width//40)
+    help6 = Label("You can access this menu any time with 'h' or 'p' and close with that same key", helpBackground.centerX, help5.centerY + app.squareSize, fill='white', size = width//40)
+    closeGameButton = Rect(helpBackground.left, helpBackground.bottom - app.height//10, helpBackground.width//2, app.height//10, fill=None, border = 'red')
+    closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15, fill='white')
+    closeGameButton.game = None
+    backToLauncher = Rect(closeGameButton.right, closeGameButton.top, closeGameButton.width, closeGameButton.height, fill=None, border = 'gray',)
+    backToLauncher.game = "PretendLauncher.py"
+    backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15, fill='white')
+    temp.add(helpBackground, helpLabel, closeGameButton.words, backToLauncher.words, help1, help2, help3, help4, help5, help6)
+    escapeButtons.add(closeGameButton, backToLauncher)
+    return temp        
+        
+def toggle_help():
+    if(app.help == False):
+        app.help = True
+        helpMenu.add(create_help())
+        escapeButtons.toFront()
+    else:
+        app.help = False
+        helpMenu.clear()
+        escapeButtons.clear()
+            
         
 def onKeyPress(key):
     '''
@@ -423,6 +462,8 @@ def onKeyPress(key):
             else:
                 app.flagCol = "orange"
             toggle_flags_color()
+    if((key == 'h' or key == 'H' or key =='p' or key =='P') and app.mode != None):
+        toggle_help()
 
 def clean_pre_game():
     '''
@@ -432,6 +473,7 @@ def clean_pre_game():
     preGame.clear()
     buttons.clear()
     buttonLabels.clear()
+    escapeButtons.clear()
 
 def onMousePress(x,y,button):
     '''
@@ -444,15 +486,36 @@ def onMousePress(x,y,button):
                 app.mode = button.type
                 create_board()
                 clean_pre_game()
+        for button in escapeButtons:
+            if(button.contains(x,y)):
+                if(button.game == None):
+                    update_stats()
+                    sys.exit(0)
+                else:
+                    update_stats()
+                    subprocess.Popen(["python3", button.game])
+                    sys.exit(0)
     else:
-        if(button == 2 and app.firstClick == False):
-            toggle_flag(x,y, True)
-        if(button == 0):
-            if app.firstClick == True:
-                fancy_first_click(x,y)
-                app.firstClick = False
-            else:
-                disappear(x,y)
+        if(app.help == False):
+            if(button == 2 and app.firstClick == False):
+                toggle_flag(x,y, True)
+            if(button == 0):
+                if app.firstClick == True:
+                    fancy_first_click(x,y)
+                    app.firstClick = False
+                else:
+                    disappear(x,y)
+        else:
+            for button in escapeButtons:
+                if(button.contains(x,y)):
+                    if(button.game == None):
+                        update_stats()
+                        sys.exit(0)
+                    else:
+                        update_stats()
+                        subprocess.Popen(["python3", button.game])
+                        sys.exit(0)
+                    
  
 def onStep():
     '''
@@ -473,7 +536,11 @@ buttons.toFront()
 buttonLabels.toFront()
 gameOverScreen.toFront()
 AcheivementNote.toFront()
+escapeButtons.toFront()
+helpMenu.toFront()
 create_front_screen()
 update_stats()
+
+
 
 app.run()
