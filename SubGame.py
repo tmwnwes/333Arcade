@@ -73,15 +73,16 @@ torpedoes=Label(30, ammo.centerX, ammo.centerY+20, bold=True, size=20)
 health = Label("Health:", sky.right-30, 10, size = 20)
 hp=Label(sub.health, health.centerX, health.centerY+20, bold=True, size=20)
 
-outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center', opacity = 0)
-pauseLabel = Label("Game Paused", app.width/2, app.height/2 - 15, size = 30, opacity = 0)
-closeGameButton = Rect(outerPause.left, outerPause.centerY, outerPause.width//2, outerPause.height//2, fill=None, border = 'red', opacity = 0)
-closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15, opacity = 0)
-backToLauncher = Rect(closeGameButton.right+1, closeGameButton.top, outerPause.width//2, outerPause.height//2, fill=None, border = 'gray', opacity = 0)
+outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center')
+pauseLabel = Label("Game Paused", app.width/2, app.height/2 - 15, size = 30)
+closeGameButton = Rect(outerPause.left, outerPause.centerY, outerPause.width//2, outerPause.height//2, fill=None, border = 'red')
+closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15)
+backToLauncher = Rect(closeGameButton.right+1, closeGameButton.top, outerPause.width//2, outerPause.height//2, fill=None, border = 'gray')
 backToLauncher.game = "PretendLauncher.py"
-backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15, opacity = 0)
+backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15)
 
 pauseScreen = Group(outerPause, pauseLabel, closeGameButton, backToLauncher, backToLauncher.words, closeGameButton.words)
+pauseScreen.visible = False
 
 ## Creating the screen and wide-scoped variables/groups/labels/objects ##
 
@@ -543,12 +544,10 @@ def toggle_pause():
     if(app.failed == False):
         if app.pause == True:
             app.pause = False
-            for thing in pauseScreen:
-                thing.opacity = 0
+            pauseScreen.visible = False
         else:
             app.pause = True
-            for thing in pauseScreen:
-                thing.opacity = 100
+            pauseScreen.visible = True
 ## Timing, Scoring, Collisions, and Destruction ##
 
 ## Ending and Resetting ##
@@ -567,6 +566,7 @@ def game_over():
     gameOverHighScore.visible=True
     app.failed=True
     app.pause = True
+    pauseScreen.visible = True
     update_stats()
     
 def restartGame():
@@ -621,6 +621,7 @@ def onKeyPress(key):
     if(key=='enter'):
         if(app.failed == True):
             restartGame()
+            pauseScreen.visible = False
     if(app.pause == False):
         if(torpedoes.value>0):
             if(key=='right' or key == 'left'): 
@@ -680,7 +681,7 @@ def onKeyHold(keys):
         safetyShield.centerY = sub.centerY
     
 def onMousePress(x,y):
-    if(app.pause == True):
+    if(pauseScreen.visible == True):
         if(closeGameButton.contains(x,y)):
             update_stats()
             sys.exit(0)

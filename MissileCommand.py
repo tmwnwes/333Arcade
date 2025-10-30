@@ -47,14 +47,15 @@ app.pause = False
 specialWarningInfo = Group()
 app.warningTimer = 0
 
-outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center', opacity = 0)
-pauseLabel = Label("Game Paused", app.width/2, app.height/2 -15, size = 30, opacity = 0, fill= 'white')
-closeGameButton = Rect(outerPause.left, outerPause.centerY, outerPause.width//2, outerPause.height//2, fill=None, border = 'red', opacity = 0)
-closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15, opacity = 0, fill = 'white')
-backToLauncher = Rect(closeGameButton.right+1, closeGameButton.top, outerPause.width//2, outerPause.height//2, fill=None, border = 'gray', opacity = 0)
+outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center')
+pauseLabel = Label("Game Paused", app.width/2, app.height/2 -15, size = 30, fill= 'white')
+closeGameButton = Rect(outerPause.left, outerPause.centerY, outerPause.width//2, outerPause.height//2, fill=None, border = 'red')
+closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15, fill = 'white')
+backToLauncher = Rect(closeGameButton.right+1, closeGameButton.top, outerPause.width//2, outerPause.height//2, fill=None, border = 'gray')
 backToLauncher.game = "PretendLauncher.py"
-backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15, opacity = 0, fill='white')
+backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15, fill='white')
 pauseScreen = Group(outerPause, pauseLabel, closeGameButton, backToLauncher, backToLauncher.words, closeGameButton.words)
+pauseScreen.visible = False
 
 leftBattery = Rect((1/40)*app.width, (19/20)*app.height, (1/12) * app.width, (1/20)*app.height)
 midBattery = Rect(app.width/2, (19/20)*app.height, (1/12) * app.width, (1/20)*app.height, align = 'top')
@@ -179,6 +180,8 @@ def reset():
         reload_all()
     make_all_cities_new_level()
     app.play = True
+    pauseScreen.centerX = app.width/2
+    pauseScreen.visible = False
     update_stats()
 
 def starting_bat():
@@ -828,6 +831,8 @@ def check_loss():
         gameOver.add(Label("Final Score: %d" %app.score, app.width/2, 3*app.height/8, fill='white', size = 30))
         gameOver.add(Label("High Score: %d" %app.hiscore, app.width/2, app.height/2, fill='white', size = 30))
         gameOver.add(Label("Press Enter to Restart", app.width/2, 5*app.height/8, fill='white', size = 30))
+        pauseScreen.visible = True
+        pauseScreen.left = 0
 
 def check_win():
     '''
@@ -1169,7 +1174,7 @@ def onMousePress(x,y):
                     bat_color_update()
                 else:
                     display_mac_window_warning()
-    else:
+    if(pauseScreen.visible == True):
         if(closeGameButton.contains(x,y)):
             update_stats()
             sys.exit(0)
@@ -1188,12 +1193,10 @@ def toggle_pause():
     if(app.play == True):
         if app.pause == True:
             app.pause = False
-            for thing in pauseScreen:
-                thing.opacity = 0
+            pauseScreen.visible = False
         else:
             app.pause = True
-            for thing in pauseScreen:
-                thing.opacity = 100
+            pauseScreen.visible = True
                 
 starting_bat()
 app.bat = batteries[0]
