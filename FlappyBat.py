@@ -74,11 +74,12 @@ def make_stars():
 
 def fail():
     score_avgs()
-    yourScoreLabel = Label("Last Score: %d" %app.score, (1/2)*app.width, (37/80)*app.height, fill='pink', size = 30)
-    highScoreLabel = Label("High Score: %d" %app.hiScore, (1/2)*app.width, (43/80)*app.height, fill='pink', size = 30)
-    failLabel = Label("Press ENTER to Restart", (app.width*(1/2)), (49/80)*app.height, size = 30, fill = 'pink')
-    mainMenuLabel = Label("Press ESCAPE to return to main menu", (app.width*(1/2)), (55/80)*app.height, size = 30, fill = 'pink' )
+    yourScoreLabel = Label("Last Score: %d" %app.score, (1/2)*app.width, (27/80)*app.height, fill='pink', size = 30, bold = True)
+    highScoreLabel = Label("High Score: %d" %app.hiScore, (1/2)*app.width, (33/80)*app.height, fill='pink', size = 30, bold = True)
+    failLabel = Label("Press ENTER to Restart", (app.width*(1/2)), (39/80)*app.height, size = 30, fill = 'pink', bold = True)
+    mainMenuLabel = Label("Press ESCAPE to return to main menu", (app.width*(1/2)), (45/80)*app.height, size = 30, fill = 'pink', bold = True)
     failScreen.add(yourScoreLabel, highScoreLabel, failLabel, mainMenuLabel)
+    mainScreenExit.visible = True
     app.play = False
     app.ready = False
     update_stats()
@@ -231,6 +232,8 @@ def onKeyPress(key):
     if(app.play==False):
         if(key =='escape'):
             mainthing.visible = True
+            mainScreenExit.visible = True
+            mainScreenExit.toFront()
             choice.visible = False
             app.mode = None
         if(app.ready == True):
@@ -250,6 +253,7 @@ def onKeyPress(key):
             ball.centerX = (1/4)*app.width
             ball.centerY = (7/20)*app.height
             reset()
+            mainScreenExit.visible = False
             scoreLabel.toFront()
             scoreLabel.value = "%d" %app.score
             if(app.mode == 'easy'):
@@ -325,6 +329,7 @@ def onMousePress(x,y):
             scoreLabel.toFront()
             fullInfoList[1]+=1
             fullInfoList[2]+=1
+            mainScreenExit.visible = False
         elif(intermediate.contains(x,y)):
             app.mode = "medium"
             killOpen(intermediate)
@@ -334,6 +339,7 @@ def onMousePress(x,y):
             scoreLabel.toFront()
             fullInfoList[1]+=1
             fullInfoList[3]+=1
+            mainScreenExit.visible = False
         elif(hard.contains(x,y)):
             app.mode = "hard"
             killOpen(hard)
@@ -343,6 +349,7 @@ def onMousePress(x,y):
             scoreLabel.toFront()
             fullInfoList[1]+=1
             fullInfoList[4]+=1
+            mainScreenExit.visible = False
         if(backToLauncherMain.contains(x,y)):
             update_stats()
             subprocess.Popen(["python3", backToLauncherMain.game])
@@ -358,6 +365,16 @@ def onMousePress(x,y):
         if(closeGameButton.contains(x,y) and app.pause == True):
             update_stats()
             sys.exit(0)
+        if(backToLauncherMain.contains(x,y) and app.play == False):
+            print("Failed and clicks launcher")
+            update_stats()
+            subprocess.Popen(["python3", backToLauncherMain.game])
+            sys.exit(0)
+        if(closeGameButtonMain.contains(x,y) and app.play == False):
+            print("Failed and Closed")
+            update_stats()
+            sys.exit(0)
+            
 stars.toFront()
 cities.toFront()
 Blocks.toFront()
@@ -376,8 +393,9 @@ backToLauncherMain = Rect(closeGameButtonMain.right+1, closeGameButtonMain.top, 
 backToLauncherMain.game = "PretendLauncher.py"
 backToLauncherMain.words = Label("Return to Launcher", backToLauncherMain.centerX, backToLauncherMain.centerY, size = 15, fill='white')
 mainScreenExit = Group(mainScreenExitBox, closeGameButtonMain, closeGameButtonMain.words, backToLauncherMain, backToLauncherMain.words)
-mainthing = Group(cover, title, instructions, box, easy, intermediate, hard, mainScreenExit)
+mainthing = Group(cover, title, instructions, box, easy, intermediate, hard)
 failScreen.toFront()
+mainScreenExit.toFront()
 make_stars()
 cities.add(make_city(0))
 cities.add(make_city((1/10)*app.width))
