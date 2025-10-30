@@ -31,14 +31,15 @@ asteroidBase = Rect(-400, -400, app.width+800, app.height+800)
 score = Label("Score: %09d" %app.score, 5, 20, size = 20, fill='white', align = 'left')
 hiScore = Label("High Score: %09d" %hi, app.width-2, score.centerY, size =20, fill='white', align='right')
 
-outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center', opacity = 0)
-pauseLabel = Label("Game Paused", app.width/2, app.height/2 -15, size = 30, opacity = 0, fill= 'white')
-closeGameButton = Rect(outerPause.left, outerPause.centerY, outerPause.width//2, outerPause.height//2, fill=None, border = 'red', opacity = 0)
-closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15, opacity = 0, fill = 'white')
-backToLauncher = Rect(closeGameButton.right+1, closeGameButton.top, outerPause.width//2, outerPause.height//2, fill=None, border = 'gray', opacity = 0)
+outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center')
+pauseLabel = Label("Game Paused", app.width/2, app.height/2 -15, size = 30, fill= 'white')
+closeGameButton = Rect(outerPause.left, outerPause.centerY, outerPause.width//2, outerPause.height//2, fill=None, border = 'red')
+closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15, fill = 'white')
+backToLauncher = Rect(closeGameButton.right+1, closeGameButton.top, outerPause.width//2, outerPause.height//2, fill=None, border = 'gray')
 backToLauncher.game = "PretendLauncher.py"
-backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15, opacity = 0, fill='white')
+backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15, fill='white')
 pauseScreen = Group(outerPause, pauseLabel, closeGameButton, backToLauncher, backToLauncher.words, closeGameButton.words)
+pauseScreen.visible = False
 
 app.asteroidspeed = (1/80)*app.width
 app.stepsPerSecond = 30
@@ -392,6 +393,8 @@ def reset():
     health.value = "Health: %1d" %ship.health
     app.enemy = False
     app.failed = False
+    pauseScreen.visible = False
+    pauseScreen.centerX = app.width/2
     update_stats()
 
     
@@ -468,7 +471,9 @@ def offer_replay():
     '''
     gameOver.add(Rect(app.width/2, app.height/2, app.width, app.height, align = 'center', fill=None, border = 'white'))  
     gameOver.add(Label("Game Over", app.width/2, app.height/2-50, fill='white', size = app.width/20)) 
-    gameOver.add(Label("Press Enter To Play Again", app.width/2, app.height/2 + 50, fill='white', size = app.width/30))   
+    gameOver.add(Label("Press Enter To Play Again", app.width/2, app.height/2 + 50, fill='white', size = app.width/30))  
+    pauseScreen.visible = True
+    pauseScreen.left = 0
         
 def blow_up_balls():
     '''
@@ -600,15 +605,12 @@ def toggle_pause():
     if(app.failed == False):
         if app.play == False:
             app.play = True
-            for thing in pauseScreen:
-                thing.opacity = 0
+            pauseScreen.visible = False
         else:
             app.play = False
-            for thing in pauseScreen:
-                thing.opacity = 100
-
+            pauseScreen.visible = True
 def onMousePress(x,y):
-    if(app.play == False and app.failed == False):
+    if(pauseScreen.visible == True):
         if(closeGameButton.contains(x,y)):
             update_stats()
             sys.exit(0)
