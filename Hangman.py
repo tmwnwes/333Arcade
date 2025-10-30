@@ -1,6 +1,8 @@
 from cmu_graphics import *
 import tkinter as tk
 import random
+import sys
+import subprocess
 
 root = tk.Tk()
 width = root.winfo_screenwidth()
@@ -267,6 +269,13 @@ def onMousePress(x,y):
             onMousePress(x,y)
         app.case = 0
     update_stats()
+    if(closeGameButton.contains(x,y)):
+        update_stats()
+        sys.exit(0)
+    if(backToLauncher.contains(x,y)):
+        update_stats()
+        subprocess.Popen(["Python3", backToLauncher.game])
+        sys.exit(0)
 
 def checkCount():
     app.wrongCount = 0
@@ -344,6 +353,11 @@ def letterReveal(letter):
 
 fullInfoList[1]+=1
 fullInfoList[6]+=1
-        
-        
+
+closeGameButton = Rect(base.left, base.top, pole.left, app.height//10, fill=None, border = 'red', align = 'bottom-left')
+closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15)
+backToLauncher = Rect(pole.right, base.top, closeGameButton.width, closeGameButton.height, fill=None, border = 'gray', align = 'bottom-left')
+backToLauncher.game = "PretendLauncher.py"
+backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15)
+
 app.run()
