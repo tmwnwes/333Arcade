@@ -24,7 +24,7 @@ for thing in gameInfo:
 hi = fullInfoList[2]
 
 app.score = 0
-app.generalSpeed = 8
+app.generalSpeed = 14
 app.play = True
 screen = Rect(0,0,app.width, app.height)
 asteroidBase = Rect(-400, -400, app.width+800, app.height+800)
@@ -44,13 +44,13 @@ pauseScreen.visible = False
 app.asteroidspeed = (1/80)*app.width
 app.stepsPerSecond = 30
 app.decel= 1/4
-app.Yspeed = 0
-app.Xspeed = 0
+app.forwardSpeed = 0
+app.leftwardSpeed = 0
 app.rotationSpeed = 0
 app.timer = 1
 app.multiplier = 1
 app.asteroidTimer = app.stepsPerSecond*4.5
-app.ballSpeed = 12 ## Player shots
+app.ballSpeed = 16 ## Player shots
 app.shotSpeed = 25 ## Enemy shots
 app.launchSpeed = 5
 app.enemyLaunchSpeed = app.stepsPerSecond*4
@@ -70,6 +70,7 @@ explosion = Group()
 gameOver = Group()
 shots = Group()
 saucers = Group()
+trail = Group()
 
 def update_high_score():
     ''' 
@@ -385,8 +386,8 @@ def reset():
     ship.centerX = app.width/2
     ship.centerY = app.height/2
     ship.rotateAngle = 0
-    app.Xspeed = 0
-    app.Yspeed = 0
+    app.leftwardSpeed = 0
+    app.forwardSpeed = 0
     app.rotationSpeed = 0
     app.multiplier = 1
     ship.health = 3
@@ -437,6 +438,18 @@ def decrease_health_ship():
     else:
         ship.health-=1
     health.value = "Health %1d" %ship.health
+
+def move_trail():
+    '''
+    Takes no args and returns no values
+    Slowly dissipates missile trails until they are invisbile
+    Subsequently removes the trail peices as they are fully invisible
+    '''
+    for trailRemnants in trail:
+        if(trailRemnants.opacity>0):
+            trailRemnants.opacity -=1
+        else:
+            trail.remove(trailRemnants)
 
 def decrease_health_asteroid(ast, scoring):
     '''
@@ -537,22 +550,36 @@ def onKeyHold(keys):
     In this script, it is used to move the ship and fire shots
     '''
     if('a' in keys or "A" in keys):
-        app.Xspeed = -app.generalSpeed 
+        if(abs(app.leftwardSpeed) <= app.generalSpeed):
+            app.leftwardSpeed += 2*app.decel
     if('w' in keys or "W" in keys):
-        app.Yspeed = -app.generalSpeed
+        if(abs(app.forwardSpeed) <= app.generalSpeed):
+            app.forwardSpeed += 3*app.decel
     if('d' in keys or "D" in keys):
-        app.Xspeed = app.generalSpeed 
+        if(abs(app.leftwardSpeed) <= app.generalSpeed):
+            app.leftwardSpeed -= 2*app.decel 
     if('s' in keys or "S" in keys):
-        app.Yspeed = app.generalSpeed
+        if(abs(app.forwardSpeed) <= app.generalSpeed):
+            app.forwardSpeed -= 3*app.decel
     if('left' in keys):
-        app.rotationSpeed = -app.generalSpeed
+        if(abs(app.rotationSpeed) <= app.generalSpeed):
+            app.rotationSpeed -= 3*app.decel
     if('right' in keys):
-        app.rotationSpeed = app.generalSpeed
+        if(abs(app.rotationSpeed) <= app.generalSpeed):
+            app.rotationSpeed += 3*app.decel
     if('space' in keys):
         if(app.timeSince == 0):
             spawn_balls(head.centerX, head.centerY, ship.rotateAngle%360)
             app.timeSince = app.launchSpeed
         
+def spawn_trail(x, y, color):
+    '''
+    Takes 3 args and returns no values
+    Creates a shape and adds it to the appropriate shape group
+    The trails in this program will represent missile streaks and rocket burns
+    '''
+    trail.add(Circle(x, y, 2, fill =  color, opacity = 90))
+
 def onStep():  
     '''
     Built in CMU function
@@ -560,16 +587,20 @@ def onStep():
     In this script, it causes all motion
     '''
     if(app.play==True):
+        move_trail()
         app.timer+=1
         if(app.timer%(app.stepsPerSecond*app.multiplier*60) == 0):
                 spawn_enemy_saucer()
                 app.saucerSpawn= 0
         if(app.timeSince>0):
             app.timeSince -=1
-        app.Xspeed = get_speed(app.Xspeed)
-        ship.centerX+=app.Xspeed
-        app.Yspeed = get_speed(app.Yspeed)
-        ship.centerY+=app.Yspeed
+        angle = ship.rotateAngle + angleTo(ship.centerX,ship.centerY, ship.centerX-app.leftwardSpeed, ship.centerY-app.forwardSpeed)
+        dist = (app.forwardSpeed**2 + app.leftwardSpeed**2)**0.5
+        ship.centerX, ship.centerY = getPointInDir(ship.centerX, ship.centerY, angle, dist)
+        app.forwardSpeed = get_speed(app.forwardSpeed)
+        app.leftwardSpeed = get_speed(app.leftwardSpeed)
+        spawn_trail(ship.centerX, ship.centerY, 'white')
+
         app.rotationSpeed = get_speed(app.rotationSpeed)
         ship.rotateAngle+=app.rotationSpeed
         app.score+=app.multiplier
