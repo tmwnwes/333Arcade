@@ -550,7 +550,7 @@ def onMousePress(x,y,button):
                         update_stats()
                         subprocess.Popen(["python3", button.game])
                         sys.exit(0)
-                    
+    auto_clear_zeros()                
  
 def onStep():
     '''
