@@ -16,9 +16,9 @@ Regardless of platform, please download or clone this entire project repository 
 # MacOS Instructions
 If you are on MacOS, you have 3 options for running the launcher:  
 Open with VS code, and run through the play button at the top right  
-or
+or  
 Open in Python Launcher (NOT IDLE) and run the script  
-or
+or  
 Open a terminal window, navigate to the directory the launcher is in and run the launcher
 
 
@@ -33,7 +33,7 @@ ___
 
 If you are on Windows you have 2 simple options to run the launcher:  
 Double click the PretendLauncher.py file as if it were an executable  
-or
+or  
 Open the repository folder through VS code and click the play button at the top right while having the launcher file selected
 ___
 
