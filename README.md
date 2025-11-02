@@ -14,7 +14,7 @@ This project is built using the Carnegie Mellon University graphics library. In 
 Regardless of platform, please download or clone this entire project repository from the "main" branch. Then download the CMU graphics library mentioned above directly from the source. Take the "cmu_graphics" folder from that download (not the entire installer folder, just the cmu_graphics folder) and put it in the same directory as the files from this repository. Then follow the platform dependent instructions below
 
 # MacOS Instructions
-If you are on MacOS, you have 3 options for running the launcher:  
+If you are on MacOS, you have 3 options for running the launcher:<br>
 Open with VS code, and run through the play button at the top right  
 or  
 Open in Python Launcher (NOT IDLE) and run the script  
@@ -31,7 +31,7 @@ ___
 
 # Windows Instructions
 
-If you are on Windows you have 2 simple options to run the launcher:  
+If you are on Windows you have 2 simple options to run the launcher:<br>
 Double click the PretendLauncher.py file as if it were an executable  
 or  
 Open the repository folder through VS code and click the play button at the top right while having the launcher file selected
