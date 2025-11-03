@@ -85,7 +85,7 @@ def check_button(colInput):
     app.att+=1
     if(colInput == thing.fill):
         app.score += 1
-        app.time += app.stepsPerSecond*1.5
+        app.time += app.stepsPerSecond
         app.currentStreak+=1
         fullInfoList[0]+=1
     else:
