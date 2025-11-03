@@ -55,7 +55,7 @@ Asteroid.py
 
 This is a remake of the classic arcade game, Asteroids. In this version of the game, you have 3 HP instead of 1 so you will not die immediately to one hit. Additionally, you can move in 4 directions, relative to ship rotation instead of only forward in the direction you face. Please note that "W" will accelerate the ship forward from the ship's perspective, not up accordin to your perspective, though those perspectives may occasionally overlap. Use WASD to accelerate in the following directions (Forward, Left, Back, Right) in relation to the ship. Use Left and Right arrow keys to accelerate towards rotation in those direcitons, and use spacebar to fire projectiles from the front of your ship in the direction you face. The asteroids have HP relating to their size, with the smallest asteroids exploding to one hit and the largest taking 4 shots to destroy, but point values are scaled with this in mind. You will also encounter enemy saucers which will fire at you and call allies in to assist if you don't destroy them fast enough. Enemy saucer health scales with time played and destroying all enemy saucers on screen will result in an increased score multiplier
 
-Descriptions for other games will be posted by November 2nd 2025
+Descriptions for other games will be posted by November 5th 2025
 
 
 
