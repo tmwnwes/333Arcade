@@ -154,10 +154,10 @@ def move_torps():
     '''
     for torp in allTorpedoes:
         if torp.dir == 'left':
-            torp.centerX -= torpSpeed
+            torp.centerX, torp.centerY = getPointInDir(torp.centerX, torp.centerY, torp.rotateAngle+90, -torpSpeed)
             spawn_bubbles(torp.right, torp.centerY, randrange(3), "left")
         else:
-            torp.centerX += torpSpeed
+            torp.centerX, torp.centerY = getPointInDir(torp.centerX, torp.centerY, torp.rotateAngle+90, torpSpeed)
             spawn_bubbles(torp.left, torp.centerY, randrange(3), "right")
             
 ## Object Motion ##
@@ -213,7 +213,7 @@ def spawn_mine():
     mines.add(new)
     mines.count+=1
 
-def launch_torpedo(x,y, dir):
+def launch_torpedo(x,y, dir, angle):
     '''
     Takes 3 arguments, x, y, and a direction, returns no values but adds shapes to appropriate groups
     x and y are positional arguments, direction entails which side of the sub to create the shape
@@ -225,13 +225,15 @@ def launch_torpedo(x,y, dir):
         col = "black"
     if(dir == "right"):
         new = Oval(x+10, y+4, 20, 6, fill=col)
-        new.dist = new.centerX + maxRange
+        new.dist = getPointInDir(new.centerX, new.centerY, angle+90, app.width/3)
         new.dir = dir
+        new.rotateAngle =  angle
         allTorpedoes.add(new)
     if(dir == "left"):
         new = Oval(x-10, y+4, 20, 6, fill=col)
         new.dir = dir
-        new.dist = new.centerX - maxRange
+        new.dist = getPointInDir(new.centerX, new.centerY, angle+90, -app.width/3)
+        new.rotateAngle = angle
         allTorpedoes.add(new)
 
 def starter_mines():
@@ -431,10 +433,7 @@ def torps_destroying_mines():
     Handles the case of a torpedo directly impacting a mine or exceeding their maximum range
     '''
     for torp in allTorpedoes:
-        if(torp.centerX>=torp.dist and torp.dir == 'right'):
-            explode_object(torp)
-            allTorpedoes.remove(torp)
-        if(torp.centerX<=torp.dist and torp.dir == 'left'):
+        if((torp.dir == 'left' and torp.centerX < torp.dist[0]) or (torp.dir =='right' and torp.centerX > torp.dist[0]) or (torp.top<= ocean.top+3 or torp.bottom >= ocean.bottom -3)):
             explode_object(torp)
             allTorpedoes.remove(torp)
         for mine in mines:
@@ -625,7 +624,7 @@ def onKeyPress(key):
     if(app.pause == False):
         if(torpedoes.value>0):
             if(key=='right' or key == 'left'): 
-                launch_torpedo(sub.centerX, sub.centerY, key)
+                launch_torpedo(sub.centerX, sub.centerY, key, sub.rotateAngle)
                 fullInfoList[4]+=1
                 torpedoes.value-=1
         if(key == 'y' or key == 'Y'):
@@ -665,18 +664,24 @@ def onKeyHold(keys):
     Focus is on game motion, moving the submarine, as well as the 
     '''
     if(app.failed==False and app.pause == False):
-        if(sub.left>0):    
+        if(sub.left>0 and sub.centerY >= ocean.top+5):    
             if('a' in keys):
-                sub.centerX-=2.5
-        if(sub.right<app.width):
+                sub.centerX, sub.centerY = getPointInDir(sub.centerX, sub.centerY, sub.rotateAngle+90, -2.5)
+        if(sub.right<app.width and sub.centerY<=ocean.bottom-5):
             if('d' in keys):
-                sub.centerX+=2.5
-        if(sub.top>ocean.top+4):
+                sub.centerX, sub.centerY = getPointInDir(sub.centerX, sub.centerY, sub.rotateAngle+90, 2.5)
+        if(sub.centerY>ocean.top+2):
             if('w' in keys):
-                sub.centerY-=2.5  
+                sub.centerY -=1 ## slower to ascend than to descend
         if(sub.bottom<ocean.bottom-5):
             if('s' in keys):
-                sub.centerY+=2.5
+                sub.centerY +=2
+        if(sub.rotateAngle<=50 and ocean.containsShape(sub)):
+            if('e' in keys):
+                sub.rotateAngle +=0.5
+        if(sub.rotateAngle>=-50 and ocean.containsShape(sub)):
+            if('q' in keys):
+                sub.rotateAngle -=0.5
         safetyShield.centerX = sub.centerX
         safetyShield.centerY = sub.centerY
     
