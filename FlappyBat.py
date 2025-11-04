@@ -27,6 +27,7 @@ app.stepsPerSecond = 42
 app.play = False
 app.ready = False
 app.score = 0
+app.maxSpeed = (1/45)*app.width
 scoreLabel = Label("%d" %app.score, app.width/2, app.height/10, fill='white', bold = True, border = 'black', size = 50)
 cities = Group()
 failScreen = Group()
@@ -72,7 +73,7 @@ def make_stars():
     for i in range(200):
         stars.add(Star(randrange(app.width), randrange((int)(ground.top - 5)), randrange(1, 3), randrange(3, 30), fill='white'))
 
-def fail():
+def fail_game():
     score_avgs()
     yourScoreLabel = Label("Last Score: %d" %app.score, (1/2)*app.width, (27/80)*app.height, fill='pink', size = 30, bold = True)
     highScoreLabel = Label("High Score: %d" %app.hiScore, (1/2)*app.width, (33/80)*app.height, fill='pink', size = 30, bold = True)
@@ -105,7 +106,7 @@ ball.add(body, leftWing, leftEye, rightEye, rightWing, leftEar, rightEar, leftTo
 ball.centerX = app.width/4
 ball.centerY = (7/20)*app.height
 
-def killOpen(selection):
+def kill_open(selection):
     mainthing.visible = False
     choice.value = selection.value
     choice.visible=True
@@ -115,7 +116,7 @@ def killOpen(selection):
     ball.centerX = app.width/4
     ball.centerY = (7/20)*app.height
     
-def resetBlocks():
+def reset_blocks():
     for block in Blocks:
         if(block.y1<=0):
             block.y1 = 0
@@ -143,11 +144,14 @@ def resetBlocks():
                 d2.y2 = app.foo + (3/8)*app.height
                 d2.counted = False
 
-def scoring():
+def scoring_counter():
     for block in Blocks:
         if ball.left>= block.centerX and block.counted == False:
             block.counted = True
             app.score+=1
+            if(app.score%25 ==0 and app.speed<app.maxSpeed):
+                app.speed+=(0.05)*app.speed
+            print(app.speed)
             fullInfoList[9]+=1
             scoreLabel.value = "%d" % app.score
             if(app.mode == "easy"):
@@ -204,12 +208,12 @@ def update_stats():
     for i in range(len(fullInfoList)):
         gameInfo.write((str)(fullInfoList[i])+"\n")
 
-def checkSpeed(speed):
+def check_speed(speed):
     speed += app.accel
     ball.rotateAngle+=(3*app.accel)
     return speed
 
-def movePipes(speed):
+def move_pipes(speed):
     Blocks.centerX -= speed
 
 def toggle_pause():
@@ -252,7 +256,7 @@ def onKeyPress(key):
             failScreen.clear()
             ball.centerX = (1/4)*app.width
             ball.centerY = (7/20)*app.height
-            reset()
+            reset_game()
             mainScreenExit.visible = False
             scoreLabel.toFront()
             scoreLabel.value = "%d" %app.score
@@ -268,7 +272,7 @@ def onKeyPress(key):
     if((key =='p' or key =='P') and app.play == True):
         toggle_pause()
 
-def reset():
+def reset_game():
     app.foo=(random.randrange(0, (int)((3/10)*app.height)))
     a1.y2=app.foo-40
     b1.y2=app.foo
@@ -295,35 +299,36 @@ def reset():
     failScreen.clear()
     scoreLabel.toBack()
     app.score = 0
+    app.speed = (1/130)*app.width if app.mode == "easy" else (1/110)*app.width if app.mode == "medium" else (1/90)*app.width if app.mode == "hard" else None
     app.ready = True
     app.pause = False
 
 def hit_detection():
     if(ball.hitsShape(Blocks)):
-        fail()
+        fail_game()
     if(ball.bottom>= ground.top):
-        fail()
+        fail_game()
     if(ball.top<=0):
-        fail()
+        fail_game()
     
 def onStep():
     if(app.play==True and app.pause == False):
         move_cities()
-        scoring()
+        scoring_counter()
         hit_detection()
-        movePipes(app.speed)
-        resetBlocks()
+        move_pipes(app.speed)
+        reset_blocks()
         ball.centerY += app.ballSpeed
-        app.ballSpeed = checkSpeed(app.ballSpeed)
+        app.ballSpeed = check_speed(app.ballSpeed)
         update_stats()
 
 def onMousePress(x,y):
     if(title.visible==True):
-        reset()
+        reset_game()
         if(easy.contains(x,y)):
-            killOpen(easy)
+            kill_open(easy)
             app.mode = "easy"
-            app.speed = (1/110)*app.width
+            app.speed = (1/130)*app.width
             app.ready = True
             scoreLabel.value = "%d" %app.score
             scoreLabel.toFront()
@@ -332,8 +337,8 @@ def onMousePress(x,y):
             mainScreenExit.visible = False
         elif(intermediate.contains(x,y)):
             app.mode = "medium"
-            killOpen(intermediate)
-            app.speed = (1/90)*app.width
+            kill_open(intermediate)
+            app.speed = (1/110)*app.width
             app.ready = True
             scoreLabel.value = "%d" %app.score
             scoreLabel.toFront()
@@ -342,8 +347,8 @@ def onMousePress(x,y):
             mainScreenExit.visible = False
         elif(hard.contains(x,y)):
             app.mode = "hard"
-            killOpen(hard)
-            app.speed = (1/70)*app.width
+            kill_open(hard)
+            app.speed = (1/90)*app.width
             app.ready = True
             scoreLabel.value = "%d" %app.score
             scoreLabel.toFront()
@@ -366,12 +371,10 @@ def onMousePress(x,y):
             update_stats()
             sys.exit(0)
         if(backToLauncherMain.contains(x,y) and app.play == False):
-            print("Failed and clicks launcher")
             update_stats()
             subprocess.Popen(["python3", backToLauncherMain.game])
             sys.exit(0)
         if(closeGameButtonMain.contains(x,y) and app.play == False):
-            print("Failed and Closed")
             update_stats()
             sys.exit(0)
             
@@ -397,17 +400,19 @@ mainthing = Group(cover, title, instructions, box, easy, intermediate, hard)
 failScreen.toFront()
 mainScreenExit.toFront()
 make_stars()
-cities.add(make_city(0))
-cities.add(make_city((1/10)*app.width))
-cities.add(make_city((2/10)*app.width))
-cities.add(make_city((3/10)*app.width))
-cities.add(make_city((4/10)*app.width))
-cities.add(make_city((5/10)*app.width))
-cities.add(make_city((6/10)*app.width))
-cities.add(make_city((7/10)*app.width))
-cities.add(make_city((8/10)*app.width))
-cities.add(make_city((9/10)*app.width))
-cities.add(make_city(app.width))
+for i in range(11):
+    cities.add(make_city((i/10)*app.width))
+# cities.add(make_city(0))
+# cities.add(make_city((1/10)*app.width))
+# cities.add(make_city((2/10)*app.width))
+# cities.add(make_city((3/10)*app.width))
+# cities.add(make_city((4/10)*app.width))
+# cities.add(make_city((5/10)*app.width))
+# cities.add(make_city((6/10)*app.width))
+# cities.add(make_city((7/10)*app.width))
+# cities.add(make_city((8/10)*app.width))
+# cities.add(make_city((9/10)*app.width))
+# cities.add(make_city(app.width))
 pauseScreen.toFront()
 fullInfoList[0]+=1
 
