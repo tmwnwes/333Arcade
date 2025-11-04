@@ -1,3 +1,14 @@
+_______
+_______
+_______
+
+This file is depreciated and will be replaced with the new client/core format, this is here temporarily until further implementation is finished
+
+
+_______
+_______
+_______
+
 Create a launcher that excecutes python code. 
 
 
