@@ -255,7 +255,7 @@ def spawn_plane(y, canScore):
         hitbox.score = 0
     spacing = app.width// hitbox.bombs
     for i in range(hitbox.bombs):
-        hitbox.dropZones.append(spacing * i)
+        hitbox.dropZones.append(spacing * (i+1))
     planes.add(hitbox)
     
 def move_fun_missiles():
@@ -487,9 +487,9 @@ def move_shots():
         else:
             shot.next = getPointInDir(shot.centerX, shot.centerY, shot.rotateAngle, app.shotSpeedLR)
         if shot.centerY <= shot.target[1]:
-            explode_object(shot, True)
             for target in targets:
                 if shot.num == target.num:
+                    explode_object(target, True)
                     targets.remove(target)
             defense.remove(shot)
             
