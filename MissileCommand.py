@@ -1040,43 +1040,59 @@ def spawn_handling():
             if(app.spawnTimer == 0):
                 if(app.enemiesLeftToSpawn %8 ==0):
                     spawn_plane(randrange(app.height//4, app.height//2), canScore)
+                    if(app.bat.top<=app.height):
+                        app.enemiesLeftToSpawn -=1
                 else:
                     spawn_basic_missile(randrange(0,app.width), -10, canScore)
+                    if(app.bat.top<=app.height):
+                        app.enemiesLeftToSpawn -=1
                 app.spawnTimer = app.stepsPerSecond * 4
-                if(app.bat.top<=app.height):
-                    app.enemiesLeftToSpawn -=1
                 newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
     elif(app.level <= 6): ## missiles, bomber planes higher up, multi-bombs, non straight missiles
             if(app.enemiesLeftToSpawn >=1):
                 if(app.spawnTimer == 0):
                     if(app.enemiesLeftToSpawn% 9 == 0):
                         spawn_multi_bomb(randrange(app.width), randrange(app.height//4, 3*app.height//4), canScore)
+                        if(app.bat.top<=app.height):
+                            app.enemiesLeftToSpawn -=1
                     if(app.enemiesLeftToSpawn%8 == 0):
                         spawn_plane(randrange(20, app.height//4), canScore)
+                        if(app.bat.top<=app.height):
+                            app.enemiesLeftToSpawn -=1
                     if(app.enemiesLeftToSpawn%7 == 0):
                         spawn_fun_missile(canScore)
+                        if(app.bat.top<=app.height):
+                            app.enemiesLeftToSpawn -=1
                     else:
                         spawn_basic_missile(randrange(0,app.width), -10, canScore)
+                        if(app.bat.top<=app.height):
+                            app.enemiesLeftToSpawn -=1
                     app.spawnTimer = app.stepsPerSecond * 4
-                    if(app.bat.top<=app.height):
-                        app.enemiesLeftToSpawn -=1
                     newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
     elif(app.level <=9 ): ## all of the above, plus smart bombs
             if(app.enemiesLeftToSpawn >=1):
                 if(app.spawnTimer == 0):
                     if(app.enemiesLeftToSpawn% 9 == 0):
                         spawn_multi_bomb(randrange(app.width), randrange(app.height//4, 3*app.height//4), canScore)
+                        if(app.bat.top<=app.height):
+                            app.enemiesLeftToSpawn -=1
                     if(app.enemiesLeftToSpawn%8 == 0):
                         spawn_plane(randrange(20, app.height//4), canScore)
+                        if(app.bat.top<=app.height):
+                            app.enemiesLeftToSpawn -=1
                     if(app.enemiesLeftToSpawn%7 == 0):
                         spawn_fun_missile(canScore)
+                        if(app.bat.top<=app.height):
+                            app.enemiesLeftToSpawn -=1
                     if(app.enemiesLeftToSpawn%11 == 0):
                         spawn_smart_bomb(canScore)
+                        if(app.bat.top<=app.height):
+                            app.enemiesLeftToSpawn -=1
                     else:
                         spawn_basic_missile(randrange(0,app.width), -10, canScore)
+                        if(app.bat.top<=app.height):
+                            app.enemiesLeftToSpawn -=1
                     app.spawnTimer = app.stepsPerSecond * 3
-                    if(app.bat.top<=app.height):
-                        app.enemiesLeftToSpawn -=1
                     newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
     else: ## all of the above, plus hovering ufos which will launch devastating strikes if they are not blown up fast enough, and basic missiles can spawn at the same time as other enemy types
         if(app.enemiesLeftToSpawn >=1):
