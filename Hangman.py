@@ -289,6 +289,11 @@ def checkCount():
 
 winScreen = Group()
 
+def onKeyPress(key):
+    for letter in letterLabels:
+        if key.lower() == letter.value:
+            onMousePress(letter.centerX, letter.centerY)
+
 def win():
     fullInfoList[0]+=1
     if(len(wordy[len(wordy)-1])>fullInfoList[4]):
