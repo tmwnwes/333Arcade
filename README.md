@@ -91,7 +91,7 @@ ____
 
 ## Hangman.py
 
-#### To select a letter, you must click on the box surrounding the letter on your screen, you cannot merely type your input. This game is similar to the standard Hangman experience, but with a few key differnces. Internal development reffered to this game as Hangman Hard Mode becase it is significantly harder than standard hangman. To provide balance, you only fail after 9 incorrect letter guesses. The difficulty is a result of the following design choices. 
+#### To guess a letter, you can either type the letter using your keyboard or click the box surrounding the letter on the screen. This game is similar to the standard Hangman experience, but with a few key differnces. Internal development reffered to this game as Hangman Hard Mode becase it is significantly harder than standard hangman. To provide balance, you only fail after 9 incorrect letter guesses. The difficulty is a result of the following design choices. 
 
 #### 1. The word list is 365k words long and contains words from past and present english dictionaries. This means that there are hundreds of old english words with weird spellings.  
 
