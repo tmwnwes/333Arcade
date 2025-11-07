@@ -34,6 +34,7 @@ app.setMaxShapeCount(1000000)
 app.autoClickSpeed = 90 
 app.autoTwinkleSpeed = 90 
 app.autoUntwinkleSpeed = 3 
+app.muted = True
 app.timer = 0 
 flareMove = (1/80) *app.height
 expansion = (1/100) *app.width
@@ -46,7 +47,7 @@ maxFireworkSize = (9/20) * app.width
 Rect(0,0,app.width,app.height) 
 allColors = ["white", "deepPink", "red", "yellow", "darkOrange", "lime", "cyan", "blue", "magenta"]
 title = Label("Fireworks", app.width/2, (7/80)*app.height, fill = "white", size = (1/8)*app.width)
-instructions = Label("Select colors & settings for the firework show" , app.width/2, (9/40)*app.height, fill = "pink", size = (1/25)*app.width)
+instructions = Label("Select colors & settings" , app.width/2, (9/40)*app.height, fill = "pink", size = (1/25)*app.width)
 white = Rect((3/40 *app.width), (2/5 *app.height), (1/4 *app.width), (7/40 *app.height), fill = "white") 
 pink = Rect((3/8 *app.width), (2/5 *app.height), (1/4 *app.width), (7/40 *app.height), fill = "deepPink") 
 red = Rect((27/40 *app.width), (2/5 *app.height), (1/4 *app.width), (7/40 *app.height), fill = "red") 
@@ -89,6 +90,8 @@ speedIncreaseMaxButton = Rect(speedButtonHolder.left+(12/49)*app.width, speedBut
 speedDecreaseMaxLabel = Label('Min', speedDecreaseMaxButton.centerX, speedDecreaseMaxButton.centerY, size = (1/60)*app.width, fill = 'gray')
 speedIncreaseMaxLabel = Label('Max', speedIncreaseMaxButton.centerX, speedIncreaseMaxButton.centerY, size = (1/60)*app.width, fill = 'gray')
 speedLabel = Label(20, speedButtonHolder.centerX, speedButtonHolder.centerY, size = (1/40)*app.width, fill = "gray")
+soundLabel = Label("Muted", helpButton.centerX, instructions.centerY, size = (1/100)*app.width, fill='grey', bold = True)
+soundBox = Rect(soundLabel.centerX, soundLabel.centerY, helpButton.width, helpButton.height, fill=None, border = 'grey', align = 'center')
 
 ## Main Screen Settings ##
 
@@ -130,7 +133,7 @@ speedSwitches = Group(speedButtonHolder, speedDecreaseButton, speedDecreaseLabel
                       speedDecrease10Label, speedDecreaseMaxButton, speedDecreaseMaxLabel, speedIncreaseMaxButton, speedIncreaseMaxLabel)
 starterScreen = Group(colorButtons, title, instructions, goButton, goLabel, screenSaverButton, screenSaverLabel, starryNightButton, 
                       starryNightLabel, twinkleButton, twinkleLabel, clearStarsButton, clearStarsLabel, selectAllButton, selectAllLabel, 
-                      deselectAllButton, deselectAllLabel, helpButton, helpLabel)
+                      deselectAllButton, deselectAllLabel, helpButton, helpLabel, soundBox, soundLabel)
 starterScreen.add(speedSwitches)
 helpMenu = Group(helpBackground, helpTitle, closeHelpMenuButton, closeHelpMenuLabel, helpText0, helpText1, helpText2, helpText3, 
                  helpText4, helpText4a, helpText5, helpText6, helpText7, helpText8, helpText8a, helpText9, backToLauncher, returnLabel, closeGameButton, closeGameLabel)
@@ -253,6 +256,19 @@ def toggle_starry_night_mode():
         starryNightLabel.fill = "white"
         starryNightLabel.value = "Starry Night Mode Active"
         
+def toggle_mute():
+    if(app.muted == True):
+        app.muted = False
+        soundLabel.value = "Sound On"
+        soundBox.border = 'white'
+        soundLabel.fill = 'white'
+    else:
+        app.muted = True
+        soundLabel.value = "Muted"    
+        soundBox.border = 'grey'
+        soundLabel.fill = 'grey'    
+        
+        
 def toggle_twinkle():
     if(app.starryNight == True):
         if(app.twinkleMode == True):
@@ -287,6 +303,8 @@ def press_button(mouseX, mouseY):
             spawn_help_menu()
         if(speedButtonHolder.contains(mouseX, mouseY)):
             check_speed(mouseX, mouseY)   
+        if(soundBox.contains(mouseX, mouseY)):
+            toggle_mute()
         if(goButton.contains(mouseX, mouseY)): 
             for button in colorButtons:
                 if(button.border == "darkGreen"): 
@@ -391,15 +409,21 @@ def create_firework(x, y, borderColor, visibility, points, num, angle, poly):
             star_or_poly = poly
         else:
             star_or_poly = randrange(2)
-        return create_firework_shape(x, y, borderColor, visibility, points, num, angle, star_or_poly)
+        new = create_firework_shape(x, y, borderColor, visibility, points, num, angle, star_or_poly)
+        new.note = Sound("Audio/medium.mp3")
+        return new
     else:
-        return create_firework_circle(x,y, borderColor, visibility, num, angle)
+        new = create_firework_circle(x,y, borderColor, visibility, num, angle)
+        new.note = Sound("Audio/medium.mp3")
+        return new
 
 def explosion_check(): 
     for flare in flares: 
         for explosion in placedFireworks: 
             if((flare.hitsShape(explosion) or (flare.centerY <= explosion.centerY)) and flare.num == explosion.num): 
                 fullInfoList[9]+=1
+                if(app.muted == False):
+                    explosion.note.play()
                 if (type(explosion)!= Circle):
                     explodingFirework.add(create_firework(explosion.centerX, explosion.centerY, explosion.border, 100, explosion.points, flare.num, explosion.rotateAngle, explosion.poly))
                 else:
