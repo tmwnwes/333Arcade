@@ -40,6 +40,7 @@ backToLauncher.game = "PretendLauncher.py"
 backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15, fill='white')
 pauseScreen = Group(outerPause, pauseLabel, closeGameButton, backToLauncher, backToLauncher.words, closeGameButton.words)
 pauseScreen.visible = False
+shooting = [Sound("Audio/Shooting1.mp3"), Sound("Audio/Shooting2.mp3"), Sound("Audio/Shooting3.mp3")]
 
 app.asteroidspeed = (1/80)*app.width
 app.stepsPerSecond = 30
@@ -143,6 +144,9 @@ def spawn_shots(x,y,angle):
     new4.next = getPointInDir(x,y,angle+5,app.shotSpeed)
     new5 = Oval(x,y,2,20, fill='white', rotateAngle = angle-5)
     new5.next = getPointInDir(x,y,angle-5,app.shotSpeed)
+    Sound("Audio/UFO_shots.mp3").play(restart = True)
+    Sound("Audio/UFO_shots.mp3").play(restart = True)
+    Sound("Audio/UFO_shots.mp3").play(restart = True)
     shots.add(new, new2, new3, new4, new5)
     
 def create_scores(x,y,val):
@@ -179,6 +183,7 @@ def small(x, y):
     new.hasHit = False
     new.speed = (3/2)*app.asteroidSpeed
     new.next = getPointInDir(new.centerX, new.centerY, r, new.speed)
+    new.note = Sound("Audio/Asteroid_Destroy.mp3")
     return new
 
 def med(x,y):
@@ -194,6 +199,7 @@ def med(x,y):
     new.hasHit = False
     new.speed = app.asteroidSpeed
     new.next= getPointInDir(new.centerX, new.centerY, r, new.speed)
+    new.note = Sound("Audio/Asteroid_Destroy.mp3")
     return new
 
 def big(x,y):
@@ -209,6 +215,7 @@ def big(x,y):
     new.hasHit = False
     new.speed = app.asteroidSpeed*(7/8)
     new.next = getPointInDir(new.centerX, new.centerY, r, new.speed)
+    new.note = Sound("Audio/Asteroid_Destroy.mp3")
     return new    
 
 def massive(x,y):
@@ -224,6 +231,7 @@ def massive(x,y):
     new.hasHit = False
     new.speed = app.asteroidSpeed*(3/4)
     new.next = getPointInDir(new.centerX, new.centerY, r, new.speed)
+    new.note = Sound("Audio/Asteroid_Destroy.mp3")
     return new   
 
 ### The preceding 4 functions are used to create asteroids of different sizes, aim them, set their hp, and score values   
@@ -458,6 +466,7 @@ def decrease_health_asteroid(ast, scoring):
     Increases score based on asteroid size and whether or not the player was the destroyer
     '''
     if ast.health<=1:
+        ast.note.play(restart = True)
         if(scoring == True):
             create_scores(ast.centerX, ast.centerY, ast.score*app.multiplier)
             app.score+=ast.score * app.multiplier
@@ -570,6 +579,7 @@ def onKeyHold(keys):
     if('space' in keys):
         if(app.timeSince == 0):
             spawn_balls(head.centerX, head.centerY, ship.rotateAngle%360)
+            shooting[randrange(3)].play(restart = True)
             app.timeSince = app.launchSpeed
         
 def spawn_trail(x, y, color):
@@ -615,6 +625,7 @@ def onStep():
         if(app.saucerSpawn >= app.saucerTime and app.enemy == True):
             app.saucerSpawn = 0
             spawn_enemy_saucer()
+            Sound("Audio/eerie.mp3").play(restart = True)
         wrap_around()
         move_balls()
         move_asteroids()
@@ -684,6 +695,7 @@ score.toFront()
 hiScore.toFront()
 fullInfoList[4]+=1
 fullInfoList[3]+=1     
-    
+
+
 
 app.run()
