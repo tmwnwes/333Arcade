@@ -46,6 +46,9 @@ app.infoShowing = False
 app.pause = False
 specialWarningInfo = Group()
 app.warningTimer = 0
+app.planeSound = Sound("Audio/planeflying.mp3")
+app.plane = False
+
 
 outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center')
 pauseLabel = Label("Game Paused", app.width/2, app.height/2 -15, size = 30, fill= 'white')
@@ -130,6 +133,7 @@ def make_city(x, j):
         wide = randrange(4,15)
         lastWidth = wide
         building = Rect(x+lastWidth+ i*(app.width/200), app.height-tall, wide, tall, border = 'white')
+        building.note = Sound("Audio/explosion.mp3")
         city.add(building)
     return city
 
@@ -222,6 +226,7 @@ def update_score():
         app.cities+=1
         app.gate*=2
         display_reward_extra_city()
+        Sound("Audio/eerie.mp3").play(restart = True)
     if(app.score> app.hiscore):
         app.hiscore = app.score
     score.value = "Score: %05d" %app.score
@@ -245,7 +250,7 @@ def spawn_plane(y, canScore):
     Then adds that shape to an appropriate group
     '''
     hitbox = Oval(-20, y, 40, 10, border = 'white', fill='gray')
-    hitbox.bombs = app.level//2
+    hitbox.bombs = app.level//2+1
     hitbox.angle = angleTo(hitbox.centerX, hitbox.centerY, app.width+30, hitbox.centerY)
     hitbox.next = getPointInDir(hitbox.centerX, hitbox.centerY, hitbox.angle, app.planeSpeed)
     hitbox.dropZones = []
@@ -256,6 +261,7 @@ def spawn_plane(y, canScore):
     spacing = app.width// hitbox.bombs
     for i in range(hitbox.bombs):
         hitbox.dropZones.append(spacing * (i+1))
+    app.plane = True
     planes.add(hitbox)
     
 def move_fun_missiles():
@@ -297,6 +303,8 @@ def move_planes():
     for plane in planes:
         plane.centerX, plane.centerY = plane.next 
         plane.next = getPointInDir(plane.centerX, plane.centerY, plane.angle, app.planeSpeed)
+        if(plane.centerX>=app.width+plane.width):
+            planes.remove(plane)
 
 
 def get_next_index(list, current):
@@ -416,6 +424,7 @@ def advance_stage():
             sum += 20
     app.score+=sum*app.mult
     app.level+=1
+    Sound("Audio/levelup.mp3").play(restart = True)
     stage.value = "Level: %1d" %app.level
     app.mult = app.level   
     app.enemiesLeftToSpawn = (app.level*7) + 5
@@ -579,6 +588,7 @@ def explosion_vs_bombs(type):
     for shape in explosion:
         for bomb in type:
             if(shape.hitsShape(bomb)):
+                Sound("Audio/medium.mp3").play(restart = True)
                 if(shape.willScore == True):
                     points = bomb.score * app.mult
                     app.score+= points
@@ -637,6 +647,7 @@ def missiles_vs_bat(type):
                 type.remove(missile)
                 bat.broken = True
                 bat.repairTimer += 25*app.stepsPerSecond
+                Sound("Audio/explosion.mp3").play(restart = True)
                 if bat == app.bat: app.bat = select_next_bat(app.bat)
                 bat_color_update()
                 
@@ -654,6 +665,7 @@ def bombs_vs_bat(type):
                 type.remove(missile)
                 bat.broken = True
                 bat.repairTimer += 10*app.stepsPerSecond
+                Sound("Audio/medium.mp3").play(restart = True)
                 if bat == app.bat: app.bat = select_next_bat(app.bat)
                 bat_color_update()
 
@@ -666,6 +678,7 @@ def missile_vs_ground(type):
     for missile in type:
         if missile.bottom>= height: ## using height here, not app.height because height is the actual size, and app.height is the window size
             explode_object(missile, False)
+            Sound("Audio/medium.mp3").play(restart = True)
             type.remove(missile)
 
 def missiles_vs_cities(type):
@@ -679,6 +692,7 @@ def missiles_vs_cities(type):
             if(missile.hitsShape(city)):
                 cityids.remove(city.id)
                 for building in city.children:
+                    building.note.play(restart = True)
                     explode_object(building, False)
                 explode_object(missile, False)
                 type.remove(missile)
@@ -699,6 +713,7 @@ def bombs_vs_cities(type):
                 if(bomb.hitsShape(city)):
                     for building in city.children:
                         explode_object(building, False)
+                        building.note.play(restart = True)
                     explode_object(bomb, False)
                     type.remove(bomb)
                     cityids.remove(city.id)
@@ -708,6 +723,7 @@ def bombs_vs_cities(type):
             else:
                 for building in city:
                     if(bomb.hitsShape(building)):
+                        building.note.play(restart = True)
                         explode_object(building, False)
                         explode_object(bomb, False)
                         type.remove(bomb)
@@ -729,6 +745,7 @@ def missiles_vs_anti_missiles(type):
                     if(target.num == anti.num):
                         targets.remove(target)
                 explode_object(missile, True)
+                Sound("Audio/uwexplosion.mp3").play(restart = True)
                 points = missile.score*app.mult*5
                 app.score+=points
                 create_scores(missile.centerX, missile.centerY, points)
@@ -863,6 +880,8 @@ def spawn_small_bombs(x,y,num, canScore):
         new.speed = app.bombSpeed
         multiBombPostSplit.add(new)
     
+    Sound("Audio/pop.mp3").play(restart = True)
+    
 def spawn_multi_bomb(x, detHeight, canScore):
     '''
     Takes 2 args, x for horizontal location and detHeight for when the bomb should explode
@@ -921,6 +940,7 @@ def spawn_shots(x, y, angle, canScore):
         new.score = 0
         new2.score = 0
         new3.score = 0
+    Sound("Audio/UFO_shots.mp3").play(restart = True)
     ufoShots.add(new, new2, new3)        
 
 def move_ufo():
@@ -1039,6 +1059,7 @@ def spawn_handling():
         if(app.enemiesLeftToSpawn >=1):
             if(app.spawnTimer == 0):
                 if(app.enemiesLeftToSpawn %8 ==0):
+                    app.planeSound.play(restart = True)
                     spawn_plane(randrange(app.height//4, app.height//2), canScore)
                     if(app.bat.top<=app.height):
                         app.enemiesLeftToSpawn -=1
@@ -1052,10 +1073,11 @@ def spawn_handling():
             if(app.enemiesLeftToSpawn >=1):
                 if(app.spawnTimer == 0):
                     if(app.enemiesLeftToSpawn% 9 == 0):
-                        spawn_multi_bomb(randrange(app.width), randrange(app.height//4, 3*app.height//4), canScore)
+                        spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8), canScore)
                         if(app.bat.top<=app.height):
                             app.enemiesLeftToSpawn -=1
                     if(app.enemiesLeftToSpawn%8 == 0):
+                        app.planeSound.play(restart = True)
                         spawn_plane(randrange(20, app.height//4), canScore)
                         if(app.bat.top<=app.height):
                             app.enemiesLeftToSpawn -=1
@@ -1073,10 +1095,11 @@ def spawn_handling():
             if(app.enemiesLeftToSpawn >=1):
                 if(app.spawnTimer == 0):
                     if(app.enemiesLeftToSpawn% 9 == 0):
-                        spawn_multi_bomb(randrange(app.width), randrange(app.height//4, 3*app.height//4), canScore)
+                        spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8), canScore)
                         if(app.bat.top<=app.height):
                             app.enemiesLeftToSpawn -=1
                     if(app.enemiesLeftToSpawn%8 == 0):
+                        app.planeSound.play(restart = True)
                         spawn_plane(randrange(20, app.height//4), canScore)
                         if(app.bat.top<=app.height):
                             app.enemiesLeftToSpawn -=1
@@ -1094,14 +1117,15 @@ def spawn_handling():
                             app.enemiesLeftToSpawn -=1
                     app.spawnTimer = app.stepsPerSecond * 3
                     newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
-    else: ## all of the above, plus hovering ufos which will launch devastating strikes if they are not blown up fast enough, and basic missiles can spawn at the same time as other enemy types
+    else: ## all of the above, plus hovering ufos which will launch devastating strikes if they are not blown up fast enough
         if(app.enemiesLeftToSpawn >=1):
             if(app.spawnTimer == 0):
                 if(app.enemiesLeftToSpawn% 9 == 0):
-                    spawn_multi_bomb(randrange(app.width), randrange(app.height//4, 3*app.height//4), canScore)
+                    spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8), canScore)
                     if(app.bat.top<=app.height):
                         app.enemiesLeftToSpawn -=1
                 if(app.enemiesLeftToSpawn%8 == 0):
+                    app.planeSound.play(restart = True)
                     spawn_plane(randrange(20, app.height//4), canScore)
                     if(app.bat.top<=app.height):
                         app.enemiesLeftToSpawn -=1
@@ -1117,9 +1141,10 @@ def spawn_handling():
                     spawn_ufo(canScore)
                     if(app.bat.top<=app.height):
                         app.enemiesLeftToSpawn -=1
-                spawn_basic_missile(randrange(0,app.width), -10, canScore)
-                if(app.bat.top<=app.height):
-                    app.enemiesLeftToSpawn -=1
+                else:
+                    spawn_basic_missile(randrange(0,app.width), -10, canScore)
+                    if(app.bat.top<=app.height):
+                        app.enemiesLeftToSpawn -=1
                 app.spawnTimer = app.stepsPerSecond * 3
                 newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
 
@@ -1133,6 +1158,9 @@ def onStep():
         if(app.pause == False):
             if(app.warningTimer>=0):
                 hide_mac_window_warning()
+            if(app.plane == True and len(planes) == 0):
+                app.plane = False
+                app.planeSound.pause()                
             app.infoTimer-=1
             app.spawnTimer -= 1
             update_score()
@@ -1222,5 +1250,7 @@ fullInfoList[1]+=1
 fullInfoList[6]+=1
 pauseScreen.toFront()
 update_stats()
+
+spawn_ufo(True)
 
 app.run()
