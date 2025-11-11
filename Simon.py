@@ -3,9 +3,50 @@ import tkinter as tk
 import sys
 import subprocess
 import random
+import os
+
+
 
 
 ### STATS integration coming next week
+
+default = [0,0,0]
+keys = ["HighScore", "GamesPlayed", "TimesLaunched"] 
+
+file_path = os.path.abspath(__file__)
+directory_path = os.path.dirname(file_path)
+os.chdir(directory_path)
+currentFile =  os.path.basename(__file__)
+gameName = currentFile[:-3]
+
+def file_checking(path, default):
+    '''
+    Takes 2 args, path for which file to look for, 
+    default is the default info for the game, 
+    returns no values but creates text files
+    Looks for necessary game files. Creates and populates the files if they are not found in the expected directory
+    Takes the values from the files, whether already existing or new and puts the values into a list for use later
+    '''
+    directory = "Files"
+    properPath = os.path.join(directory, path)
+    if(not os.path.exists(directory)):
+        os.makedirs(directory, exist_ok=True)
+    if (not os.path.exists(properPath)):
+        with open(properPath, 'w') as f:
+            f.seek(0)
+            for i in range(len(default)):
+                f.write((str)(default[i])+"\n")
+
+file_checking(gameName+"Stats.txt", default)
+file_checking(gameName+"Keys.txt", keys)
+
+gameInfo = open("Files/SimonStats.txt", "r+")
+fullInfoList = []
+for thing in gameInfo:
+    thing = thing.strip()
+    if thing != '':
+        fullInfoList.append((int)(thing))
+hi = fullInfoList[0]
 
 root = tk.Tk()
 width = root.winfo_screenwidth()
@@ -17,7 +58,7 @@ app.width = width
 app.height = height
 app.level = 1
 app.stepsPerSecond = 30
-app.hiScore = 0 ## Change later with introduction of stats
+app.hiScore = fullInfoList[0]
 app.waiting = app.stepsPerSecond * 0.5
 app.timer = 0
 app.counter = 0
@@ -80,6 +121,9 @@ def end_round_win():
     
 
 def offer_replay():
+    if(app.level-1 > app.hiScore):
+        app.hiScore = app.level-1
+    fullInfoList[0] = app.hiScore
     background = Rect(0,0,app.width, app.height)
     gameOverLabel = Label("Simon Says... You Lost", app.width/2, app.height/4, fill='white', size = app.width/30)
     retryLabel = Label("Press Enter to Play Again", gameOverLabel.centerX, gameOverLabel.centerY + app.height/8, fill = 'white', size = app.width/30)
@@ -105,6 +149,7 @@ def reset_game():
 def end_round_fail():
     app.failed = True
     offer_replay()
+    update_stats()
 
 def check_accuracy():
     for i in range(len(order_player)):
@@ -115,6 +160,7 @@ def check_accuracy():
             app.timeBetweenComputerAndPlayer = app.stepsPerSecond
             app.lastMode = app.mode
             app.mode = "delay"
+    update_stats()
 
 def onStep():
     if(app.failed == False):
@@ -171,11 +217,24 @@ def onMouseRelease(x,y):
             button.border = 'black'
 
 def onKeyPress(key):
-    if key == 'enter':
+    if(key == 'enter' and app.failed == True):
+        fullInfoList[1]+=1
+        update_stats()
         reset_game()
         
+def update_stats():
+    '''
+    Takes no arguments and returns no values
+    Updates values relating to stored stats outside of the program
+    '''
+    gameInfo.seek(0)
+    for i in range(len(fullInfoList)):
+        gameInfo.write((str)(fullInfoList[i])+"\n")
+        
 order_game.append(colors[randrange(4)])
-
+fullInfoList[1]+=1
+fullInfoList[2]+=1
+update_stats()
 
 app.run()
 
