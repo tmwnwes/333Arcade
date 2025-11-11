@@ -3,6 +3,7 @@ import tkinter as tk
 import random
 import sys
 import subprocess
+import os
 
 root = tk.Tk()
 width = root.winfo_screenwidth()
@@ -16,6 +17,37 @@ app.height = height
 wordList = open("Files/words_alpha.txt", "r", -1) ### 370k words, incliuding names, places, plurals, and weird old english words like symphysy
 words = []
 words2 = []
+
+default = [0,0,0,0,0,0,0]
+keys = ["Solved", "Attempted", "ShortestLengthWordSolved", "ShortestLengthWordFailed", "LongestLengthWordSolved", "LongestLengthWordFailed", "TimesLaunched"]
+
+
+file_path = os.path.abspath(__file__)
+directory_path = os.path.dirname(file_path)
+os.chdir(directory_path)
+currentFile =  os.path.basename(__file__)
+gameName = currentFile[:-3]
+
+def file_checking(path, default):
+    '''
+    Takes 2 args, path for which file to look for, 
+    default is the default info for the game, 
+    returns no values but creates text files
+    Looks for necessary game files. Creates and populates the files if they are not found in the expected directory
+    Takes the values from the files, whether already existing or new and puts the values into a list for use later
+    '''
+    directory = "Files"
+    properPath = os.path.join(directory, path)
+    if(not os.path.exists(directory)):
+        os.makedirs(directory, exist_ok=True)
+    if (not os.path.exists(properPath)):
+        with open(properPath, 'w') as f:
+            f.seek(0)
+            for i in range(len(default)):
+                f.write((str)(default[i])+"\n")
+
+file_checking(gameName+"Stats.txt", default)
+file_checking(gameName+"Keys.txt", keys)
 
 gameInfo = open("Files/HangmanStats.txt", "r+")
 fullInfoList = [] ## Key infomation can be found in MinesweeperStatsKeys.txt
