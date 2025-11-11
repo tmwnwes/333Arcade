@@ -183,7 +183,6 @@ def scoring_counter():
             app.score+=1
             if(app.score%25 ==0 and app.speed<app.maxSpeed):
                 app.speed+=(0.05)*app.speed
-            print(app.speed)
             fullInfoList[9]+=1
             scoreLabel.value = "%d" % app.score
             if(app.mode == "easy"):
