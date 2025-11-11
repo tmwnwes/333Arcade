@@ -1025,6 +1025,7 @@ def move_smart_bombs():
     for bomb in smartMissiles:
         bomb.how_far = []
         bomb.centerX, bomb.centerY = bomb.next 
+        spawn_trail(bomb.centerX, bomb.centerY, bomb.fill)
         bomb.speed += app.gravity
         for shape in explosion:
             if(shape.centerY> bomb.centerY):
@@ -1192,6 +1193,7 @@ def onStep():
                 hide_mac_window_warning()
             if(app.plane == True and len(planes) == 0):
                 app.plane = False
+                app.planeSound.play(restart = True) ## To avoid a crash
                 app.planeSound.pause()                
             app.infoTimer-=1
             app.spawnTimer -= 1
