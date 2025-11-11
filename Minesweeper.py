@@ -43,7 +43,7 @@ file_checking(gameName+"Stats.txt", default)
 file_checking(gameName+"Keys.txt", keys)
 
 gameInfo = open("Files/MinesweeperStats.txt", "r+")
-fullInfoList = [] ## Key infomation can be found in MinesweeperStatsKeys.txt
+fullInfoList = [] 
 for thing in gameInfo:
     thing = thing.strip()
     if thing != '':

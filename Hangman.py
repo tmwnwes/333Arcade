@@ -14,7 +14,7 @@ root.destroy()
 app.width = width
 app.height = height
 
-wordList = open("Files/words_alpha.txt", "r", -1) ### 370k words, incliuding names, places, plurals, and weird old english words like symphysy
+wordList = open("Files/words_alpha.txt", "r", -1) ### 365k words, incliuding names, places, plurals, and weird old english words like symphysy
 words = []
 words2 = []
 
@@ -50,7 +50,7 @@ file_checking(gameName+"Stats.txt", default)
 file_checking(gameName+"Keys.txt", keys)
 
 gameInfo = open("Files/HangmanStats.txt", "r+")
-fullInfoList = [] ## Key infomation can be found in MinesweeperStatsKeys.txt
+fullInfoList = []
 for thing in gameInfo:
     thing = thing.strip()
     if thing != '':
