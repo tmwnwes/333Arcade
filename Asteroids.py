@@ -4,6 +4,7 @@ import sys
 import subprocess
 import random
 import math
+import os
 
 root = tk.Tk()
 width = root.winfo_screenwidth()
@@ -13,6 +14,37 @@ root.destroy()
 
 app.width = width
 app.height = height
+
+AsteroidsDefault = [0,0,0,0,0]
+AsteroidsKeys = ["Shots", "Hits", "HighScore", "GamesPlayed", "TimesLaunched"]
+
+
+file_path = os.path.abspath(__file__)
+directory_path = os.path.dirname(file_path)
+os.chdir(directory_path)
+currentFile =  os.path.basename(__file__)
+gameName = currentFile[:-3]
+
+def file_checking(path, default):
+    '''
+    Takes 2 args, path for which file to look for, 
+    default is the default info for the game, 
+    returns no values but creates text files
+    Looks for necessary game files. Creates and populates the files if they are not found in the expected directory
+    Takes the values from the files, whether already existing or new and puts the values into a list for use later
+    '''
+    directory = "Files"
+    properPath = os.path.join(directory, path)
+    if(not os.path.exists(directory)):
+        os.makedirs(directory, exist_ok=True)
+    if (not os.path.exists(properPath)):
+        with open(properPath, 'w') as f:
+            f.seek(0)
+            for i in range(len(default)):
+                f.write((str)(default[i])+"\n")
+
+file_checking(gameName+"Stats.txt", AsteroidsDefault)
+file_checking(gameName+"Keys.txt", AsteroidsKeys)
 
 app.failed = False
 gameInfo = open("Files/AsteroidsStats.txt", "r+")
