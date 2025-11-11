@@ -38,7 +38,7 @@ app.doubled = False
 doubleTime = Arc(20, 20, 40, 40, 0, 360, fill='lime', opacity = 0)
 freezeTime = Arc(20, 70, 40, 40, 0, 360, fill='cyan', opacity = 0)
 
-background = Image("Images/FruitNinjaBackground.png", 0,0) ### Give proper credit
+background = Image("Images/Thumbnails/FruitNinjaBackground.png", 0,0) ### Give proper credit
 background.width = app.width
 background.height = app.height
 
@@ -248,14 +248,14 @@ def spawn_fruit():
         fruits.add(fruit)
 
 fruit_splits = ["Images/Splits/Banana1.png", "Images/Splits/Banana2.png", "Images/Splits/Cherry1.png", "Images/Splits/Cherry2.png","Images/Splits/Coconut1.png", "Images/Splits/Coconut2.png", "Images/Splits/Dragonfruit1.png", "Images/Splits/Dragonfruit2.png", "Images/Splits/Greenapple1.png", "Images/Splits/Greenapple2.png", "Images/Splits/Kiwi1.png", "Images/Splits/Kiwi2.png", "Images/Splits/Lemon1.png", "Images/Splits/Lemon2.png", "Images/Splits/Lime1.png", "Images/Splits/Lime2.png", "Images/Splits/Mango1.png", "Images/Splits/Mango2.png", "Images/Splits/Orange1.png", "Images/Splits/Orange2.png", "Images/Splits/Passionfruit1.png", "Images/Splits/Passionfruit2.png", "Images/Splits/Peach1.png", "Images/Splits/Peach2.png", "Images/Splits/Pear1.png", "Images/Splits/Pear2.png", "Images/Splits/Pineapple1.png", "Images/Splits/Pineapple2.png", "Images/Splits/Plum1.png", "Images/Splits/Plum2.png", "Images/Splits/Pomegranate1.png", "Images/Splits/Pomegranate2.png", "Images/Splits/Red_Apple1.png", "Images/Splits/Red_Apple2.png", "Images/Splits/Strawberry1.png", "Images/Splits/Strawberry2.png", "Images/Splits/Tomato1.png", "Images/Splits/Tomato2.png", "Images/Splits/Watermelon1.png", "Images/Splits/Watermelon2.png"]
-fruit_urls = ["Images/Banana.png","Images/Cherry.png","Images/Coconut.png","Images/Dragonfruit.png","Images/Greenapple.png","Images/Kiwi.png","Images/Lemon.png","Images/Lime.png","Images/Mango.png","Images/Orange.png","Images/Passionfruit.png","Images/Peach.png","Images/Pear.png","Images/Pineapple.png","Images/Plum.png","Images/Pomegranate.png","Images/Red_Apple.png","Images/Strawberry.png","Images/Tomato.png","Images/Watermelon.png"]
+fruit_urls = ["Images/WholeFruits/Banana.png","Images/WholeFruits/Cherry.png","Images/WholeFruits/Coconut.png","Images/WholeFruits/Dragonfruit.png","Images/WholeFruits/Greenapple.png","Images/WholeFruits/Kiwi.png","Images/WholeFruits/Lemon.png","Images/WholeFruits/Lime.png","Images/WholeFruits/Mango.png","Images/WholeFruits/Orange.png","Images/WholeFruits/Passionfruit.png","Images/WholeFruits/Peach.png","Images/WholeFruits/Pear.png","Images/WholeFruits/Pineapple.png","Images/WholeFruits/Plum.png","Images/WholeFruits/Pomegranate.png","Images/WholeFruits/Red_Apple.png","Images/WholeFruits/Strawberry.png","Images/WholeFruits/Tomato.png","Images/WholeFruits/Watermelon.png"]
 fruit_hitboxes = []
 cut_fruit_urls = []
 powerupSplits = ["Images/Splits/Score_2x_Banana1.png", "Images/Splits/Score_2x_Banana2.png" ,"Images/Splits/Freeze_Banana2.png", "Images/Splits/Freeze_Banana1.png"]
-powerups_urls = ["Images/Score_2x_Banana.png", "Images/Freeze_Banana.png"]
+powerups_urls = ["Images/WholeFruits/Score_2x_Banana.png", "Images/WholeFruits/Freeze_Banana.png"]
 powerups_hitboxes = []
 bomb_splits = ["Images/Splits/Bomb1.png", "Images/Splits/Bomb2.png", "Images/Splits/bomb101.png", "Images/Splits/bomb102.png"]
-bomb_urls = ["Images/Bomb.png", "Images/bomb10.png"]
+bomb_urls = ["Images/WholeFruits/Bomb.png", "Images/WholeFruits/bomb10.png"]
 bomb_hitboxes = []
 fruit_names = ['Banana', 'Cherry', 'Coconut', 'Dragonfruit', 'Greenapple', 'Kiwi', 'Lemon', 'Lime', 'Mango', 'Orange', 'Passionfruit', 'Peach', 'Pear', 'Pineapple', 'Plum', 'Pomegranate', 'Red_Apple', 'Strawberry', 'Tomato', 'Watermelon']
 powerups_names = ['x2', 'freeze']  
