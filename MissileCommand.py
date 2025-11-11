@@ -3,12 +3,44 @@ import tkinter as tk
 import random
 import sys
 import subprocess
+import os
 
 root = tk.Tk()
 width = root.winfo_screenwidth()
 height = root.winfo_screenheight()
 root.wm_attributes('-fullscreen', True) ## This line is a workaround for macOs devices with no ill effects for Windows users. It forces a new window to open in fullscreen and focus on it, before destroying it on the next line. The main canvas is then created and players will see it. Players must still maximise this window manually however
 root.destroy()
+
+default = [0,0,0,0,0,0,0,0]
+keys = ["HighScore", "GamesPlayed", "Shots", "Hits", "EnemiesDestroyed", "CitiesLost", "TimesLaunched", "HighestLevel"] 
+
+file_path = os.path.abspath(__file__)
+directory_path = os.path.dirname(file_path)
+os.chdir(directory_path)
+currentFile =  os.path.basename(__file__)
+gameName = currentFile[:-3]
+
+def file_checking(path, default):
+    '''
+    Takes 2 args, path for which file to look for, 
+    default is the default info for the game, 
+    returns no values but creates text files
+    Looks for necessary game files. Creates and populates the files if they are not found in the expected directory
+    Takes the values from the files, whether already existing or new and puts the values into a list for use later
+    '''
+    directory = "Files"
+    properPath = os.path.join(directory, path)
+    if(not os.path.exists(directory)):
+        os.makedirs(directory, exist_ok=True)
+    if (not os.path.exists(properPath)):
+        with open(properPath, 'w') as f:
+            f.seek(0)
+            for i in range(len(default)):
+                f.write((str)(default[i])+"\n")
+
+file_checking(gameName+"Stats.txt", default)
+file_checking(gameName+"Keys.txt", keys)
+
 
 gameInfo = open("Files/MissileCommandStats.txt", "r+")
 fullInfoList = [] 
@@ -1250,7 +1282,5 @@ fullInfoList[1]+=1
 fullInfoList[6]+=1
 pauseScreen.toFront()
 update_stats()
-
-spawn_ufo(True)
 
 app.run()
