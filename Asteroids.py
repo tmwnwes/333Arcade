@@ -15,8 +15,8 @@ root.destroy()
 app.width = width
 app.height = height
 
-AsteroidsDefault = [0,0,0,0,0]
-AsteroidsKeys = ["Shots", "Hits", "HighScore", "GamesPlayed", "TimesLaunched"]
+default = [0,0,0,0,0]
+keys = ["Shots", "Hits", "HighScore", "GamesPlayed", "TimesLaunched"]
 
 
 file_path = os.path.abspath(__file__)
@@ -43,8 +43,8 @@ def file_checking(path, default):
             for i in range(len(default)):
                 f.write((str)(default[i])+"\n")
 
-file_checking(gameName+"Stats.txt", AsteroidsDefault)
-file_checking(gameName+"Keys.txt", AsteroidsKeys)
+file_checking(gameName+"Stats.txt", default)
+file_checking(gameName+"Keys.txt", keys)
 
 app.failed = False
 gameInfo = open("Files/AsteroidsStats.txt", "r+")
