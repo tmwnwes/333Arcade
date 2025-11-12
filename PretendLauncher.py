@@ -23,10 +23,11 @@ app.advanced = False
 app.recentDir = None
 app.lastX = app.width/2
 app.slider = False
-app.dragSpeed = (1/84)*app.width
+app.dragSpeed = (1/80)*width
 
 unknownStats = Group()
-knownGames = ["Asteroids.py", "ColorGame.py", "Fireworks.py", "Hangman.py", "Minesweeper.py", "SubGame.py", "MissileCommand.py", "FlappyBat.py"]
+knownGames = ["Asteroids.py", "ColorGame.py", "Fireworks.py", "Hangman.py", "Minesweeper.py", "SubGame.py", "MissileCommand.py", "FlappyBat.py", "Simon.py"]
+
 unknownGames = []
 
 UnknownGameKeys = ["Unknown Game"]
@@ -73,6 +74,11 @@ FlappyBatKeys = ["TimesLaunched", "GamesPlayed", "GamesEasy", "GamesMed", "Games
 FlappyBatDisplay = ["Highest Score", "Favorite Mode", "Average Score"]
 FlappyBatStatsDisplay = []
 FlappyBatInfoFull = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+SimonDefault = [0,0,0]
+SimonKeys = ["HighScore", "GamesPlayed", "TimesLaunched"]
+SimonDisplay = ["High Score"]
+SimonStatsDisplay = []
+SimonInfoFull = [0,0,0]
 ### Default Values, Keys, Simple Stat Display Keys, Display Values, and General Info about each known and created game. Must update for each additional game made. Add to the known game list and create the necessary values above
 
 
@@ -166,7 +172,7 @@ displays = []
 realKeys = []
 statsDisplay = []
 
-tempList = [SubGameStatsDisplay, HangmanStatsDisplay, MinesweeperStatsDisplay, FireworksStatsDisplay, ColorGameStatsDisplay, AsteroidsStatsDisplay, MissileCommandStatsDisplay, FlappyBatStatsDisplay]
+tempList = [SubGameStatsDisplay, HangmanStatsDisplay, MinesweeperStatsDisplay, FireworksStatsDisplay, ColorGameStatsDisplay, AsteroidsStatsDisplay, MissileCommandStatsDisplay, FlappyBatStatsDisplay, SimonStatsDisplay]
 
 
 def accuracy_check(indexYes, indexTotal, source, destination, destIndex):
@@ -201,7 +207,7 @@ def create_all_paths_and_game_buttons(gamesAvailable):
         newButton = Rect(app.left + (i/4)*app.width, app.top, app.width/4,app.width/4, fill = 'gray', border = 'black')
         newButton.game = gamePath
         buttons.append(newButton)
-        newLabel = Label("Launch "+ data, newButton.centerX, newButton.centerY)
+        newLabel = Label("Launch "+ data, newButton.centerX, newButton.centerY, bold = True, size = app.width/60)
         gameLabels.add(newLabel)
         for name, value in list(globals().items()):
             if data in name:
@@ -230,6 +236,7 @@ ColorGameStatsDisplay+=[0, ColorGameInfoFull[2], ColorGameInfoFull[5]]
 AsteroidsStatsDisplay+=[0, AsteroidsInfoFull[2]]
 MissileCommandStatsDisplay+=[MissileCommandInfoFull[0], MissileCommandInfoFull[4], 0, MissileCommandInfoFull[5], MissileCommandInfoFull[7]]
 FlappyBatStatsDisplay+=[FlappyBatInfoFull[8], find_favorite_game_mode_flappy_bat(), (0 if FlappyBatInfoFull[9]==0 else FlappyBatInfoFull[9]/FlappyBatInfoFull[1])]
+SimonStatsDisplay+=[SimonInfoFull[0]]
 ## Simple Stats
 
 accuracy_check(5, 4, SubGameInfoFull, SubGameStatsDisplay, 3)
@@ -252,7 +259,7 @@ def create_buttons_for_unknown_games():
         newButton = Rect(app.left + ((i+app.games)/4)*app.width, app.top, app.width/4,app.width/4, fill = 'gray', border = 'black')
         newButton.game = gamePath
         buttons.append(newButton)
-        newLabel = Label("Launch "+ data, newButton.centerX, newButton.centerY)
+        newLabel = Label("Launch "+ data, newButton.centerX, newButton.centerY, size = app.width/50, bold = True)
         gameLabels.add(newLabel)
         unknownLabel = Label(UnknownGameKeys[0], newButton.left, (1/4)*app.width+10, size = 20, align = 'left')
         unknownStats.add(unknownLabel)
