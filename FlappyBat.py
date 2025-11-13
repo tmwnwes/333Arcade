@@ -95,6 +95,10 @@ def make_city(x):
     return city
 
 def move_cities():
+    '''
+    Takes no args and returns no values
+    Moves background cities at a slow speed
+    '''
     cities.centerX -= app.speed/40
     for city in cities:
         if(city.right<=0):
@@ -102,10 +106,20 @@ def move_cities():
             cities.add(make_city(app.width))
             
 def make_stars():
+    '''
+    Takes no args and returns no values
+    Creates a certain number of stars for the background night sky
+    Adds the stars to approprate group
+    '''
     for i in range(200):
         stars.add(Star(randrange(app.width), randrange((int)(ground.top - 5)), randrange(1, 3), randrange(3, 30), fill='white'))
 
 def fail_game():
+    '''
+    Takes no args and returns no values
+    Should only be called if game is lost
+    Displays score values and instructions    
+    '''
     score_avgs()
     yourScoreLabel = Label("Last Score: %d" %app.score, (1/2)*app.width, (27/80)*app.height, fill='pink', size = 30, bold = True)
     highScoreLabel = Label("High Score: %d" %app.hiScore, (1/2)*app.width, (33/80)*app.height, fill='pink', size = 30, bold = True)
@@ -139,6 +153,11 @@ ball.centerX = app.width/4
 ball.centerY = (7/20)*app.height
 
 def kill_open(selection):
+    '''
+    Takes 1 arg, a label
+    Returns no values
+    Sets bat to starting position
+    '''
     mainthing.visible = False
     choice.value = selection.value
     choice.visible=True
@@ -149,6 +168,11 @@ def kill_open(selection):
     ball.centerY = (7/20)*app.height
     
 def reset_blocks():
+    '''
+    Takes no args and returns no values
+    Used to move blocks to right side of screen if they have disappeared to the left
+    Also changes the height of blocks. Guarantees the gap is always the same size
+    '''
     for block in Blocks:
         if(block.y1<=0):
             block.y1 = 0
@@ -177,6 +201,10 @@ def reset_blocks():
                 d2.counted = False
 
 def scoring_counter():
+    '''
+    Checks of the bat has cleared a game and increases score if so
+    Also incrememnts speed at certain defined intervals
+    '''
     for block in Blocks:
         if ball.left>= block.centerX and block.counted == False:
             block.counted = True
@@ -193,6 +221,9 @@ def scoring_counter():
                 fullInfoList[15]+=1
                 
 def score_avgs():
+    '''
+    Ensures that score averages are correctly stored in the list containing game stats
+    '''
     fullInfoList[10] = (0 if fullInfoList[2] == 0 else fullInfoList[13]//fullInfoList[2])
     fullInfoList[11] = (0 if fullInfoList[3] == 0 else fullInfoList[14]//fullInfoList[3])
     fullInfoList[12] = (0 if fullInfoList[4] == 0 else fullInfoList[15]//fullInfoList[4])          
@@ -240,11 +271,21 @@ def update_stats():
         gameInfo.write((str)(fullInfoList[i])+"\n")
 
 def check_speed(speed):
+    '''
+    Takes 1 arg, speed, a number representing the vertical speed of the bat
+    Returns an number, speed, which is the given argument after alteration
+    Also rotates the bat
+    '''
     speed += app.accel
     ball.rotateAngle+=(3*app.accel)
     return speed
 
 def move_pipes(speed):
+    '''
+    Takes 1 arg, speed, a number representing the speed of the blocks
+    Returns no values
+    Moves the blocks the speed specified
+    '''
     Blocks.centerX -= speed
 
 def toggle_pause():
@@ -264,6 +305,10 @@ def toggle_pause():
             thing.opacity = 100
 
 def onKeyPress(key):
+    '''
+    Built in CMU function which takes a pressed key as an argument
+    Used in this game to control bat movement, return to menu, pause the game, and start new round
+    '''
     if(app.play==False):
         if(key =='escape'):
             mainthing.visible = True
@@ -304,6 +349,11 @@ def onKeyPress(key):
         toggle_pause()
 
 def reset_game():
+    '''
+    Takes no args adn returns no values
+    Resets all alterable values and positions to starting values and positions
+    Sets block heights randomly
+    '''
     app.foo=(random.randrange(0, (int)((3/10)*app.height)))
     a1.y2=app.foo-40
     b1.y2=app.foo
@@ -335,6 +385,10 @@ def reset_game():
     app.pause = False
 
 def hit_detection():
+    '''
+    Takes no args and returns no values
+    Checks if the bat is out of bounds or interacting directly with a block
+    '''
     if(ball.hitsShape(Blocks)):
         fail_game()
     if(ball.bottom>= ground.top):
@@ -343,6 +397,9 @@ def hit_detection():
         fail_game()
     
 def onStep():
+    '''
+    Built in CMU function which calls all body code app.stepsPerSecond many times per second
+    '''
     if(app.play==True and app.pause == False):
         move_cities()
         scoring_counter()
@@ -354,6 +411,10 @@ def onStep():
         update_stats()
 
 def onMousePress(x,y):
+    '''
+    Built in CMU function which takes the coordinates of a mouse press as argument
+    Used in this game to select difficulty or close the game
+    '''
     if(title.visible==True):
         reset_game()
         if(easy.contains(x,y)):
@@ -433,20 +494,7 @@ mainScreenExit.toFront()
 make_stars()
 for i in range(11):
     cities.add(make_city((i/10)*app.width))
-# cities.add(make_city(0))
-# cities.add(make_city((1/10)*app.width))
-# cities.add(make_city((2/10)*app.width))
-# cities.add(make_city((3/10)*app.width))
-# cities.add(make_city((4/10)*app.width))
-# cities.add(make_city((5/10)*app.width))
-# cities.add(make_city((6/10)*app.width))
-# cities.add(make_city((7/10)*app.width))
-# cities.add(make_city((8/10)*app.width))
-# cities.add(make_city((9/10)*app.width))
-# cities.add(make_city(app.width))
 pauseScreen.toFront()
 fullInfoList[0]+=1
-
-
-        
+  
 app.run()
