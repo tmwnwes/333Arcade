@@ -4,6 +4,7 @@ from cmu_graphics import *
 import tkinter as tk
 import subprocess
 
+
 root = tk.Tk()
 width = root.winfo_screenwidth()
 height = root.winfo_screenheight()
@@ -27,7 +28,8 @@ app.dragSpeed = (1/80)*width
 
 unknownStats = Group()
 knownGames = ["Asteroids.py", "ColorGame.py", "Fireworks.py", "Hangman.py", "Minesweeper.py", "SubGame.py", "MissileCommand.py", "FlappyBat.py", "Simon.py"]
-
+thumbnails = ["Images/Thumbnails/AsteroidsImage.png", "Images/Thumbnails/ColorGameImage.png", "Images/Thumbnails/FireworksImage.png", "Images/Thumbnails/FlappyBatImage.png", "Images/Thumbnails/HangmanImage.png", "Images/Thumbnails/MinesweeperImage.png", "Images/Thumbnails/MissileCommandImage.png", "Images/Thumbnails/SimonImage.png", "Images/Thumbnails/SubGameImage.png"]
+images = Group()
 unknownGames = []
 
 UnknownGameKeys = ["Unknown Game"]
@@ -204,10 +206,16 @@ def create_all_paths_and_game_buttons(gamesAvailable):
         keyPath = data+"Keys.txt"
         dataPaths.append(dataPath)
         keyPaths.append(keyPath)
-        newButton = Rect(app.left + (i/4)*app.width, app.top, app.width/4,app.width/4, fill = 'gray', border = 'black')
+        newButton = Rect(app.left + (i/4)*app.width, app.top, app.width/4,3*(app.width/10), fill = 'gray', border = 'black')
         newButton.game = gamePath
         buttons.append(newButton)
-        newLabel = Label("Launch "+ data, newButton.centerX, newButton.centerY, bold = True, size = app.width/60)
+        for j in range(len(thumbnails)):
+            if(data in thumbnails[j]):
+                gameImage = Image(thumbnails[j], newButton.left, newButton.top)
+                gameImage.width = (int)(width/4)
+                gameImage.height = (int)(width/4)
+                images.add(gameImage)
+        newLabel = Label("Launch "+ data, newButton.centerX, newButton.bottom - 20, bold = True, size = app.width/60, align = 'bottom')
         gameLabels.add(newLabel)
         for name, value in list(globals().items()):
             if data in name:
@@ -281,7 +289,7 @@ def post_advanced_stats():
     '''
     for i in range(len(realGameInfoPaths)):
         for j in range(len(realGameInfoPaths[i])):
-            new = Label(realKeys[i][j] + ":", buttons[i].left, 1/4*app.width + 10 + j*20, align = 'left', size = 20) ## Used to be realKeys[i][j]
+            new = Label(realKeys[i][j] + ":", buttons[i].left, buttons[i].bottom + 10 + j*20, align = 'left', size = 20) ## Used to be realKeys[i][j]
             new2 = Label(realGameInfoPaths[i][j], new.right + 5, new.centerY, align = 'left', size = new.size) ## Used to be realGameInfoPaths[i][j]
             shownStats.add(new, new2)
 
@@ -293,7 +301,7 @@ def post_simple_stats():
     '''
     for i in range(len(displays)):
         for j in range(len(displays[i])):
-            new = Label(displays[i][j] + ":", buttons[i].left, 1/4*app.width + 10 + j*20, align = 'left', size = 20)
+            new = Label(displays[i][j] + ":", buttons[i].left, buttons[i].bottom + 10 + j*20, align = 'left', size = 20)
             new2 = Label(statsDisplay[i][1][j], new.right + 5, new.centerY, align = 'left', size = new.size)
             shownStats.add(new, new2)
 
@@ -330,6 +338,7 @@ def onMouseDrag(x,y):
                 shownStats.centerX+=app.dragSpeed
                 gameLabels.centerX+=app.dragSpeed
                 unknownStats.centerX+=app.dragSpeed
+                images.centerX+=app.dragSpeed
                 slider.centerX-=(4/(app.games+len(unknownGames)))*(app.dragSpeed)
         if(app.recentDir == "right"):
             if(not(buttons[len(buttons)-1].right<=app.width)):
@@ -338,6 +347,7 @@ def onMouseDrag(x,y):
                 shownStats.centerX-=app.dragSpeed
                 gameLabels.centerX-=app.dragSpeed
                 unknownStats.centerX-=app.dragSpeed
+                images.centerX-=app.dragSpeed
                 slider.centerX+=(4/(app.games+len(unknownGames)))*(app.dragSpeed)
     app.lastX = x
         
@@ -368,6 +378,7 @@ def toggle_stats():
         statsLabel.value = "Show Simple Stats"
 
 post_simple_stats()
+images.toFront()
 gameLabels.toFront()
 app.run()
 
