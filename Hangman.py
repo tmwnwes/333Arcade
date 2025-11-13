@@ -74,24 +74,34 @@ word = words[randrange(len(words))] # pick a word
 
 
 
-wordLength = len(word)
+app.wordLength = len(word)
 wordPattern = []
 
-for i in range(wordLength):
+for i in range(app.wordLength):
     wordPattern.append('0')
 
 wordy = [word] ## wordy is a list containing every iteration of the word, beginning obviously with the 1st word
 
 def get_same_length(wordLength):
+    '''
+    Takes a number, wordLength, as an arg
+    returns list of words as a subset of the words list which have the same length
+    '''
     temp = []
     for wd in words:
         if len(wd) == wordLength:
             temp.append(wd) 
     return temp
      
-words2 = get_same_length(wordLength)   
+words2 = get_same_length(app.wordLength)   
 
-def patternCheck(list, pattern):
+def pattern_check(list, pattern):
+    '''
+    Takes 2 args:
+    list: Current possible words
+    pattern: list containing letters in their position which must be matched to by possible words
+    Returns a list containing only words which were both in the original list AND matched the pattern    
+    '''
     accepted = list
     bad = []
     for wd in accepted:
@@ -108,6 +118,14 @@ def patternCheck(list, pattern):
     return accepted
 
 def pick_new_word(yes, no, pattern, letter):
+    '''
+    Takes 4 args:
+    yes: list containing included letters
+    no: list containing letters not in word
+    pattern: list containing revealed letters in their position that must be matched to by any other possible words
+    letter: most recently guessed letter   
+    Returns no values but does update lists and potentially current word 
+    '''
     temp = []
     bad = []
     withit = []
@@ -115,7 +133,7 @@ def pick_new_word(yes, no, pattern, letter):
     global words2
     global wordPattern
     for wd in words2:
-        if len(wd) == wordLength:
+        if len(wd) == app.wordLength:
             temp.append(wd)
     for wd in temp:
         for i in range(len(no)):
@@ -128,7 +146,7 @@ def pick_new_word(yes, no, pattern, letter):
     for badWord in bad:
         if badWord in temp:
             temp.remove(wd)
-    temp = patternCheck(temp, pattern)
+    temp = pattern_check(temp, pattern)
     for wd in temp:
         if letter in wd:
             withit.append(wd)
@@ -142,7 +160,7 @@ def pick_new_word(yes, no, pattern, letter):
     else:
         words2 = withit
         yesLetters.append(letter)
-        for i in range(wordLength):
+        for i in range(app.wordLength):
             if wordy[len(wordy)-1][i] == letter:
                 wordPattern[i] = letter
             
@@ -151,9 +169,13 @@ gameLetters = Group()
 underlines = Group()
 
 def create_Word():
+    '''
+    Takes no args and returns no values
+    Creates the spaces for the letters in the word as well as the letters from the word
+    '''
     gameLetters.clear()
     underlines.clear()
-    for i in range(wordLength):
+    for i in range(app.wordLength):
         new = Label(wordPattern[i], (i* ((3/80)*app.width) + (3/80 * app.width)), 0, size = (1/20)*app.width, opacity = 0) ##????
         underline = Line((i* ((15/400)*app.width) + (9/400 * app.width)), (0.17*app.height), (i * (15/400)*app.width + (21/400)*app.width), (0.17*app.height), lineWidth = (1/200)*app.width)
         new.bottom = (0.16*app.height)
@@ -162,15 +184,7 @@ def create_Word():
         for j in gameLetters:
             if j.value != '0':
                 j.opacity = 100
-
 create_Word()
-
-def bring():
-    for letter in gameLetters:
-        for let in letterLabels:
-            if let.fill == 'lime':
-                if letter.value == let.value:
-                    letter.opacity = 100
 
 rects = Group()
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x' ,'y', 'z']
@@ -178,6 +192,10 @@ letterLabels = Group()
 app.wrongCount = 0        
 
 def make_alphabet():
+    '''
+    Takes no args and returns no values
+    Creates the set of letters on the right side of the screen
+    '''
     global rects
     global letterLabels
     int = 0
@@ -216,7 +234,11 @@ person = Group(head, body, leftArm, rightArm, rightArm, leftLeg, rightLeg, leftE
 yesLetters = []
 noLetters = []
 
-def validate():
+def validate_words():
+    '''
+    Takes no args and returns no values
+    Updates lists with valid words
+    '''
     temp = []
     global words2
     for wd in words2:
@@ -230,17 +252,21 @@ def validate():
  
  
 def update_stats():
+    '''
+    Takes no arguments and returns no values
+    Updates values relating to stored stats outside of the program
+    '''
     gameInfo.seek(0)
     for i in range(len(fullInfoList)):
         gameInfo.write((str)(fullInfoList[i])+"\n")           
             
             
 def reset_all():
-    global noLetters
-    global yesLetters
-    global wordy
-    global wordLength
-    global wordPattern
+    '''
+    Takes no args and returns no values
+    Resets all values to beginning values and picks a new starting word, updating lists to match
+    Also updates stats
+    '''
     global words2
     app.over = 0
     app.otherCase = 0
@@ -249,15 +275,16 @@ def reset_all():
         part.opacity = 0
     for part in person:
         part.opacity = 0
-    noLetters = []
-    yesLetters = []
-    wordPattern = []
+    noLetters.clear()
+    yesLetters.clear()
+    wordPattern.clear()
     word = words[randrange(len(words))]
-    wordy = [word]
-    wordLength = len(word)
-    for i in range(wordLength):
+    wordy.clear()
+    wordy.append(word)
+    app.wordLength = len(word)
+    for i in range(app.wordLength):
         wordPattern.append('0')
-    words2 = get_same_length(wordLength)
+    words2 = get_same_length(app.wordLength)
     create_Word()
     make_alphabet()
     failScreen.clear()
@@ -266,13 +293,17 @@ def reset_all():
     update_stats()       
 
 def onMousePress(x,y):
+    '''
+    Built in CMU function which takes the coordinates of a mouse press as argument
+    Used in this game to press buttons to guess letters, start new round or close game
+    '''
     if app.over == 1:
         if button.contains(x,y):
             reset_all()
     else:
-        validate()
+        validate_words()
         temp = wordy[len(wordy)-1]
-        patternCheck(words2, wordPattern)
+        pattern_check(words2, wordPattern)
         for rect in rects:
             for let in letterLabels:
                 if(rect.contains(x,y)):
@@ -281,21 +312,21 @@ def onMousePress(x,y):
                             if app.otherCase == 1:
                                 pick_new_word(yesLetters, noLetters, wordPattern, let.value)
                             if (temp == wordy[len(wordy)-1]):
-                                for i in range(wordLength):
+                                for i in range(app.wordLength):
                                     if temp[i] == let.value:
                                         wordPattern[i] = temp[i]
                                 let.fill = 'lime'
-                                letterReveal(let.value)
+                                letter_reveal(let.value)
                                 app.otherCase = 1
                             else: 
                                 let.fill = 'red'
                         elif(not(let.value in wordy[len(wordy)-1])):
                             noLetters.append(let.value)
-                            validate()
+                            validate_words()
                             let.fill = 'red'
                     rect.opacity = 25
-        checkCount()
-        bodyAdd()
+        check_count()
+        body_add()
         if app.case == 0:
             app.case = 1
             onMousePress(x,y)
@@ -309,24 +340,37 @@ def onMousePress(x,y):
         subprocess.Popen(["Python3", backToLauncher.game])
         sys.exit(0)
 
-def checkCount():
+def check_count():
+    '''
+    Takes no args and returns no values
+    Updates count of wrong letters and checks if the word has been guessed completely
+    '''
     app.wrongCount = 0
     for let in letterLabels:
         if(let.fill=='red'):
             app.wrongCount+=1
     if(not("0" in wordPattern)):
-        win()
+        win_round()
         app.over = 1
         offer_to_play_again()
 
 winScreen = Group()
 
 def onKeyPress(key):
+    '''
+    Built in CMU function which takes a pressed key as argument
+    Used in this game to press the button matching the letter pressed
+    '''
     for letter in letterLabels:
         if key.lower() == letter.value:
             onMousePress(letter.centerX, letter.centerY)
 
-def win():
+def win_round():
+    '''
+    Takes no args and returns no values
+    Should only be called if player has won the round
+    Creates shapes and adds them to appropriate groups
+    '''
     fullInfoList[0]+=1
     if(len(wordy[len(wordy)-1])>fullInfoList[4]):
         fullInfoList[4] = len(wordy[len(wordy)-1])
@@ -342,36 +386,51 @@ question = Label("Try Again?", button.centerX, button.centerY, size = 1/30 * app
 gameOver = Group(button, question)
 
 def offer_to_play_again():
+    '''
+    Takes no args and returns no values
+    Should only be called if player has lost the round.
+    Unhides game over screeen
+    '''
     for part in gameOver:
         part.opacity = 100
 
-def bodyAdd(): ## Move fail() and app.stop() up for harder game and down for easier game (In step 6 is for an average regular game, in step 9 for a super easy game, in 4 for mostly impossible)
-    if(app.wrongCount==1):
+def body_add():
+    '''
+    Takes no args and returns no values
+    Called whenever player guesses a wrong letter
+    Unhides a body part to show advancement towards failure
+    '''
+    if(app.wrongCount>=1):
         head.opacity = 100
-    if(app.wrongCount==2):
+    if(app.wrongCount>=2):
         body.opacity = 100
-    if(app.wrongCount==3):
+    if(app.wrongCount>=3):
         leftLeg.opacity = 100
-    if(app.wrongCount==4):
+    if(app.wrongCount>=4):
         rightLeg.opacity = 100
-    if(app.wrongCount==5):
+    if(app.wrongCount>=5):
         leftArm.opacity = 100
-    if(app.wrongCount==6):
+    if(app.wrongCount>=6):
         rightArm.opacity = 100
-    if(app.wrongCount==7):
+    if(app.wrongCount>=7):
         leftEye.opacity = 100
-    if(app.wrongCount==8):
+    if(app.wrongCount>=8):
         rightEye.opacity = 100
-    if(app.wrongCount==9):
+    if(app.wrongCount>=9):
         mouth.opacity = 100
-        fail()
+        fail_game()
         app.over = 1
         offer_to_play_again()
         
-
 failScreen = Group()
 
-def fail():
+def fail_game():
+    '''
+    Takes no args and returns no values
+    Creates shapes and adds them to appropriate groups
+    Should only be called if player has lost the round
+    Also update stats    
+    '''
     failScreen.add(Rect((3/20)*app.width,(3/5)*app.height,(7/20)*app.width,(3/20)*app.height, fill=None))
     failScreen.add(Label("You failed", (13/40)*app.width, (21/32)*app.height, size = (1/30)*app.width))
     failScreen.add(Label(wordy[len(wordy)-1], (13/40)*app.width, (23/32)*app.height, size = (1/30)*app.width))
@@ -381,7 +440,12 @@ def fail():
         fullInfoList[3] = len(wordy[len(wordy)-1])
     update_stats()
 
-def letterReveal(letter):
+def letter_reveal(letter):
+    '''
+    Takes 1 argument, a character representing a letter in the word
+    Returns no values but does show letters in the word matching the provided letter
+    If called with a letter not in the word, nothing will happen
+    '''
     create_Word()
     for thing in gameLetters:
         if(thing.value == letter):
