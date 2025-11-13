@@ -6,7 +6,7 @@ import subprocess
 
 ## THIS BRANCH IS FOR MILESTONE 4 TESTING
 
-
+print("The Launcher has opened")
 root = tk.Tk()
 width = root.winfo_screenwidth()
 height = root.winfo_screenheight()
@@ -318,6 +318,7 @@ def onMousePress(x,y):
         sys.exit(0)
     for button in buttons:
         if button.contains(x,y):
+            print("Launching " + button.game)
             subprocess.Popen(["python3", button.game])
             sys.exit(0)
           
