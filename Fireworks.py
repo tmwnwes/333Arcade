@@ -174,44 +174,78 @@ helpMenu.visible = False
 ## Screensaver Autoclick Speed Change Settings ##
 
 def increase_speed_max():
+    '''
+    Takes no args and returns no values
+    If the game is in screensaver mode, then this will set screensaver autoclicks to max speed
+    '''
     if(app.mode=="screensaver"):
         speedLabel.value = 100
         app.autoClickSpeed = (60*app.stepsPerSecond)/speedLabel.value
 
 def decrease_speed_max():
+    '''
+    Takes no args and returns no values
+    If the game is in screensaver mode, then this will set screensaver autoclicks to minimum speed
+    '''
     if(app.mode=="screensaver"):
         speedLabel.value = 1
         app.autoClickSpeed = (60*app.stepsPerSecond)/speedLabel.value
 
 def increase_speed_10():
+    '''
+    Takes no args and returns no values
+    If the game is in screensaver mode, then this will increase the speed of autoclicks by 10 per minute
+    Will set to max speed if an increase of 10 would put the speed too high
+    '''
     if(app.mode =="screensaver"):
         if speedLabel.value <91:
             speedLabel.value = speedLabel.value + 10
         else:
-            speedLabel.value = 100
+            increase_speed_max()
         app.autoClickSpeed = (60*app.stepsPerSecond)/speedLabel.value
 
 def decrease_speed_10():
+    '''
+    Takes no args and returns no values
+    If the game is in screensaver mode, then this will decrease the speed of autoclicks by 10 per minute
+    Will set to minumum speed if a decrease of 10 would put the speed too low
+    '''
     if(app.mode =="screensaver"):
         if speedLabel.value >10:
             speedLabel.value = speedLabel.value - 10
         else:
-            speedLabel.value = 1
+            decrease_speed_max()
         app.autoClickSpeed = (60*app.stepsPerSecond)/speedLabel.value
 
 def increase_speed():
+    '''
+    Takes no args and returns no values
+    If the game is in screensaver mode, then this will increase the speed of autoclicks by 1 per minute
+    Only take action if speed is not already max
+    '''
     if(app.mode=="screensaver"):
         if speedLabel.value<100:
             speedLabel.value = speedLabel.value + 1
             app.autoClickSpeed = (60*app.stepsPerSecond)/speedLabel.value
 
 def decrease_speed():
+    '''
+    Takes no args and returns no values
+    If the game is in screensaver mode, then this will decrease the speed of autoclicks by 1 per minute
+    Only take action is speed is not already minimum
+    '''
     if(app.mode=="screensaver"):
         if speedLabel.value>1:
             speedLabel.value = speedLabel.value - 1
             app.autoClickSpeed = (60*app.stepsPerSecond)/speedLabel.value
             
 def check_speed(x,y):
+    '''
+    Takes 2 positional arguments, x and y
+    Returns no values
+    Checks if any speed related button contains those coordinates
+    Calls speed alteration functions as needed
+    '''
     if(speedDecreaseButton.contains(x, y)):
         decrease_speed()
     if(speedIncreaseButton.contains(x, y)):
@@ -230,14 +264,28 @@ def check_speed(x,y):
 ## Main Screen Settings Changes ##
 
 def deselect_all_colors():
+    '''
+    Takes no args and returns no values
+    Removes selection for all colors
+    '''
     for button in colorButtons:
         button.border = button.fill
 
 def select_all_colors():
+    '''
+    Takes no args and returns no values
+    Adds Selection for all colors
+    '''
     for button in colorButtons:
         button.border = "darkGreen"
         
 def color_activation_check(locX, locY):
+    '''
+    Takes 2 positional args, locX, locY
+    Returns no values 
+    Checks if any of the color buttons contain the coordinates
+    If so, toggles selection of that color
+    '''
     for button in colorButtons: 
         button.borderWidth = (1/200)*app.width
         if(button.contains(locX, locY)): 
@@ -247,6 +295,11 @@ def color_activation_check(locX, locY):
                 button.border = "darkGreen"        
         
 def toggle_screensaver_mode():
+    '''
+    Takes no args and returns no values
+    When called, if screensaver mode is active, it will no longer be active
+    Else, screensaver mode will become active
+    '''
     if (app.mode == "manual"):
         app.mode = "screensaver"
         screenSaverButton.border = "white"
@@ -271,6 +324,11 @@ def toggle_screensaver_mode():
                 item.border = 'gray'  
         
 def toggle_starry_night_mode():
+    '''
+    Takes no args and returns no values
+    When called, if starry night mode is active, it will no longer be active
+    Else, starry night mode will become active
+    '''
     if(app.starryNight == True):
         if(app.twinkleMode == True):
             toggle_twinkle()
@@ -287,6 +345,11 @@ def toggle_starry_night_mode():
         starryNightLabel.value = "Starry Night Mode Active"
         
 def toggle_mute():
+    '''
+    Takes no args and returns no values
+    When called, if sound is on, it will mute audio
+    Else, sound will turn on
+    '''
     if(app.muted == True):
         app.muted = False
         soundLabel.value = "Sound On"
@@ -300,6 +363,12 @@ def toggle_mute():
         
         
 def toggle_twinkle():
+    '''
+    Takes no args and retursn no values
+    When called, if twinkle mode is active, it will no longer be active
+    Else, twinkle mode will become active
+    Only takes action if starry night mode is active
+    '''
     if(app.starryNight == True):
         if(app.twinkleMode == True):
             app.twinkleMode = False
@@ -315,6 +384,11 @@ def toggle_twinkle():
             twinkleLabel.value = "Twinkle Mode Active"       
         
 def press_button(mouseX, mouseY): 
+    '''
+    Takes 2 positional args, mouseX, and mouseY
+    Checks if any button contains the coordinates while in a clickable state and if so, 
+    Clicks that button
+    '''
     filteredFireworkColorList.clear() 
     if(app.play == True):
         if(screenSaverButton.contains(mouseX, mouseY)):
@@ -360,10 +434,18 @@ def press_button(mouseX, mouseY):
 
 
 def despawn_help_menu():
+    '''
+    Takes no args and returns no values
+    Deactiveates help menu and makes the game playable
+    '''
     helpMenu.visible = False
     app.play = True
 
 def spawn_help_menu():
+    '''
+    Takes no args and returns no values
+    Activates help menu and makes the game unplayable
+    '''
     helpMenu.visible = True
     app.play = False  
 
@@ -372,20 +454,37 @@ def spawn_help_menu():
 ## Motion of Rockets, Fireworks, and Leftover Stars ##
 
 def move_flare():
+    '''
+    Takes no args ans returns no values
+    Moves all flares upwards towards their intended target
+    '''
     for flare in flares:
         flare.centerY -= flareMove
 
 def cause_twinkle():
+    '''
+    Takes no args and returns no values
+    Will twinkle leftover stars at random if there are any
+    Only takes action if twinkle mode is active
+    '''
     if(app.twinkleMode == True):
         for star in stars:
             if randrange(10) <=4:
                 star.radius = 5
 
 def un_twinkle():
+    '''
+    Takes no args and returns no values
+    Sets all leftover stars to their original size
+    '''
     for star in stars:
         star.radius = 3
         
 def expand_fireworks():
+    '''
+    Takes no args and returns no values
+    Creates the explosion and dissipation effects of all exploding fireworks
+    '''
     for shine in explodingFirework:
         if(shine.opacity >0): 
             shine.radius +=(expansion) 
@@ -399,6 +498,17 @@ def expand_fireworks():
 ## Collision and Creation of Fireworks ##
 
 def create_firework_shape(locX, locY, fireworkColor, vis, points, num, givenAngle, poly): 
+    '''
+    Takes 8 args:
+    2 positional args locX, locY
+    fireworkColor: the color of the firework
+    vis: The opacity of the firework to be created
+    points: How many points the shape should have
+    num: id for the firework
+    givenAngle: what angle of rotation the firework should have
+    poly: primitive boolean to decide if firework should be a star or standard polygon
+    Returns the created shape
+    '''
     if (vis == 100): 
         radius = 1
         starPoints = points
@@ -420,11 +530,28 @@ def create_firework_shape(locX, locY, fireworkColor, vis, points, num, givenAngl
     return new
 
 def create_flare(locX, flareColor, num): 
+    '''
+    Takes 3 args:
+    positional: locX for horizontal location
+    flareColor: color of the shape to be created
+    num: id for the shape
+    Creates shape with these parameters below the screen
+    Returns created shape
+    '''
     new = Circle (locX, app.height + 50, 4, fill = flareColor) 
     new.num = num
     return new
 
 def create_firework_circle(x,y,borderColor, visibility, num, givenAngle):
+    '''
+    Takes 6 args:
+    2 positional args: x, y
+    borderColor = Color of the firework, color goes on the border
+    visibility: opacity of the shape to be created
+    num: id for the firework
+    givenAngle: what angle of rotation the firework should have
+    returns the shape
+    '''
     if(visibility == 100):
         radius = 1
     else:
@@ -434,6 +561,17 @@ def create_firework_circle(x,y,borderColor, visibility, num, givenAngle):
     return new        
     
 def create_firework(x, y, borderColor, visibility, points, num, angle, poly):
+    '''
+    Takes 8 args
+    2 positional: x,y
+    borderColor: color of the firework, color goes on border
+    visibility: opacity of the created shape
+    points: number of points for the shape (≥3 means it can be a polygon or star, otherwise circle)
+    num: id for the firework
+    angle: rotation angle for the firework
+    poly: primitive boolean to determine if the shape will be a star or regular polygon
+    returns the created shape
+    '''
     if points>=3:
         if(poly != None):
             star_or_poly = poly
@@ -448,6 +586,11 @@ def create_firework(x, y, borderColor, visibility, points, num, angle, poly):
         return new
 
 def explosion_check(): 
+    '''
+    Takes no args and returns no values
+    Checks if it is time to explode any fireworks
+    Uses helpers to activate the explosion
+    '''
     for flare in flares: 
         for explosion in placedFireworks: 
             if((flare.hitsShape(explosion) or (flare.centerY <= explosion.centerY)) and flare.num == explosion.num): 
@@ -468,12 +611,21 @@ def explosion_check():
 
 
 def update_stats():
+    '''
+    Takes no arguments and returns no values
+    Updates values relating to stored stats outside of the program
+    '''
     gameInfo.seek(0)
     for i in range(len(fullInfoList)):
         gameInfo.write((str)(fullInfoList[i])+"\n")
 
 
 def onKeyPress(key):
+    '''
+    Built in CMU function
+    Takes key press as argument
+    In this game, used to return to main menu, open help menu, and delete stars
+    '''
     if(key == "escape"):
         if(app.play == True):
             app.up = 1
@@ -491,6 +643,11 @@ def onKeyPress(key):
         spawn_help_menu()
             
 def onMousePress(x, y): 
+    '''
+    Built in CMU function:
+    Takes the coordinates of a mouse press event as arguement
+    In this game, used to select settings and colors as well as to spawn fireworks
+    '''
     if colorButtons.active == False:
         if(app.play == True):
             color = filteredFireworkColorList[randrange(len(filteredFireworkColorList))] 
@@ -512,6 +669,11 @@ def onMousePress(x, y):
         press_button(x,y)  
 
 def onStep(): 
+    '''
+    Built in CMU Function
+    Calls body code app.stepsPerSecond many times every second
+    Used to show motion and effects
+    '''
     if(app.play == True):
         if(app.mode == "screensaver"):
             app.up +=1
@@ -531,6 +693,5 @@ def onStep():
 
 fullInfoList[10]+=1
 update_stats()
-
 
 app.run()
