@@ -5,11 +5,6 @@ import subprocess
 import random
 import os
 
-
-
-
-### STATS integration coming next week
-
 default = [0,0,0]
 keys = ["HighScore", "GamesPlayed", "TimesLaunched"] 
 
@@ -94,6 +89,10 @@ backToLauncherLabel = Label("Return to Launcher", backToLauncher.centerX, backTo
 
 
 def toggle_on():
+    '''
+    Takes no arguments and returns no values
+    Activate highlighting of button if "clicked" by computer
+    '''
     if(app.timer%app.waiting == 0 and app.counter< len(order_game)):
         for button in buttons:
             if(button.fill == order_game[app.counter]):
@@ -103,6 +102,11 @@ def toggle_on():
         app.counter+=1
 
 def toggle_off():
+    '''
+    Takes no args and returns no values
+    Disables highlighting at appropriate time
+    If computer has clicked all buttons in order, prepare player's turn
+    '''
     if(app.turnOffTimer <= 0):
         for button in buttons:
             button.border = 'black'
@@ -113,14 +117,23 @@ def toggle_off():
             app.mode = 'delay'
 
 def end_round_win():
+    '''
+    Takes no args and returns no values
+    Should only be called if player wins the round
+    Advance level, reset timers and add new color to order
+    '''
     app.level+=1
     level.value = "Level: %d" %app.level
     yourGuessTime.value = ''
     order_player.clear()
     order_game.append(colors[randrange(4)])
-    
 
 def offer_replay():
+    '''
+    Takes no args and returns no values
+    Should only be called if player has lost the round
+    Display instructions and add shapes to appropriate group
+    '''
     if(app.level-1 > app.hiScore):
         app.hiScore = app.level-1
     fullInfoList[0] = app.hiScore
@@ -133,6 +146,11 @@ def offer_replay():
     
 
 def reset_game():
+    '''
+    Takes no args and returns no values
+    Should only be called if the player has chosen to begin new round
+    Reset all values and clear lists.
+    '''
     order_game.clear()
     order_game.append(colors[randrange(4)])
     order_player.clear()
@@ -147,11 +165,23 @@ def reset_game():
     app.failed = False
 
 def end_round_fail():
+    '''
+    Takes no args and returns no values
+    Should only be called if the player has clicked the wrong button
+    Offer a chance to replay and update stats
+    '''
     app.failed = True
     offer_replay()
     update_stats()
 
 def check_accuracy():
+    '''
+    Takes no args and returns no values
+    Checks the order of colors created by the game against the order created by player clicks. 
+    If there is a discrepency, fail the round
+    If there are no discrpencies and the orders have the same length, win the round and advance
+    Otherwise do nothing other than update stats
+    '''
     for i in range(len(order_player)):
         if(order_player[i] != order_game[i]):
             end_round_fail()
@@ -163,6 +193,10 @@ def check_accuracy():
     update_stats()
 
 def onStep():
+    '''
+    Built in CMU function which calls body code app.stepsPerSecond many times every second
+    Used to create the motion and highlighting/unhighlighting of the buttons
+    '''
     if(app.failed == False):
         if(app.playerSelectionTimer<=0):
             end_round_fail()
@@ -189,12 +223,13 @@ def onStep():
                     app.mode = 'computer'
                     timer.value = "Computer's Turn Now"
                     yourGuessTime.value = ''
-
-                
-        
-        
         
 def onMousePress(x,y):
+    '''
+    Built in CMU function which takes as argument the coordinates of a mouse press
+    Checks which button contains the mouse press
+    Does the approprate action    
+    '''
     if(closeGameButton.contains(x,y)):
         sys.exit(0)
     if(backToLauncher.contains(x,y)):
@@ -212,11 +247,20 @@ def onMousePress(x,y):
 
         
 def onMouseRelease(x,y):
+    '''
+    Built in CMU function which takes as argument the coordinates of a mouse being let go
+    Coordinates for this function are pointless in this game but need to be included as this is a built in function
+    Upon call, all buttons are in an unclicked state
+    '''
     if(app.mode == 'player' or app.mode == 'delay'):
         for button in buttons:
             button.border = 'black'
 
 def onKeyPress(key):
+    '''
+    Built in CMU function which takes a key press as argument
+    Used in this game to reset after a round is over
+    '''
     if(key == 'enter' and app.failed == True):
         fullInfoList[1]+=1
         update_stats()
