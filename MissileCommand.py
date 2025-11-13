@@ -476,7 +476,7 @@ def kaboom_all():
     for object in explosion:
         if(object.time <= 0):
             object.opacity-=10
-        if(object.radius<=(1/150)*app.width): 
+        if(object.radius<=(1/125)*app.width): 
             object.radius+=1
         if object.radius >=(1/200)*app.width:
             object.time -= 1
@@ -522,6 +522,7 @@ def move_shots():
     Forces an explosion if the target is hit ot bypassed
     '''
     for shot in defense:
+        spawn_trail(shot.centerX, shot.centerY, shot.fill)
         shot.centerX, shot.centerY = shot.next
         if(shot.loc == 'mid'):
             shot.next = getPointInDir(shot.centerX, shot.centerY, shot.rotateAngle, app.shotSpeedMid)
@@ -1233,23 +1234,24 @@ def onMousePress(x,y):
         if(app.bat.broken == False):
             if(app.bat.reloadTimer == 0 and app.bat.ammoCount>=1):
                 if(app.bat.top<= app.height):
-                    app.bat.ammoCount -= 1
-                    app.bat.reloadTimer = app.generalReload
-                    fullInfoList[2]+=1
-                    make_target(realX,realY)
-                    defender = Circle(app.bat.centerX, app.bat.top+5, 3, fill='white')
-                    defender.rotateAngle = angleTo(defender.centerX, defender.centerY, x, y)
-                    defender.target = (x,y)
-                    defender.num = app.munitionCounter
-                    if(app.bat == batteries[1]):
-                        defender.next = getPointInDir(defender.centerX, defender.centerY, defender.rotateAngle, app.shotSpeedMid)
-                        defender.loc = "mid"
-                    else:
-                        defender.next = getPointInDir(defender.centerX, defender.centerY, defender.rotateAngle, app.shotSpeedLR)
-                        defender.loc = "edge"
-                    defense.add(defender)
-                    app.bat = select_next_bat(app.bat)
-                    bat_color_update()
+                    if(realY<=app.bat.top):
+                        app.bat.ammoCount -= 1
+                        app.bat.reloadTimer = app.generalReload
+                        fullInfoList[2]+=1
+                        make_target(realX,realY)
+                        defender = Circle(app.bat.centerX, app.bat.top+5, 3, fill='white')
+                        defender.rotateAngle = angleTo(defender.centerX, defender.centerY, x, y)
+                        defender.target = (x,y)
+                        defender.num = app.munitionCounter
+                        if(app.bat == batteries[1]):
+                            defender.next = getPointInDir(defender.centerX, defender.centerY, defender.rotateAngle, app.shotSpeedMid)
+                            defender.loc = "mid"
+                        else:
+                            defender.next = getPointInDir(defender.centerX, defender.centerY, defender.rotateAngle, app.shotSpeedLR)
+                            defender.loc = "edge"
+                        defense.add(defender)
+                        app.bat = select_next_bat(app.bat)
+                        bat_color_update()
                 else:
                     display_mac_window_warning()
     if(pauseScreen.visible == True):
