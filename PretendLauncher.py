@@ -9,6 +9,8 @@ import pyautogui
 
 print("The Launcher has opened")
 
+
+
 size = pyautogui.size()
 width = size[0]
 height = size[1]
@@ -284,6 +286,8 @@ sliderLine = Line(0,app.height-10, app.width, app.height-10, fill='grey', lineWi
 slider = Rect(0, statsButton.bottom, (4/(app.games+len(unknownGames)))*app.width, 20) 
 escapeButton = Rect(app.width, app.bottom-40, app.width/10, 20, fill=None, border = "black", align = 'top-right')
 excapeLabel = Label("ExitLauncher", escapeButton.centerX, escapeButton.centerY)
+nextPage = Rect(app.width, app.bottom-60, app.width/10, 20, fill=None, border = "black", align = 'top-right') ### Only for testing
+nextPageLabel = Label("Next Page", nextPage.centerX, nextPage.centerY) ### Only for testing
 
 def post_advanced_stats():
     '''
@@ -314,6 +318,11 @@ def onMousePress(x,y):
     CMU built in function to accept mouse press coordinates
     For this script, a press either toggles stats or launches a game, or simply does nothing if no buttons were pressed
     '''
+    if(nextPage.contains(x,y)):
+        onMouseDrag(slider.left+1, slider.centerY)
+        for i in range(50):
+            onMouseDrag(slider.left+2, slider.centerY)
+            onMouseDrag(slider.left+3, slider.centerY)
     if (statsButton.contains(x,y)):
         toggle_stats()
     if (escapeButton.contains(x,y)):
