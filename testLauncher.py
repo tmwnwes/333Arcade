@@ -74,7 +74,7 @@ if(system=="Darwin"):
 def windows_open_page_1(num):
     subprocess.Popen([call, "PretendLauncher.py"])
     time.sleep(5)
-    pyautogui.doubleClick((num*2 + 1)*(width/8), width/8)
+    pyautogui.click((num*2 + 1)*(width/8), width/8)
     time.sleep(3)
     active = []
     for i in range(len(knownGames)):
@@ -90,7 +90,7 @@ def windows_open_page_2(num):
     time.sleep(5)
     pyautogui.click(width-10, height-50)
     time.sleep(2)
-    pyautogui.doubleClick((num*2 + 1)*(width/8), width/8)
+    pyautogui.click((num*2 + 1)*(width/8), width/8)
     time.sleep(3)
     active = []
     for i in range(len(knownGames)):
@@ -108,7 +108,7 @@ def windows_open_page_3(num):
     time.sleep(2)
     pyautogui.click(width-10, height-50)
     time.sleep(2)
-    pyautogui.doubleClick((num*2 + 1)*(width/8), width/8)
+    pyautogui.click((num*2 + 1)*(width/8), width/8)
     time.sleep(3)
     active = []
     for i in range(len(knownGames)):

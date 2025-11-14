@@ -414,6 +414,5 @@ post_simple_stats()
 images.toFront()
 gameLabels.toFront()
 
-print(games + unknownGames)
 app.run()
 
