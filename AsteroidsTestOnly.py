@@ -12,7 +12,7 @@ height = size[1]
 
 
 app.width = 7*(width//10)
-app.height = height
+app.height = 19*(height//20)
 
 default = [0,0,0,0,0]
 keys = ["Shots", "Hits", "HighScore", "GamesPlayed", "TimesLaunched"]
@@ -26,7 +26,7 @@ gameName = currentFile[:-11]
 
 print(currentFile + " has opened")
 
-subprocess.Popen(["python3.13", gameName+"UserTests.py"])
+subprocess.Popen([sys.executable, gameName+"UserTests.py"])
 
 def file_checking(path, default):
     '''
