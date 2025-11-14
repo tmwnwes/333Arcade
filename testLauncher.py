@@ -54,6 +54,7 @@ def mac_open_page_3(num):
     pyautogui.click(width-10, height-50)
     time.sleep(2)
     pyautogui.click(width-10, height-50)
+    time.sleep(2)
     pyautogui.click((num*2 + 1)*(width/8), width/8) 
     time.sleep(3)
     for key in closeGameKeys:
@@ -68,7 +69,7 @@ if(system=="Darwin"):
     for i in range(4):
         mac_open_page_2(i)
     for i in range(1,2):
-        mac_open_page_2(i)
+        mac_open_page_3(i)
 
 
 def windows_open_page_1(num):
