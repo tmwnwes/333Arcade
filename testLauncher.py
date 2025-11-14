@@ -73,7 +73,7 @@ if(system=="Darwin"):
 
 
 def windows_open_page_1(num):
-    subprocess.Popen([call, "PretendLauncher.py"])
+    subprocess.Popen([call, "PretendLauncherWindowsPage1.py"])
     time.sleep(5)
     pyautogui.click((num*2 + 1)*(width/8), width/8)
     time.sleep(3)
@@ -87,10 +87,8 @@ def windows_open_page_1(num):
     time.sleep(3)
 
 def windows_open_page_2(num):
-    subprocess.Popen([call, "PretendLauncher.py"])
+    subprocess.Popen([call, "PretendLauncherWindowsPage2.py"])
     time.sleep(5)
-    pyautogui.click(width-10, height-50)
-    time.sleep(2)
     pyautogui.click((num*2 + 1)*(width/8), width/8)
     time.sleep(3)
     active = []
@@ -103,12 +101,8 @@ def windows_open_page_2(num):
     time.sleep(3)
 
 def windows_open_page_3(num):
-    subprocess.Popen([call, "PretendLauncher.py"])
+    subprocess.Popen([call, "PretendLauncherWindowsPage3.py"])
     time.sleep(5)
-    pyautogui.click(width-10, height-50)
-    time.sleep(2)
-    pyautogui.click(width-10, height-50)
-    time.sleep(2)
     pyautogui.click((num*2 + 1)*(width/8), width/8)
     time.sleep(3)
     active = []
