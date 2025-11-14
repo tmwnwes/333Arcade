@@ -1,11 +1,10 @@
 ## Creating the screen and wide-scoped variables/groups/labels/objects ##
-
 import sys
 from cmu_graphics import *
-import tkinter as tk
 import subprocess
 import os
 import random
+import pyautogui
 
 
 default = [0,0,0,0,0,0,0,0,0]
@@ -47,14 +46,9 @@ for thing in gameInfo:
         fullInfoList.append((int)(thing))
 hi = fullInfoList[0]
 
-root = tk.Tk()
-width = root.winfo_screenwidth()
-height = root.winfo_screenheight()
-root.wm_attributes('-fullscreen', True) ## This line is a workaround for macOs devices with no ill effects for Windows users. It forces a new window to open in fullscreen and focus on it, before destroying it on the next line. The main canvas is then created and players will see it. Players must still maximise this window manually however
-root.destroy()
-
-app.width = width
-app.height = height
+size = pyautogui.size()
+app.width = size[0]
+app.height = size[1]
 
 app.failed = False
 app.pause = False

@@ -1,15 +1,13 @@
 from cmu_graphics import *
-import tkinter as tk
 import random
 import sys
 import subprocess
 import os
+import pyautogui
 
-root = tk.Tk()
-width = root.winfo_screenwidth()
-height = root.winfo_screenheight()
-root.wm_attributes('-fullscreen', True) ## This line is a workaround for macOs devices with no ill effects for Windows users. It forces a new window to open in fullscreen and focus on it, before destroying it on the next line. The main canvas is then created and players will see it. Players must still maximise this window manually however
-root.destroy()
+size = pyautogui.size()
+width = size[0]
+height = size[1]
 
 default = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 keys = ["TimesLaunched", "GamesPlayed", "GamesEasy", "GamesMed", "GamesHard", "HighScoreEasy", "HighScoreMed", "HighScoreHard", "OverallHighScore", "TotalPoints", "AvgEasy", "AvgMed", "AvgHard", "TotalEasy", "TotalMed", "TotalHard"]
