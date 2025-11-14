@@ -12,6 +12,7 @@ height = size[1]
 
 app.width = width
 app.height = height
+app.autofs = 0
 
 default = [0,0,0,0,0]
 keys = ["Shots", "Hits", "HighScore", "GamesPlayed", "TimesLaunched"]
@@ -626,6 +627,14 @@ def onStep():
     All code in this function is run app.stepsPerSecond many times every second
     In this script, it causes all motion
     '''
+    if(app.autofs<=1):
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
     if(app.play==True):
         move_trail()
         app.timer+=1

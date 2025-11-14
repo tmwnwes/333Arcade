@@ -8,6 +8,7 @@ import pyautogui
 size = pyautogui.size()
 width = size[0]
 height = size[1]
+app.autofs = 0
 
 default = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 keys = ["TimesLaunched", "GamesPlayed", "GamesEasy", "GamesMed", "GamesHard", "HighScoreEasy", "HighScoreMed", "HighScoreHard", "OverallHighScore", "TotalPoints", "AvgEasy", "AvgMed", "AvgHard", "TotalEasy", "TotalMed", "TotalHard"]
@@ -398,6 +399,14 @@ def onStep():
     '''
     Built in CMU function which calls all body code app.stepsPerSecond many times per second
     '''
+    if(app.autofs<=1):
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
     if(app.play==True and app.pause == False):
         move_cities()
         scoring_counter()

@@ -9,6 +9,8 @@ size = pyautogui.size()
 width = size[0]
 height = size[1]
 
+app.autofs = 0
+
 default = [0,0,0,0,0,0,0,0]
 keys = ["HighScore", "GamesPlayed", "Shots", "Hits", "EnemiesDestroyed", "CitiesLost", "TimesLaunched", "HighestLevel"] 
 
@@ -1186,6 +1188,14 @@ def onStep():
     All code in this body is executed app.stepsPerSecond many times every second
     Used to show motion in this project
     '''
+    if(app.autofs<=1):
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
     if(app.play == True):
         if(app.pause == False):
             if(app.warningTimer>=0):

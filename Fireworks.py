@@ -10,6 +10,7 @@ import pyautogui
 size = pyautogui.size()
 width = size[0]
 height = size[1]
+app.autofs = 0
 
 default = [0,0,0,0,0,0,0,0,0,0,0]
 keys = ["white", "pink", "red", "yellow", "orange", "green", "cyan", "blue", "magenta", "totalPopped", "TimesLaunched"]
@@ -672,6 +673,14 @@ def onStep():
     Calls body code app.stepsPerSecond many times every second
     Used to show motion and effects
     '''
+    if(app.autofs<=1):
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
     if(app.play == True):
         if(app.mode == "screensaver"):
             app.up +=1

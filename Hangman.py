@@ -8,6 +8,7 @@ import pyautogui
 size = pyautogui.size()
 width = size[0]
 height = size[1]
+app.autofs = 0
 
 app.width = width
 app.height = height
@@ -458,5 +459,19 @@ closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameBu
 backToLauncher = Rect(pole.right, base.top, closeGameButton.width, closeGameButton.height, fill=None, border = 'gray', align = 'bottom-left')
 backToLauncher.game = "PretendLauncher.py"
 backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15)
+
+def onStep():
+    '''
+    Built in CMU function with executes body code app.stepsPerSecond many times per second
+    Used in this function exclusively to force fullscreen on mac devices
+    '''
+    if(app.autofs<=1):
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
 
 app.run()

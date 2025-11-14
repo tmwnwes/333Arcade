@@ -15,6 +15,8 @@ os.chdir(directory_path)
 currentFile =  os.path.basename(__file__)
 gameName = currentFile[:-3]
 
+app.autofs = 0
+
 def file_checking(path, default):
     '''
     Takes 2 args, path for which file to look for, 
@@ -196,6 +198,14 @@ def onStep():
     Built in CMU function which calls body code app.stepsPerSecond many times every second
     Used to create the motion and highlighting/unhighlighting of the buttons
     '''
+    if(app.autofs<=1):
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
     if(app.failed == False):
         if(app.playerSelectionTimer<=0):
             end_round_fail()

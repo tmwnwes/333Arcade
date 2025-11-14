@@ -10,7 +10,7 @@ import pyautogui
 default = [0,0,0,0,0,0,0,0,0]
 keys = ["HighScore", "GamesPlayed", "YellowSubAch", "MinesBlownUp", "TorpsFired", "TorpsHit" ,"PowerUpsCollected", "TimesLaunched", "HideStartScreen"] 
 
-
+app.autofs = 0
 file_path = os.path.abspath(__file__)
 directory_path = os.path.dirname(file_path)
 os.chdir(directory_path)
@@ -667,6 +667,14 @@ def onStep():
     Takes no arguments and returns no values
     Anything called in this function is called app.stepsPerSecond many times per second
     '''
+    if(app.autofs<=1):
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
     if(app.achShowing == True):
         app.removeAchTimer-=1
         if(app.removeAchTimer <=0):

@@ -3,13 +3,13 @@ import sys
 from cmu_graphics import *
 import tkinter as tk
 import subprocess
+import pyautogui
 
+size = pyautogui.size()
+width = size[0]
+height = size[1]
 
-root = tk.Tk()
-width = root.winfo_screenwidth()
-height = root.winfo_screenheight()
-root.wm_attributes('-fullscreen', True) ## This line is a workaround for macOs devices with no ill effects for Windows users. It forces a new window to open in fullscreen and focus on it, before destroying it on the next line. The main canvas is then created and players will see it. Players must still maximise this window manually however
-root.destroy()
+app.autofs = 0
 
 file_path = os.path.abspath(__file__)
 directory_path = os.path.dirname(file_path)
@@ -377,8 +377,19 @@ def toggle_stats():
         post_advanced_stats()
         statsLabel.value = "Show Simple Stats"
 
+def onStep(): ### Forces Full screen on mac
+    if(app.autofs<=1):
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
+    
 post_simple_stats()
 images.toFront()
 gameLabels.toFront()
+
 app.run()
 

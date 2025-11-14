@@ -9,6 +9,8 @@ import pyautogui
 size = pyautogui.size()
 width = size[0]
 height = size[1]
+app.autofs = 0
+
 
 app.width = width
 app.height = height
@@ -214,6 +216,14 @@ def onStep():
     Built in CMU function which calls all of the body code app.stepsPerSecond many times per second
     Used in this script to descrement timeers and show scores
     '''
+    if(app.autofs<=1): ## Forces mac fullscreen
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
     if(app.failed == False):
         check_time()
         app.time -= 1
