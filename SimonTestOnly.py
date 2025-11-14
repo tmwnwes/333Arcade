@@ -2,6 +2,7 @@ from cmu_graphics import *
 import sys
 import subprocess
 import random
+import time
 import os
 import pyautogui
 
@@ -21,7 +22,7 @@ gameName = currentFile[:-11]
 
 print(currentFile + " has opened")
 
-subprocess.Popen(["python3.13", gameName+"UserTests.py"])
+subprocess.Popen([sys.executable, gameName+"UserTests.py"])
 
 def file_checking(path, default):
     '''
@@ -53,7 +54,7 @@ for thing in gameInfo:
 hi = fullInfoList[0]
 
 app.width = 7*(width//10)
-app.height = height
+app.height = 19*(height//20)
 app.level = 1
 app.stepsPerSecond = 30
 app.hiScore = fullInfoList[0]
@@ -282,6 +283,8 @@ order_game.append(colors[randrange(4)])
 fullInfoList[1]+=1
 fullInfoList[2]+=1
 update_stats()
+
+time.sleep(1)
 
 app.run()
 
