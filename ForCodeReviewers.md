@@ -1,25 +1,28 @@
 For members of the code review team, this document and the README.md documents are necessary to read
 
+To run some of the automated tests, you must have pyautogui installed. You can use pip install pyautogui or pip3 install pyautogui for windows and mac respectively. 
+
 All instructions for setup are included in the README.
 
-Extra steps:
+This file will give you instructions for running tests
 
-Run the launcher and all games in full screen mode, they will not function properly otherwise
+There are 3 types of tests for this project:
 
-Since you are specifically doing code review, please follow all of the steps in README and then launch PretendLauncher.py
+1. Automatic GUI tests: You run a file (titles specified later) and tests will commence. Details on what should happen will be specified for each file.
 
-This file serves as our current (and very crude) launcher for this project. Interact with the program as you would any game launcher. 
+2. Manual GUI tests: You will run a file(titles specfied later) which will give you instructions to complete in the game window and you will select yes or no based on if the tests passed or not. The results will be saved to a txt file which you will submit as part of milestone 4 (There will be several)
 
-There is a slider at the bottom to navigate to extra games (assuming there are more than 4 .py game files when you use this program)
+3. Function tests where functions from different games are pulled out into a new file (function_tests.py) which allow you to test them directly. Some tests will be provided. For milestone 4, simply state whether they behaved as expected
 
-3 games at the time of code review are ready to use. These are part of the project, so please click on their button in the launcher and test them out as well. I will also include extra .py files in the release that will just run a few lines of code to show that they work. Test all of these if able. 
 
-You may run into security issues on macOS (and the instructions to solve this problem are included in the README, so please read it all the way through)
+## Automatic GUI Tests
 
-Game specific help:
+### Run testLauncher.py
 
-SubGame: Move with WASD, shoot with left and right arrows, Pause and Unpause with p. Play another round with "enter" after failing
+#### What should happen:
 
-Minesweeper: Place (or delete if present) flags with right click, on mac this is a 2 finger press on the trackpad, on all other systems, it is a standard right click. back to main menu with escape after winning or failing
+##### The Launcher will open, followed by a short delay, then an opening of the first game, then the game will close. This exact process will repeat for all game files in the known games category (So testing files, and fruit ninja are excluded) There will be a print of "The Launcher has opened each time the launcher opens, followed by a print of "Launching gameName.py" and a print of "gameName.py has opened" where gameName.py is replaced by whatever game is being opened. Both instances of gameName.py should be the same. It should only change upon the next launch of the launcher and subsequent game.
 
-Asteroids: Shoot with spacebar, move with WASD, rotate with left and right arrows: Play another round with "enter" after failing. Note that enemy ships can destroy asteroids for you but you will not receive points for that (+0 will be displayed.) This is not a bug. 
+##### Consider this a pass if all games launch and the pattern of Launcher -> game -> game prints holds for each launch. "DONE" will be printed upon cmpletion of this test
+
+
