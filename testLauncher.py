@@ -68,7 +68,7 @@ if(system=="Darwin"):
         mac_open_page_1(i)
     for i in range(4):
         mac_open_page_2(i)
-    for i in range(1,2):
+    for i in range(1):
         mac_open_page_3(i)
 
 
@@ -125,7 +125,7 @@ if(system == "Windows"):
         windows_open_page_1(i)
     for i in range(4):
         windows_open_page_2(i)
-    for i in range(1,2):
+    for i in range(1):
         windows_open_page_3(i)
 
 print("DONE")
