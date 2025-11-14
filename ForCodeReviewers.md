@@ -1,6 +1,6 @@
 For members of the code review team, this document and the README.md documents are necessary to read
 
-To run some of the automated tests, you must have pyautogui installed. You can use pip install pyautogui or pip3 install pyautogui for windows and mac respectively. 
+To run some of the automated tests, you must have pyautogui installed. You can use pip install pyautogui or pip3 install pyautogui or python -m pip install pyautogui or python3 -m pip3 install pyautogui if your paths are messed up from a weird installation.. 
 
 All instructions for setup are included in the README.
 
@@ -10,10 +10,10 @@ There are 2 types of tests for this project:
 
 1. Automatic GUI tests: You run a file testLauncher.py and tests will commence.
 
-2. Manual GUI tests: You will run a file for each game (explained below) which will give you instructions to complete in the game window and you will select yes or no based on if the tests passed or not. The results will be saved to a txt file which you will submit as part of milestone 4 (There will be several files all in a folder, so juust submit the whole TESTSRESULTS FOLDER)
+2. Manual GUI tests: You will run a file for each game (explained below) which will give you instructions to complete in the game window and you will select yes or no based on if the tests passed or not. The results will be saved to a txt file which you will submit as part of milestone 4 (There will be several files all in a folder, so just submit the whole TESTSRESULTS FOLDER)
 
 
-## Automatic GUI Tests
+## Automatic GUI Test
 
 ### Run testLauncher.py
 
@@ -23,10 +23,27 @@ There are 2 types of tests for this project:
 
 ##### Consider this a pass if all games launch and the pattern of Launcher -> game -> game prints holds for each launch. "DONE" will be printed upon cmpletion of this test
 
+##### Just state in the review portion of the milestone 4 that this set of tests passed if the above critera was met
+
 #### Note that mac users may be required to grant permissions for cmu graphics to run at all (via allowing all developers apps to run), as well as grant control permissions to vscode or terminal to allow pyautogui to actually control the mouse and keyboard. These options will pop up on mac with Apple's instructions and you should follow those instructions. 
+
+
 
 ## MANUAL GUI TESTS
 
 #### Each Game will have files called GameName.py, GameNameTestOnly.py, and GameNameUserTests.py It is imperative that you run the gameNameTestsOnly.py file. It will launch the UserTests file on its own and you will interact with both windows after they open. For example, There will be Asteroids.py, AsteroidsTestOnly.py and AsteroidsUserTests.py and you should run AsteroidsTestOnly.py to conduct these tests. Instructions are pre loaded into each UserTests file and as long as you follow the instructions, the tests are straightforward. The results will be compiled in a text file for each game in the TESTSRESULTS folder. Submit that folder for Milestone 4 after conducting all tests. 
 
+#### This means you should run these files for manual gui tests:
+
+AsteroidsTestOnly.py
+ColorGameTestOnly.py
+FireworksTestOnly.py
+FlappyBatTestOnly.py
+HangmanTestOnly.py
+MinesweeperTestOnly.py
+MissileCommandTestOnly.py
+SimonTestOnly.py
+SubGameTestOnly.py
+
+Then submit the entire TESTSRESULTS folder
 
