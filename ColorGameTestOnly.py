@@ -9,10 +9,8 @@ size = pyautogui.size()
 width = size[0]
 height = size[1]
 
-app.autofs = 0
 
-
-app.width = width
+app.width = 7*(width//10)
 app.height = height
 
 default = [0,0,0,0,0,0]
@@ -22,9 +20,11 @@ file_path = os.path.abspath(__file__)
 directory_path = os.path.dirname(file_path)
 os.chdir(directory_path)
 currentFile =  os.path.basename(__file__)
-gameName = currentFile[:-3]
+gameName = currentFile[:-11]
 
 print(currentFile + " has opened")
+
+subprocess.Popen(["python3.13", gameName+"UserTests.py"])
 
 def file_checking(path, default):
     '''
@@ -218,14 +218,6 @@ def onStep():
     Built in CMU function which calls all of the body code app.stepsPerSecond many times per second
     Used in this script to descrement timeers and show scores
     '''
-    if(app.autofs<=1):
-        app.autofs += 1
-    if(app.autofs == 1):
-        pyautogui.keyDown("command")
-        pyautogui.keyDown('ctrl')
-        pyautogui.press('f')
-        pyautogui.keyUp("command")
-        pyautogui.keyUp("ctrl")
     if(app.failed == False):
         check_time()
         app.time -= 1
