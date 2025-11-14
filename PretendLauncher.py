@@ -288,6 +288,8 @@ escapeButton = Rect(app.width, app.bottom-40, app.width/10, 20, fill=None, borde
 excapeLabel = Label("ExitLauncher", escapeButton.centerX, escapeButton.centerY)
 nextPage = Rect(app.width, app.bottom-60, app.width/10, 20, fill=None, border = "black", align = 'top-right') ### Only for testing
 nextPageLabel = Label("Next Page", nextPage.centerX, nextPage.centerY) ### Only for testing
+prevPage = Rect(0, app.bottom-60, app.width/10, 20, fill=None, border = "black") ### Only for testing
+nextPageLabel = Label("Prev Page", prevPage.centerX, prevPage.centerY) ### Only for testing
 
 def post_advanced_stats():
     '''
@@ -319,10 +321,17 @@ def onMousePress(x,y):
     For this script, a press either toggles stats or launches a game, or simply does nothing if no buttons were pressed
     '''
     if(nextPage.contains(x,y)):
-        onMouseDrag(slider.left+1, slider.centerY)
+        onMouseDrag(slider.left, slider.centerY+1)
         for i in range(50):
+            onMouseDrag(slider.left+1, slider.centerY)
             onMouseDrag(slider.left+2, slider.centerY)
-            onMouseDrag(slider.left+3, slider.centerY)
+            app.lastX = slider.left-1
+    if(prevPage.contains(x,y)):
+        onMouseDrag(slider.right, slider.centerY+1)
+        for i in range(50):
+            onMouseDrag(slider.right-1, slider.centerY)
+            onMouseDrag(slider.right-2, slider.centerY)
+            app.lastX = slider.right+1
     if (statsButton.contains(x,y)):
         toggle_stats()
     if (escapeButton.contains(x,y)):
