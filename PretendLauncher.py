@@ -7,7 +7,7 @@ import subprocess
 ## THIS BRANCH IS FOR MILESTONE 4 TESTING
 import pyautogui
 
-print("The Launcher has opened")
+("The Launcher has opened")
 
 
 
@@ -321,17 +321,23 @@ def onMousePress(x,y):
     For this script, a press either toggles stats or launches a game, or simply does nothing if no buttons were pressed
     '''
     if(nextPage.contains(x,y)):
-        onMouseDrag(slider.left, slider.centerY+1)
-        for i in range((int)(((((((app.games+len(unknownGames))-4)/((app.games+len(unknownGames))/4))*app.width)/app.dragSpeed)/4)-10)):
-            onMouseDrag(slider.left+1, slider.centerY)
-            onMouseDrag(slider.left+2, slider.centerY)
-            app.lastX = slider.left-1
+        if(slider.right<=app.width):
+            for button in buttons:
+                button.centerX-=app.width
+            shownStats.centerX-=app.width
+            gameLabels.centerX-=app.width
+            unknownStats.centerX-=app.width
+            images.centerX-=app.width
+            slider.centerX+=(4/(app.games+len(unknownGames)))*(app.width)
     if(prevPage.contains(x,y)):
-        onMouseDrag(slider.right, slider.centerY+1)
-        for i in range((int)(((((((app.games+len(unknownGames))-4)/((app.games+len(unknownGames))/4))*app.width)/app.dragSpeed)/4)-10)):
-            onMouseDrag(slider.right-1, slider.centerY)
-            onMouseDrag(slider.right-2, slider.centerY)
-            app.lastX = slider.right+1
+        if(slider.left>0):
+            for button in buttons:
+                button.centerX+=app.width
+            shownStats.centerX+=app.width
+            gameLabels.centerX+=app.width
+            unknownStats.centerX+=app.width
+            images.centerX+=app.width
+            slider.centerX-=(4/(app.games+len(unknownGames)))*(app.width)        
     if (statsButton.contains(x,y)):
         toggle_stats()
     if (escapeButton.contains(x,y)):
