@@ -28,6 +28,8 @@ os.chdir(directory_path)
 currentFile =  os.path.basename(__file__)
 gameName = currentFile[:-3]
 
+print(currentFile + "has opened")
+
 def file_checking(path, default):
     '''
     Takes 2 args, path for which file to look for, 
