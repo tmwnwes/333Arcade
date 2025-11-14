@@ -2,6 +2,8 @@
  Repository for COMP333 Fall Semester Project
 ________
 
+This is the Milestone 4 Branch. Please read the entire README.md file and entire ForCodeReiewers.md file
+
 # Python 3.14 is not currently supported. Please use Python 3.9 - 3.13*
 
 *You may download Python 3.13.9 at https://www.python.org/downloads/release/python-3139/ and then navigating to your specific platform and downloading the installer.
@@ -11,7 +13,7 @@ This project is built using the Carnegie Mellon University graphics library. In 
 
 # How to play
 
-Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplised by clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Then download the CMU graphics library mentioned above directly from the source. Take the "cmu_graphics" folder from that download (not the entire installer folder, just the cmu_graphics folder) and put it in the same directory as the files from this repository. Then follow the platform dependent instructions below
+Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplised by navigting to the named branch, and then clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Then download the CMU graphics library mentioned above directly from the source. Take the "cmu_graphics" folder from that download (not the entire installer folder, just the cmu_graphics folder) and put it in the same directory as the files from this repository. Then make sure you have pyautogui installed. This can be accomplished on Windows and Mac with pip or pip3 just by opening a terminal / command prompt and typing pip install pyautogui or pip3 pyautogui. If this function fails, instead type python3 -m pip install pyautogui or python3 -m pip3 install pyautogui. Then follow the platform dependent instructions below for manual testing: 
 
 ## MacOS Instructions
 If you are on MacOS, you have 3 options for running the launcher:
@@ -57,11 +59,35 @@ or
 2. Open the repository folder through VS code and click the play button at the top right while having the launcher file selected
 ____
 
+For Automatic tests, you will need to run the testing files which exist with names relating to each test being run. For example:
+
+ launcher_test_open_all_games_in_sequence.py will run the launcher, then a game, then close the game and open the launcher again and open the next game, repeatedly, for all games. 
+ 
+ You should consider this test a pass if every game opens and each print lines up in the order:
+ 
+ "The Launcher has opened"
+
+ "Launching [some game]"
+
+ "[Some game] has opened" 
+
+ for each game
+
+ There will then be tests for each game
+
 # Included in this Repository
 
 ## Files
 
 #### This folder will come populated with a slightly altered version of the words_alpha.txt file available at https://github.com/dwyl/english-words/blob/master/words_alpha.txt. The alterations are just the removal of words that are 4 letters or fewer, but you can feel free to look at the source or replace the file attached in this repository with that file instead. Upon running the launcher, Files will become populated with stats and key files for use by the game included with this project.
+
+## Audio
+
+#### This folder comes populated with mp3 files used in some of the games. Deleting this folder or files within the folder may cause game crashes as audio files are attempted to be played.
+
+## Images
+
+#### This folder contains thumbnail images for each of the created games as well as images for fruit ninja
 
 ## PretendLauncher.py
 
