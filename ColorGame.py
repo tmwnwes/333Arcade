@@ -1,16 +1,17 @@
 from cmu_graphics import *
 import random
-import tkinter as tk
 import sys
 import subprocess
 import os
+import pyautogui
 
+size = pyautogui.size()
+width = size[0]
+height = size[1]
 
-root = tk.Tk()
-width = root.winfo_screenwidth()
-height = root.winfo_screenheight()
-root.wm_attributes('-fullscreen', True) ## This line is a workaround for macOs devices with no ill effects for Windows users. It forces a new window to open in fullscreen and focus on it, before destroying it on the next line. The main canvas is then created and players will see it. Players must still maximise this window manually however
-root.destroy()
+app.autofs = 0
+
+app.autofs = 0
 
 app.width = width
 app.height = height
@@ -24,7 +25,7 @@ os.chdir(directory_path)
 currentFile =  os.path.basename(__file__)
 gameName = currentFile[:-3]
 
-print(currentFile + "has opened")
+print(currentFile + " has opened")
 
 def file_checking(path, default):
     '''
@@ -218,6 +219,14 @@ def onStep():
     Built in CMU function which calls all of the body code app.stepsPerSecond many times per second
     Used in this script to descrement timeers and show scores
     '''
+    if(app.autofs<=1):
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
     if(app.failed == False):
         check_time()
         app.time -= 1

@@ -1,15 +1,15 @@
 from cmu_graphics import *
-import tkinter as tk
 import random
 import sys
 import subprocess
 import os
+import pyautogui
 
-root = tk.Tk()
-width = root.winfo_screenwidth()
-height = root.winfo_screenheight()
-root.wm_attributes('-fullscreen', True) ## This line is a workaround for macOs devices with no ill effects for Windows users. It forces a new window to open in fullscreen and focus on it, before destroying it on the next line. The main canvas is then created and players will see it. Players must still maximise this window manually however
-root.destroy()
+size = pyautogui.size()
+width = size[0]
+height = size[1]
+
+app.autofs = 0
 
 default = [0,0,0,0,0,0,0,0,0,0,0]
 keys = ["WonEasy", "AttemptedEasy", "WonMedium", "AttemptedMedium", "WonHard", "AttemptedHard" ,"WonTotal", "AttemptedTotal", "Achievement1", "FlagsUsed", "TimesLaunched"]
@@ -21,7 +21,7 @@ os.chdir(directory_path)
 currentFile =  os.path.basename(__file__)
 gameName = currentFile[:-3]
 
-print(currentFile + "has opened")
+print(currentFile + " has opened")
 
 def file_checking(path, default):
     '''
@@ -591,6 +591,14 @@ def onStep():
     Built in CMU function, runs the code below app.stepsPerSecond times every second. 
     Used to explode bombs in failure and hide achievement over time
     '''
+    if(app.autofs<=1):
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
     if(app.failed == True):
         explode_bombs()
     if(app.achShowing == True):
