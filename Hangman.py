@@ -460,7 +460,7 @@ def onStep():
     Built in CMU function which calls body code app.stepsPerSecond many times per second
     Used to force full screen in this game
     '''                
-    if(app.autofs<=1):
+    if(app.autofs<=2):
         app.autofs += 1
     if(app.autofs == 1):
         pyautogui.keyDown("command")
@@ -468,7 +468,9 @@ def onStep():
         pyautogui.press('f')
         pyautogui.keyUp("command")
         pyautogui.keyUp("ctrl")
+    if(app.autofs==2):
         app.typeyTime= True
+
 
 fullInfoList[1]+=1
 fullInfoList[6]+=1
