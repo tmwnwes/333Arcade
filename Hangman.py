@@ -10,6 +10,8 @@ width = size[0]
 height = size[1]
 app.autofs = 0
 
+app.typeyTime = False
+
 app.width = width
 app.height = height
 
@@ -360,9 +362,10 @@ def onKeyPress(key):
     Built in CMU function which takes a pressed key as argument
     Used in this game to press the button matching the letter pressed
     '''
-    for letter in letterLabels:
-        if key.lower() == letter.value:
-            onMousePress(letter.centerX, letter.centerY)
+    if(app.typeyTime == True):
+        for letter in letterLabels:
+            if key.lower() == letter.value:
+                onMousePress(letter.centerX, letter.centerY)
 
 def win_round():
     '''
@@ -465,7 +468,7 @@ def onStep():
     Built in CMU function with executes body code app.stepsPerSecond many times per second
     Used in this function exclusively to force fullscreen on mac devices
     '''
-    if(app.autofs<=1):
+    if(app.autofs<=2):
         app.autofs += 1
     if(app.autofs == 1):
         pyautogui.keyDown("command")
@@ -473,5 +476,7 @@ def onStep():
         pyautogui.press('f')
         pyautogui.keyUp("command")
         pyautogui.keyUp("ctrl")
+    if(app.autofs ==2):
+        app.typeyTime = True
 
 app.run()
