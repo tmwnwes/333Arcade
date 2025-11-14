@@ -322,13 +322,13 @@ def onMousePress(x,y):
     '''
     if(nextPage.contains(x,y)):
         onMouseDrag(slider.left, slider.centerY+1)
-        for i in range(50):
+        for i in range((int)(((((((app.games+len(unknownGames))-4)/((app.games+len(unknownGames))/4))*app.width)/app.dragSpeed)/4))):
             onMouseDrag(slider.left+1, slider.centerY)
             onMouseDrag(slider.left+2, slider.centerY)
             app.lastX = slider.left-1
     if(prevPage.contains(x,y)):
         onMouseDrag(slider.right, slider.centerY+1)
-        for i in range(50):
+        for i in range((int)(((((((app.games+len(unknownGames))-4)/((app.games+len(unknownGames))/4))*app.width)/app.dragSpeed)/4))):
             onMouseDrag(slider.right-1, slider.centerY)
             onMouseDrag(slider.right-2, slider.centerY)
             app.lastX = slider.right+1
@@ -414,5 +414,6 @@ post_simple_stats()
 images.toFront()
 gameLabels.toFront()
 
+print(games + unknownGames)
 app.run()
 
