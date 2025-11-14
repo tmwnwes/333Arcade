@@ -23,7 +23,7 @@ gameName = currentFile[:-11]
 
 print(currentFile + " has opened")
 
-subprocess.Popen(["python3.13", gameName+"UserTests.py"])
+subprocess.Popen([sys.executable, gameName+"UserTests.py"])
 
 def file_checking(path, default):
     '''
@@ -55,7 +55,7 @@ for thing in gameInfo:
 
 
 app.width = 7*(width//10)
-app.height = height
+app.height = 19*(height//20)
 app.mode = "manual"
 app.up = 1
 app.play = True 
@@ -677,14 +677,6 @@ def onStep():
     Calls body code app.stepsPerSecond many times every second
     Used to show motion and effects
     '''
-    if(app.autofs<=1):
-        app.autofs += 1
-    if(app.autofs == 1):
-        pyautogui.keyDown("command")
-        pyautogui.keyDown('ctrl')
-        pyautogui.press('f')
-        pyautogui.keyUp("command")
-        pyautogui.keyUp("ctrl")
     if(app.play == True):
         if(app.mode == "screensaver"):
             app.up +=1
