@@ -1,8 +1,11 @@
 # 333Arcade
  Repository for COMP333 Fall Semester Project
 ________
+At Current Date (11/14/2025) the Assignment is Milestone 4. If you are a code reviewer for this project and you are reading this sentence, you are in the WRONG BRANCH
 
-# Python 3.14 is not currently supported. Please use Python 3.9 - 3.13*
+It is imperative that you switch to the Milestone-4-Code-Review-Branch-(Never-Merge) branch
+
+# Python 3.14 is not currently supported. Please use Python 3.13*
 
 *You may download Python 3.13.9 at https://www.python.org/downloads/release/python-3139/ and then navigating to your specific platform and downloading the installer.
 
