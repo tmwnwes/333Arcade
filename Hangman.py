@@ -13,6 +13,7 @@ app.autofs = 0
 
 app.width = width
 app.height = height
+app.typeyTime = False
 
 wordList = open("Files/words_alpha.txt", "r", -1) ### 365k words, incliuding names, places, plurals, and weird old english words like symphysy
 words = []
@@ -363,9 +364,10 @@ def onKeyPress(key):
     Built in CMU function which takes a pressed key as argument
     Used in this game to press the button matching the letter pressed
     '''
-    for letter in letterLabels:
-        if key.lower() == letter.value:
-            onMousePress(letter.centerX, letter.centerY)
+    if(app.typeyTime == True):
+        for letter in letterLabels:
+            if key.lower() == letter.value:
+                onMousePress(letter.centerX, letter.centerY)
 
 def win_round():
     '''
@@ -466,6 +468,7 @@ def onStep():
         pyautogui.press('f')
         pyautogui.keyUp("command")
         pyautogui.keyUp("ctrl")
+        app.typeyTime= True
 
 fullInfoList[1]+=1
 fullInfoList[6]+=1
