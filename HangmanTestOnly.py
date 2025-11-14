@@ -11,8 +11,7 @@ height = size[1]
 
 
 app.width = 7*(width//10)
-app.height = height
-app.typeyTime = False
+app.height = 19*(height//20)
 
 wordList = open("Files/words_alpha.txt", "r", -1) ### 365k words, incliuding names, places, plurals, and weird old english words like symphysy
 words = []
@@ -30,7 +29,7 @@ gameName = currentFile[:-11]
 
 print(currentFile + " has opened")
 
-subprocess.Popen(["python3.13", gameName+"UserTests.py"])
+subprocess.Popen([sys.executable, gameName+"UserTests.py"])
 
 def file_checking(path, default):
     '''
@@ -364,11 +363,10 @@ def onKeyPress(key):
     '''
     Built in CMU function which takes a pressed key as argument
     Used in this game to press the button matching the letter pressed
-    '''
-    if(app.typeyTime == True):
-        for letter in letterLabels:
-            if key.lower() == letter.value:
-                onMousePress(letter.centerX, letter.centerY)
+    '''      
+    for letter in letterLabels:
+        if key.lower() == letter.value:
+            onMousePress(letter.centerX, letter.centerY)
 
 def win_round():
     '''

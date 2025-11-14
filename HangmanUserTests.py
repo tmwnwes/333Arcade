@@ -1,5 +1,7 @@
 from cmu_graphics import *
 import pyautogui
+import os
+import sys
 
 size = pyautogui.size()
 
@@ -7,7 +9,81 @@ width = size[0]
 height = size[1]
 
 app.width = 3*(width//10)
-app.height = height
+app.height = (19*(height//20))
+app.counter = 0
 
+keys = ["Letter Selection works", "Wrong Letter does not appear", "Correct Letter does appear", "New Round Means New Word"]
+questions1 = ["Click on, or type a letter (give about 3 seconds before answering as the first trim is slow)", "Click on or type more letters until you select a letter not in the word and it's highlighted red", "Click on or type more letters until you select a letter not in the word and it's highlighted green", "Upon success or failure, click the Try Again Button and replay until you have won or lost again"]
+questions2 = ["Did that letter become highlighted on the on screen alphabet in either green or red?", "Click Yes on this window if the letter DID NOT appear in the word at the top of the screen", "Click Yes on this window if the letter DID appear in the word at the top of the screen", "Was this word different than last round?" ]
+answers = []
+instructions = Label("If at any point, you fail the round or due, please follow the on screen game instructions to restart", app.width/2, app.height/5, fill='black', bold = True, size = app.width/60)
+instruct2 = Label("Also, you will need to click into this window each time before being able to click yes or no", instructions.centerX, instructions.bottom + 20)
+instruct2 = Label("Also, you will need to click into the game window each time before being able to follow instructions", instructions.centerX, instruct2.bottom + 20)
+instruct3 = Label("Make sure to move the windows such that you can see this test answer window and the game window", instructions.centerX, instructions.top -20)
+shownQuestion1 = Label(questions1[0], app.width/2, 2*app.height/5)
+shownQuestion2 = Label(questions2[0], app.width/2, shownQuestion1.bottom+15)
+
+yesButton = Rect(app.width/2, app.height/2, app.width/2, app.height/10, fill='green', border = 'black', align = 'center')
+noButton = Rect(yesButton.left, yesButton.bottom+5, app.width/2, app.height/10, fill='red', border = 'black')
+
+yesLabel = Label("Yes", yesButton.centerX, yesButton.centerY, fill='white', bold = True)
+noLabel = Label("No", noButton.centerX, noButton.centerY, fill='white', bold = True)
+
+file_path = os.path.abspath(__file__)
+directory_path = os.path.dirname(file_path)
+os.chdir(directory_path)
+currentFile =  os.path.basename(__file__)
+gameName = currentFile[:-3]
+
+print(currentFile + " has opened")
+
+def file_checking(path, keys):
+    '''
+    Takes 2 args, path for which file to look for, 
+    default is the default info for the game, 
+    returns no values but creates text files
+    Looks for necessary game files. Creates and populates the files if they are not found in the expected directory
+    Takes the values from the files, whether already existing or new and puts the values into a list for use later
+    '''
+    directory = "TESTSRESULTS"
+    properPath = os.path.join(directory, path)
+    if(not os.path.exists(directory)):
+        os.makedirs(directory, exist_ok=True)
+    if (not os.path.exists(properPath)):
+        with open(properPath, 'w') as f:
+            f.seek(0)
+            for i in range(len(keys)):
+                f.write((str)((str)(keys[i])+ " :\n"))
+
+file_checking(gameName+"TestResults.txt", keys)
+
+fullInfoListResults = []
+
+def update_stats():
+    '''
+    Takes no arguments and returns no values
+    Updates stores stats in the associated text file
+    '''
+    gameInfo = open("TESTSRESULTS/" +gameName+"TestResults.txt", "w")
+    gameInfo.seek(0)
+    for i in range(len(fullInfoListResults)):
+        gameInfo.write(keys[i] + " : " + fullInfoListResults[i]+"\n")
+
+def onMousePress(x,y):
+    if(yesButton.contains(x,y)):
+        fullInfoListResults.append("PASS")
+        app.counter+=1
+    if(noButton.contains(x,y)):
+        fullInfoListResults.append("FAIL")
+        app.counter += 1
+    if(app.counter>=len(questions1)):
+        update_stats()
+        shownQuestion1.value =  "Thank you. You may close this test"
+        shownQuestion2.value = "Please Review the file and submit for milestone 4"
+        yesButton.visible = False
+        noButton.visible = False
+    else:
+        shownQuestion1.value = questions1[app.counter]
+        shownQuestion2.value = questions2[app.counter]
 
 app.run()
