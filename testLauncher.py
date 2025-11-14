@@ -12,12 +12,13 @@ if(system == "Darwin"):
     closeGameKeys+=["command", "w"]
     call = 'python3.13'
 if(system == "Windows"):
-    closeGameKeys+=["alt", "f4"]
+    closeGameKeys+=["altleft", "f4"]
     call = sys.executable
 
 size = pyautogui.size()
 width = size[0]
 height = size[1]
+knownGames = ["Asteroids", "ColorGame", "Fireworks", "Hangman", "Minesweeper", "SubGame", "MissileCommand", "FlappyBat", "Simon"]
 
 file_path = os.path.abspath(__file__)
 directory_path = os.path.dirname(file_path)
@@ -54,20 +55,33 @@ if(system=="Darwin"):
         mac_open_page_2(i)
 
 def windows_open_page_1(num):
-    launcher = subprocess.Popen([call, "PretendLauncher.py"])
+    subprocess.Popen([call, "PretendLauncher.py"])
     time.sleep(5)
-    pyautogui.click((num*2 + 1)*(width/8), width/8) 
+    pyautogui.doubleClick((num*2 + 1)*(width/8), width/8)
     time.sleep(3)
-    pyautogui.hotkey(closeGameKeys)
+    active = []
+    for i in range(len(knownGames)):
+        a = pyautogui.getWindowsWithTitle(knownGames[i])
+        if(a!=[]):
+            active.append(a)
+    for thing in active:
+        thing[0].close()
     time.sleep(3)
 
 def windows_open_page_2(num):
-    launcher = subprocess.Popen([call, "PretendLauncher.py"])
+    subprocess.Popen([call, "PretendLauncher.py"])
     time.sleep(5)
     pyautogui.doubleClick(width-10, height-50)
-    pyautogui.doubleClick((num*2 + 1)*(width/8), width/8) 
+    time.sleep(2)
+    pyautogui.doubleClick((num*2 + 1)*(width/8), width/8)
     time.sleep(3)
-    pyautogui.hotkey(closeGameKeys)
+    active = []
+    for i in range(len(knownGames)):
+        a = pyautogui.getWindowsWithTitle(knownGames[i])
+        if(a!=[]):
+            active.append(a)
+    for thing in active:
+        thing[0].close()
     time.sleep(3)
 
 if(system == "Windows"):
@@ -78,13 +92,3 @@ if(system == "Windows"):
 
 print("DONE")
 
-# pyautogui.click(x=200, y=200) 
-
-# Perform a right-click
-# pyautogui.rightClick(x=300, y=400)
-
-# Double-click
-# pyautogui.doubleClick(x=500, y=600)
-
-# pyautogui.typewrite("Hello, World!")
-# pyautogui.press("enter")
