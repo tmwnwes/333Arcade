@@ -21,7 +21,7 @@ gameName = currentFile[:-11]
 
 print(currentFile + " has opened")
 
-subprocess.Popen(["python3.13", gameName+"UserTests.py"])
+subprocess.Popen([sys.executable, gameName+"UserTests.py"])
 
 def file_checking(path, default):
     '''
@@ -54,7 +54,7 @@ for thing in gameInfo:
 app.hiscore = fullInfoList[0]
 
 app.width = 7*(width//10)
-app.height = height
+app.height = 19*(height//20)
 app.play = True
 app.munitionCounter = 0 
 app.score = 0
