@@ -4,7 +4,7 @@ ________
 
 This is the Milestone 4 Branch. Please read the entire README.md file and entire ForCodeReiewers.md file
 
-# Python 3.14 is not currently supported. Please use Python 3.9 - 3.13*
+# Python 3.14 is not currently supported. Please use Python 3.13*
 
 *You may download Python 3.13.9 at https://www.python.org/downloads/release/python-3139/ and then navigating to your specific platform and downloading the installer.
 
@@ -13,7 +13,7 @@ This project is built using the Carnegie Mellon University graphics library. In 
 
 # How to play
 
-Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplised by navigting to the named branch, and then clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Then download the CMU graphics library mentioned above directly from the source. Take the "cmu_graphics" folder from that download (not the entire installer folder, just the cmu_graphics folder) and put it in the same directory as the files from this repository. Then make sure you have pyautogui installed. This can be accomplished on Windows and Mac with pip or pip3 just by opening a terminal / command prompt and typing pip install pyautogui or pip3 pyautogui. If this function fails, instead type python3 -m pip install pyautogui or python3 -m pip3 install pyautogui. Then follow the platform dependent instructions below for manual testing: 
+Regardless of platform, please download or clone this entire project repository from the "Milestone-4-Code-Review-Branch-(Never-Merge)" branch. This can be accomplised by navigting to the named branch, and then clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code and then switching to the approprate branch. Then download the CMU graphics library mentioned above directly from the source. Take the "cmu_graphics" folder from that download (not the entire installer folder, just the cmu_graphics folder. Please take special mention of this. It is the most common error) and put it in the same directory as the files from this repository. Then make sure you have pyautogui installed. This can be accomplished on Windows and Mac with pip or pip3 just by opening a terminal / command prompt and typing pip install pyautogui or pip3 pyautogui. If this function fails, instead type python3 -m pip install pyautogui or python3 -m pip3 install pyautogui. Then follow the platform dependent instructions below for the ability to play the games (This is to actually play the games, not necessarily run the tests): 
 
 ## MacOS Instructions
 If you are on MacOS, you have 3 options for running the launcher:
@@ -61,7 +61,7 @@ ____
 
 For Automatic tests, you will need to run the testing files which exist with names relating to each test being run. For example:
 
- launcher_test_open_all_games_in_sequence.py will run the launcher, then a game, then close the game and open the launcher again and open the next game, repeatedly, for all games. 
+launcherTest.py will run the launcher, then a game, then close the game and open the launcher again and open the next game, repeatedly, for all games. 
  
  You should consider this test a pass if every game opens and each print lines up in the order:
  
@@ -72,8 +72,42 @@ For Automatic tests, you will need to run the testing files which exist with nam
  "[Some game] has opened" 
 
  for each game
+You should ignore these messages in your terminal for this test:
 
- There will then be tests for each game
+You are running cmu-graphics version 1.1.43, but a newer version 1.1.44 is available.
+Visit https://academy.cs.cmu.edu/desktop to upgrade.
+
+
+
+
+                         (
+                    (    (
+                    ((  (*(
+                    (*( (*/
+                    (**.***,
+                    (***************((((((((((((((((
+                    (********************************
+                    (*******************************(
+                    (*******************************(
+                    (*******************************(
+                    /*******************************(
+                    (/******************(((((((     ((
+                (*****(****************,
+                /**********(************(
+            ((***************(*********
+                (*****(/*********(*****(
+                    (**********/(/***(*/
+                    (****************(
+                        (/***********(
+                            (*******(
+                            (**(
+
+ ** To run your animation, add cmu_graphics.run() to the bottom of your file **
+
+We run the animations with a different function call so this will always pop up though it is irrelevant
+
+
+ There will then be tests for each game individually separate from this which is better explained in ForCodeReviewers.md 
 
 # Included in this Repository
 
@@ -142,6 +176,8 @@ For Automatic tests, you will need to run the testing files which exist with nam
 #### This game places you as the commander of a submarine in an underwater minefield, targeted by mines, depth charges, and (in an upcoming update in december, other submarines.) It is your job to survive as long as possible. You have torpedoes to preotect yourself against mines fired with left arrow key (front of sub) and right arrow key (back of sub). Torpedoes can cause a chain reaction of mine explosions You may also angle your submarine counterclockwise with Q or clockwise with E. Finally, actually moving your submarine is accomplished with WASD keys, where W and S move the submarine upwards and downwards with respect to the screen and general notions of up and down while A and D move the ship forward or backwards relative to its rotation. Periodically, you willbe targeted with depth charges which will target your general location within the ocean and explode near your last known coordinates. Depth charges can also start a chain reaction, blowing up nearby mines. You will earn score for all depth charges avoided and mines destroyed by your torpedoes, depth charges or chain reactions. There is no win condition in this game, your goal is to survive as long as possible. 
 
 
+# For each game, there are 2 other files, a TestOnly file and a UserTests file. 
 
+### ForCodeReviewers will explain what to do with these files but if you are only interested in playing the games, then ignore those files and just use the main branch. It is assumed that anybody on this branch is here for Comp 333 Milestone 4
 
 
