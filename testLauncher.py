@@ -48,11 +48,28 @@ def mac_open_page_2(num):
         pyautogui.keyUp(key)
     time.sleep(3)
 
+def mac_open_page_3(num):
+    launcher = subprocess.Popen([call, "PretendLauncher.py"])
+    time.sleep(5)
+    pyautogui.click(width-10, height-50)
+    time.sleep(2)
+    pyautogui.click(width-10, height-50)
+    pyautogui.click((num*2 + 1)*(width/8), width/8) 
+    time.sleep(3)
+    for key in closeGameKeys:
+        pyautogui.keyDown(key)
+    for key in closeGameKeys:
+        pyautogui.keyUp(key)
+    time.sleep(3)
+
 if(system=="Darwin"):
     for i in range(4):
         mac_open_page_1(i)
     for i in range(4):
         mac_open_page_2(i)
+    for i in range(1,2):
+        mac_open_page_2(i)
+
 
 def windows_open_page_1(num):
     subprocess.Popen([call, "PretendLauncher.py"])
@@ -71,7 +88,25 @@ def windows_open_page_1(num):
 def windows_open_page_2(num):
     subprocess.Popen([call, "PretendLauncher.py"])
     time.sleep(5)
-    pyautogui.doubleClick(width-10, height-50)
+    pyautogui.click(width-10, height-50)
+    time.sleep(2)
+    pyautogui.doubleClick((num*2 + 1)*(width/8), width/8)
+    time.sleep(3)
+    active = []
+    for i in range(len(knownGames)):
+        a = pyautogui.getWindowsWithTitle(knownGames[i])
+        if(a!=[]):
+            active.append(a)
+    for thing in active:
+        thing[0].close()
+    time.sleep(3)
+
+def windows_open_page_3(num):
+    subprocess.Popen([call, "PretendLauncher.py"])
+    time.sleep(5)
+    pyautogui.click(width-10, height-50)
+    time.sleep(2)
+    pyautogui.click(width-10, height-50)
     time.sleep(2)
     pyautogui.doubleClick((num*2 + 1)*(width/8), width/8)
     time.sleep(3)
@@ -89,6 +124,8 @@ if(system == "Windows"):
         windows_open_page_1(i)
     for i in range(4):
         windows_open_page_2(i)
+    for i in range(1,2):
+        windows_open_page_3(i)
 
 print("DONE")
 
