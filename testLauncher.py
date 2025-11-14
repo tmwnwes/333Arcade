@@ -64,9 +64,8 @@ def windows_open_page_1(num):
 def windows_open_page_2(num):
     launcher = subprocess.Popen([call, "PretendLauncher.py"])
     time.sleep(5)
-    ## OPEN GAME 5
     pyautogui.doubleClick(width-10, height-50)
-    pyautogui.doubleClick(1*(width/8), width/8) 
+    pyautogui.doubleClick((num*2 + 1)*(width/8), width/8) 
     time.sleep(3)
     pyautogui.hotkey(closeGameKeys)
     time.sleep(3)
