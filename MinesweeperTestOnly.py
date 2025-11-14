@@ -22,7 +22,7 @@ gameName = currentFile[:-11]
 
 print(currentFile + " has opened")
 
-subprocess.Popen(["python3.13", gameName+"UserTests.py"])
+subprocess.Popen([sys.executable, gameName+"UserTests.py"])
 
 def file_checking(path, default):
     '''
@@ -53,7 +53,7 @@ for thing in gameInfo:
         fullInfoList.append((int)(thing))
 
 app.width = 7*(width//10)
-app.height = height
+app.height = 19*(height//20)
 
 app.setMaxShapeCount(100000)
 
@@ -137,9 +137,9 @@ def create_board():
         app.bombPercentage = 28
         fullInfoList[5]+=1
     fullInfoList[7]+=1
-    app.squareSize = (int)((1/app.blocksWide)*width)
-    app.rows = (int)(height / app.squareSize)
-    app.cols = (int)(width / app.squareSize)
+    app.squareSize = (int)((1/app.blocksWide)*app.width)
+    app.rows = (int)(app.height / app.squareSize)
+    app.cols = (int)(app.width / app.squareSize)
     for i in range(app.cols):
         for j in range(app.rows):
             if (i+j)%2 == 0:
@@ -484,14 +484,14 @@ def create_help():
     Also creates buttons allowing the user to close the game or return to launcher on the help screen instead of just the main menu    
     '''
     temp = Group()
-    helpBackground = Rect(0,0,width, height)
+    helpBackground = Rect(0,0,app.width, app.height)
     helpLabel = Label("Help", helpBackground.centerX, helpBackground.top + app.squareSize, fill='white', size = app.squareSize)
-    help1 = Label("Click on a square to reveal it. If it is a bomb, you lose", helpBackground.centerX, helpLabel.centerY + app.squareSize, fill='white', size = width//40)
-    help2 = Label("Numbers in each square represent how many adjacent squres are bombs", helpBackground.centerX, help1.centerY + app.squareSize, fill='white', size = width//40)
-    help3 = Label("Place (or remove) a flag on a square by right-clicking it", helpBackground.centerX, help2.centerY + app.squareSize, fill='white', size = width//40)
-    help4 = Label("Flags can be used to help you keep track of squares you think may be bombs", helpBackground.centerX, help3.centerY+app.squareSize, fill='white', size = width//40)
-    help5 = Label("There is no time limit and you win by clearing all non-bomb squares", helpBackground.centerX, help4.centerY + app.squareSize, fill='white', size = width//40)
-    help6 = Label("You can access this menu any time with 'h' or 'p' and close with that same key", helpBackground.centerX, help5.centerY + app.squareSize, fill='white', size = width//40)
+    help1 = Label("Click on a square to reveal it. If it is a bomb, you lose", helpBackground.centerX, helpLabel.centerY + app.squareSize, fill='white', size = app.width//40)
+    help2 = Label("Numbers in each square represent how many adjacent squres are bombs", helpBackground.centerX, help1.centerY + app.squareSize, fill='white', size = app.width//40)
+    help3 = Label("Place (or remove) a flag on a square by right-clicking it", helpBackground.centerX, help2.centerY + app.squareSize, fill='white', size = app.width//40)
+    help4 = Label("Flags can be used to help you keep track of squares you think may be bombs", helpBackground.centerX, help3.centerY+app.squareSize, fill='white', size = app.width//40)
+    help5 = Label("There is no time limit and you win by clearing all non-bomb squares", helpBackground.centerX, help4.centerY + app.squareSize, fill='white', size = app.width//40)
+    help6 = Label("You can access this menu any time with 'h' or 'p' and close with that same key", helpBackground.centerX, help5.centerY + app.squareSize, fill='white', size = app.width//40)
     closeGameButton = Rect(helpBackground.left, helpBackground.bottom - app.height//10, helpBackground.width//2, app.height//10, fill=None, border = 'red')
     closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15, fill='white')
     closeGameButton.game = None
