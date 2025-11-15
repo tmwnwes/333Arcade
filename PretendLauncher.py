@@ -273,7 +273,7 @@ def create_buttons_for_unknown_games():
         newButton = Rect(app.left + ((i+app.games)/4)*app.width, app.top, app.width/4,app.width/4, fill = 'gray', border = 'black')
         newButton.game = gamePath
         buttons.append(newButton)
-        newLabel = Label("Launch "+ data, newButton.centerX, newButton.centerY, size = app.width/50, bold = True)
+        newLabel = Label("Launch "+ data, newButton.centerX, newButton.centerY, size = app.width/75, bold = True)
         gameLabels.add(newLabel)
         unknownLabel = Label(UnknownGameKeys[0], newButton.left, (1/4)*app.width+10, size = 20, align = 'left')
         unknownStats.add(unknownLabel)
@@ -321,7 +321,7 @@ def onMousePress(x,y):
     For this script, a press either toggles stats or launches a game, or simply does nothing if no buttons were pressed
     '''
     if(nextPage.contains(x,y)):
-        if(slider.right<=app.width):
+        if(slider.right<app.width):
             for button in buttons:
                 button.centerX-=app.width
             shownStats.centerX-=app.width
@@ -407,9 +407,9 @@ def toggle_stats():
         statsLabel.value = "Show Simple Stats"
 
 def onStep(): ### Forces Full screen on mac
-    if(app.autofs<=1):
+    if(app.autofs<=5):
         app.autofs += 1
-    if(app.autofs == 1):
+    if(app.autofs == 4):
         pyautogui.keyDown("command")
         pyautogui.keyDown('ctrl')
         pyautogui.press('f')
