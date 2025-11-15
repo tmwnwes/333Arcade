@@ -267,7 +267,7 @@ def create_buttons_for_unknown_games():
         newButton = Rect(app.left + ((i+app.games)/4)*app.width, app.top, app.width/4,app.width/4, fill = 'gray', border = 'black')
         newButton.game = gamePath
         buttons.append(newButton)
-        newLabel = Label("Launch "+ data, newButton.centerX, newButton.centerY, size = app.width/50, bold = True)
+        newLabel = Label("Launch "+ data, newButton.centerX, newButton.centerY, size = app.width/55, bold = True)
         gameLabels.add(newLabel)
         unknownLabel = Label(UnknownGameKeys[0], newButton.left, (1/4)*app.width+10, size = 20, align = 'left')
         unknownStats.add(unknownLabel)
@@ -280,6 +280,10 @@ sliderLine = Line(0,app.height-10, app.width, app.height-10, fill='grey', lineWi
 slider = Rect(0, statsButton.bottom, (4/(app.games+len(unknownGames)))*app.width, 20) 
 escapeButton = Rect(app.width, app.bottom-40, app.width/10, 20, fill=None, border = "black", align = 'top-right')
 excapeLabel = Label("ExitLauncher", escapeButton.centerX, escapeButton.centerY)
+nextPage = Rect(app.width, app.bottom-60, app.width/10, 20, fill=None, border = "black", align = 'top-right')
+nextPageLabel = Label("Next Page", nextPage.centerX, nextPage.centerY)
+prevPage = Rect(0, app.bottom-60, app.width/10, 20, fill=None, border = "black")
+nextPageLabel = Label("Prev Page", prevPage.centerX, prevPage.centerY)
 
 def post_advanced_stats():
     '''
@@ -310,6 +314,24 @@ def onMousePress(x,y):
     CMU built in function to accept mouse press coordinates
     For this script, a press either toggles stats or launches a game, or simply does nothing if no buttons were pressed
     '''
+    if(nextPage.contains(x,y)):
+        if(slider.right<app.width):
+            for button in buttons:
+                button.centerX-=app.width
+            shownStats.centerX-=app.width
+            gameLabels.centerX-=app.width
+            unknownStats.centerX-=app.width
+            images.centerX-=app.width
+            slider.centerX+=(4/(app.games+len(unknownGames)))*(app.width)
+    if(prevPage.contains(x,y)):
+        if(slider.left>0):
+            for button in buttons:
+                button.centerX+=app.width
+            shownStats.centerX+=app.width
+            gameLabels.centerX+=app.width
+            unknownStats.centerX+=app.width
+            images.centerX+=app.width
+            slider.centerX-=(4/(app.games+len(unknownGames)))*(app.width)        
     if (statsButton.contains(x,y)):
         toggle_stats()
     if (escapeButton.contains(x,y)):
@@ -378,9 +400,9 @@ def toggle_stats():
         statsLabel.value = "Show Simple Stats"
 
 def onStep(): ### Forces Full screen on mac
-    if(app.autofs<=1):
+    if(app.autofs<=4):
         app.autofs += 1
-    if(app.autofs == 1):
+    if(app.autofs == 3):
         pyautogui.keyDown("command")
         pyautogui.keyDown('ctrl')
         pyautogui.press('f')
