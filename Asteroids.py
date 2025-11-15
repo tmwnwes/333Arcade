@@ -418,6 +418,7 @@ def reset():
     visibleScores.clear()
     explosion.clear()
     gameOver.clear()
+    trail.clear()
     app.score = 0
     app.play = True
     fullInfoList[3]+=1
@@ -627,9 +628,9 @@ def onStep():
     All code in this function is run app.stepsPerSecond many times every second
     In this script, it causes all motion
     '''
-    if(app.autofs<=1):
+    if(app.autofs<=4):
         app.autofs += 1
-    if(app.autofs == 1):
+    if(app.autofs == 3):
         pyautogui.keyDown("command")
         pyautogui.keyDown('ctrl')
         pyautogui.press('f')
