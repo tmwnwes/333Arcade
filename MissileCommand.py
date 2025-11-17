@@ -292,7 +292,7 @@ def spawn_plane(y, canScore):
         hitbox.score = 0
     spacing = app.width// hitbox.bombs
     for i in range(hitbox.bombs):
-        hitbox.dropZones.append(spacing * (i+1))
+        hitbox.dropZones.append(spacing * (i+1) + randrange(-50, 51, 1))
     app.plane = True
     planes.add(hitbox)
     
@@ -1012,7 +1012,7 @@ def spawn_fun_missile(canScore):
     new.num = app.munitionCounter
     new.speed = app.basicMissileSpeed - 1
     new.gravSpeed = app.gravity
-    new.rotateAngle = angleTo(new.centerX, new.centerY, randrange(app.width//40, 39*app.width//40), app.height)
+    new.rotateAngle = angleTo(new.centerX, new.centerY, randrange(5*(app.width//40), 35*(app.width//40)), app.height)
     new.next = getPointInDir(new.centerX, new.centerY, new.rotateAngle, new.speed)
     nonbasicMissiles.add(new)
     
@@ -1034,11 +1034,11 @@ def move_smart_bombs():
         if(len(bomb.how_far)>0):
             lowestDistaceExplosionInfo = min(bomb.how_far, key=lambda t: t[0])
             scaryAngle = lowestDistaceExplosionInfo[1]
-            if(bomb.rotateAngle <= scaryAngle and bomb.rotateAngle>140):
-                bomb.rotateAngle -= 2
+            if(bomb.rotateAngle <= scaryAngle and bomb.rotateAngle>130):
+                bomb.rotateAngle -= 3
                 bomb.speed -= (app.gravity/2)
-            elif(bomb.rotateAngle> scaryAngle and bomb.rotateAngle<220):
-                bomb.rotateAngle +=2
+            elif(bomb.rotateAngle> scaryAngle and bomb.rotateAngle<230):
+                bomb.rotateAngle +=3
                 bomb.speed -= (app.gravity/2)
         bomb.next = getPointInDir(bomb.centerX, bomb.centerY, bomb.rotateAngle, bomb.speed)           
 
@@ -1267,7 +1267,7 @@ def onStep():
     '''
     if(app.autofs<=5):
         app.autofs += 1
-    if(app.autofs == 3):
+    if(app.autofs == 4):
         pyautogui.keyDown("command")
         pyautogui.keyDown('ctrl')
         pyautogui.press('f')
