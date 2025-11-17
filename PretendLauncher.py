@@ -27,8 +27,8 @@ app.slider = False
 app.dragSpeed = (1/80)*width
 
 unknownStats = Group()
-knownGames = ["Asteroids.py", "ColorGame.py", "Fireworks.py", "Hangman.py", "Minesweeper.py", "SubGame.py", "MissileCommand.py", "FlappyBat.py", "Simon.py"]
-thumbnails = ["Images/Thumbnails/AsteroidsImage.png", "Images/Thumbnails/ColorGameImage.png", "Images/Thumbnails/FireworksImage.png", "Images/Thumbnails/FlappyBatImage.png", "Images/Thumbnails/HangmanImage.png", "Images/Thumbnails/MinesweeperImage.png", "Images/Thumbnails/MissileCommandImage.png", "Images/Thumbnails/SimonImage.png", "Images/Thumbnails/SubGameImage.png"]
+knownGames = ["Asteroids.py", "ColorGame.py", "Fireworks.py", "Hangman.py", "Minesweeper.py", "SubGame.py", "MissileCommand.py", "FlappyBat.py", "Simon.py", "Typespeed.py"]
+thumbnails = ["Images/Thumbnails/AsteroidsImage.png", "Images/Thumbnails/ColorGameImage.png", "Images/Thumbnails/FireworksImage.png", "Images/Thumbnails/FlappyBatImage.png", "Images/Thumbnails/HangmanImage.png", "Images/Thumbnails/MinesweeperImage.png", "Images/Thumbnails/MissileCommandImage.png", "Images/Thumbnails/SimonImage.png", "Images/Thumbnails/SubGameImage.png", "Images/Thumbnails/TypespeedImage.png"]
 images = Group()
 unknownGames = []
 
@@ -81,6 +81,11 @@ SimonKeys = ["HighScore", "GamesPlayed", "TimesLaunched"]
 SimonDisplay = ["High Score"]
 SimonStatsDisplay = []
 SimonInfoFull = [0,0,0]
+TypespeedDefault = [0,0,0,0,0,0,0]
+TypespeedKeys = ["WordsTyped", "LongestStreak", "HighScore", "GamesPlayed", "TimesLaunched", "WordsMissed", "Mistakes"]
+TypespeedDisplay = ["High Score", "Words Typed", "Longest Streak"]
+TypespeedStatsDisplay = []
+TypespeedInfoFull = [0,0,0,0,0,0,0]
 ### Default Values, Keys, Simple Stat Display Keys, Display Values, and General Info about each known and created game. Must update for each additional game made. Add to the known game list and create the necessary values above
 
 
@@ -174,7 +179,7 @@ displays = []
 realKeys = []
 statsDisplay = []
 
-tempList = [SubGameStatsDisplay, HangmanStatsDisplay, MinesweeperStatsDisplay, FireworksStatsDisplay, ColorGameStatsDisplay, AsteroidsStatsDisplay, MissileCommandStatsDisplay, FlappyBatStatsDisplay, SimonStatsDisplay]
+tempList = [SubGameStatsDisplay, HangmanStatsDisplay, MinesweeperStatsDisplay, FireworksStatsDisplay, ColorGameStatsDisplay, AsteroidsStatsDisplay, MissileCommandStatsDisplay, FlappyBatStatsDisplay, SimonStatsDisplay, TypespeedStatsDisplay]
 
 
 def accuracy_check(indexYes, indexTotal, source, destination, destIndex):
@@ -245,6 +250,7 @@ AsteroidsStatsDisplay+=[0, AsteroidsInfoFull[2]]
 MissileCommandStatsDisplay+=[MissileCommandInfoFull[0], MissileCommandInfoFull[4], 0, MissileCommandInfoFull[5], MissileCommandInfoFull[7]]
 FlappyBatStatsDisplay+=[FlappyBatInfoFull[8], find_favorite_game_mode_flappy_bat(), (0 if FlappyBatInfoFull[9]==0 else FlappyBatInfoFull[9]/FlappyBatInfoFull[1])]
 SimonStatsDisplay+=[SimonInfoFull[0]]
+TypespeedStatsDisplay+=[TypespeedInfoFull[2], TypespeedInfoFull[0], TypespeedInfoFull[1]]
 ## Simple Stats
 
 accuracy_check(5, 4, SubGameInfoFull, SubGameStatsDisplay, 3)
