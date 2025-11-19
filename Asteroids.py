@@ -16,7 +16,7 @@ app.autofs = 0
 
 default = [0,0,0,0,0]
 keys = ["Shots", "Hits", "HighScore", "GamesPlayed", "TimesLaunched"]
-
+fullInfoList =[]
 
 file_path = os.path.abspath(__file__)
 directory_path = os.path.dirname(file_path)
@@ -41,18 +41,28 @@ def file_checking(path, default):
             f.seek(0)
             for i in range(len(default)):
                 f.write((str)(default[i])+"\n")
+    if("Stats" in properPath):
+        with open(properPath, "r+") as gameInfo:
+            for thing in gameInfo:
+                thing = thing.strip()
+                if thing != '':
+                    fullInfoList.append((int)(thing))
+            if(len(default)>len(fullInfoList)):
+                keysFile = open("Files/"+gameName+"Keys.txt", "r+")
+                start = len(fullInfoList)
+                for i in range(start,len(default)):
+                    fullInfoList.append(default[i])
+                    gameInfo.seek(0,2)
+                    gameInfo.write((str)(fullInfoList[i])+"\n")
+                    keysFile.seek(0,2)
+                    keysFile.write(keys[i])
+
 
 file_checking(gameName+"Stats.txt", default)
 file_checking(gameName+"Keys.txt", keys)
 
 app.failed = False
 gameInfo = open("Files/AsteroidsStats.txt", "r+")
-fullInfoList = [] 
-for thing in gameInfo:
-    thing = thing.strip()
-    if thing != '':
-        fullInfoList.append((int)(thing))
-hi = fullInfoList[2]
 
 app.score = 0
 app.generalSpeed = 14
@@ -60,7 +70,7 @@ app.play = True
 screen = Rect(0,0,app.width, app.height)
 asteroidBase = Rect(-400, -400, app.width+800, app.height+800)
 score = Label("Score: %09d" %app.score, 5, 20, size = 20, fill='white', align = 'left')
-hiScore = Label("High Score: %09d" %hi, app.width-2, score.centerY, size =20, fill='white', align='right')
+hiScore = Label("High Score: %09d" %fullInfoList[2], app.width-2, score.centerY, size =20, fill='white', align='right')
 
 outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center')
 pauseLabel = Label("Game Paused", app.width/2, app.height/2 -15, size = 30, fill= 'white')
