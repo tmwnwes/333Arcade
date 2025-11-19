@@ -13,7 +13,7 @@ app.autofs = 0
 
 default = [0,0,0,0,0,0,0,0,0,0,0]
 keys = ["WonEasy", "AttemptedEasy", "WonMedium", "AttemptedMedium", "WonHard", "AttemptedHard" ,"WonTotal", "AttemptedTotal", "Achievement1", "FlagsUsed", "TimesLaunched"]
-
+fullInfoList = [] 
 
 file_path = os.path.abspath(__file__)
 directory_path = os.path.dirname(file_path)
@@ -38,16 +38,26 @@ def file_checking(path, default):
             f.seek(0)
             for i in range(len(default)):
                 f.write((str)(default[i])+"\n")
+    if("Stats" in properPath):
+        with open(properPath, "r+") as gameInfo:
+            for thing in gameInfo:
+                thing = thing.strip()
+                if thing != '':
+                    fullInfoList.append((int)(thing))
+            if(len(default)>len(fullInfoList)):
+                keysFile = open("Files/"+gameName+"Keys.txt", "r+")
+                start = len(fullInfoList)
+                for i in range(start,len(default)):
+                    fullInfoList.append(default[i])
+                    gameInfo.seek(0,2)
+                    gameInfo.write((str)(fullInfoList[i])+"\n")
+                    keysFile.seek(0,2)
+                    keysFile.write(keys[i])
 
 file_checking(gameName+"Stats.txt", default)
 file_checking(gameName+"Keys.txt", keys)
 
-gameInfo = open("Files/MinesweeperStats.txt", "r+")
-fullInfoList = [] 
-for thing in gameInfo:
-    thing = thing.strip()
-    if thing != '':
-        fullInfoList.append((int)(thing))
+gameInfo = open("Files/"+gameName+"Stats.txt", "r+")
 
 app.width = width
 app.height = height
@@ -68,7 +78,7 @@ app.noFlags = True
 app.achShowing = False
 achievementNote = Group()
 background = Rect(0,0,app.width, app.height, fill='lightGray')
-colors = ['black', 'saddleBrown', 'cornflowerBlue', 'darkCyan', 'lime', 'yellow', 'darkOrange', 'red', 'magenta']
+colors = ['black', 'saddleBrown', 'cornflowerBlue', 'teal', 'cyan', 'yellow', 'orange', 'red', 'magenta']
 app.flagCol = 'orange'
 numberLabels = Group()
 buttonLabels = Group()
@@ -94,12 +104,15 @@ def create_front_screen():
     easyButton = Rect((11/40)*app.width, (13/40)*app.height, (9/20)*app.width, (7/40)*app.height, fill = 'white')
     mediumButton = Rect((11/40)*app.width, (21/40)*app.height, (9/20)*app.width, (7/40)*app.height, fill = 'white')
     hardButton = Rect((11/40)*app.width, (29/40)*app.height, (9/20)*app.width, (7/40)*app.height, fill = 'white')
+    crazyButton = Rect(app.width, 0, (3/20*app.width),(7/120*app.width), fill=None, border = 'white', align = 'top-right')
     easyButton.type = "easy"
     mediumButton.type = "medium"
     hardButton.type = "hard"
+    crazyButton.type = 'crazy'
     label1 = Label("Easy", easyButton.centerX, easyButton.centerY, size = (3/40)*app.width)
     label2 = Label("Medium", mediumButton.centerX, mediumButton.centerY, size = (3/40)*app.width)
     label3 = Label("Hard", hardButton.centerX, hardButton.centerY, size = (3/40)*app.width)
+    labelCrazy = Label("Crazy", crazyButton.centerX, crazyButton.centerY, size = 3/160*app.width, fill='white')
     label4 = Label("Minesweeper", easyButton.centerX, (1/8)*app.height, size = (1/10)*app.width, fill = 'white')
     label5 = Label("* Your first click on the board is always safe *", easyButton.centerX, (9/40)*app.height, fill = 'white', size = (1/20)*app.width)
     closeGameButton = Rect(hardButton.left, hardButton.bottom, hardButton.width//2, app.height//10, fill=None, border = 'red')
@@ -108,8 +121,8 @@ def create_front_screen():
     backToLauncher = Rect(closeGameButton.right, closeGameButton.top, closeGameButton.width, closeGameButton.height, fill=None, border = 'gray',)
     backToLauncher.game = "PretendLauncher.py"
     backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15, fill='white')
-    buttons.add(easyButton, mediumButton, hardButton)
-    buttonLabels.add(label1, label2, label3)
+    buttons.add(easyButton, mediumButton, hardButton, crazyButton)
+    buttonLabels.add(label1, label2, label3, labelCrazy)
     preGame.add(frontScreen, label4, label5, closeGameButton.words, backToLauncher.words)
     escapeButtons.add(closeGameButton,backToLauncher)
 
@@ -123,16 +136,20 @@ def create_board():
         None
     if(app.mode == 'easy'):
         app.blocksWide = 16
-        app.bombPercentage = 20
+        app.bombPercentage = 15
         fullInfoList[1]+=1
     if(app.mode == 'medium'):
         app.blocksWide = 24
-        app.bombPercentage = 24
+        app.bombPercentage = 20
         fullInfoList[3]+=1
     if(app.mode == 'hard'):
         app.blocksWide = 40
-        app.bombPercentage = 28
+        app.bombPercentage = 22
         fullInfoList[5]+=1
+    if(app.mode == 'crazy'):
+        app.blocksWide = 60
+        app.bombPercentage = 30
+
     fullInfoList[7]+=1
     app.squareSize = (int)((1/app.blocksWide)*width)
     app.rows = (int)(height / app.squareSize)
