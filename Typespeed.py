@@ -89,14 +89,18 @@ def move_words(speed):
             app.runAway += 1
 
 def check_loss():
-    if(app.runAway >= 30):
-        app.failed = True
-        background = Rect(0,0,app.width, app.height)
-        gameOverLabel = Label("Game Over", app.width/2, app.height/4, fill='white', size = app.width/30)
-        retryLabel = Label("Press Space to Play Again", gameOverLabel.centerX, gameOverLabel.centerY + app.height/8, fill = 'white', size = app.width/30)
-        lastScore = Label("Last Score: %d" %(app.score), retryLabel.centerX, retryLabel.centerY+app.height/8, fill='white', size=app.width/30)
-        hiScore = Label("High Score: %d" %app.hiScore, lastScore.centerX, lastScore.centerY+app.height/8, fill='white', size = app.width/30)
-        gameOver.add(background, gameOverLabel, retryLabel, lastScore, hiScore)
+    if(app.runAway >= app.level*5 + 10):
+        if(app.level == 1):
+            app.failed = True
+            background = Rect(0,0,app.width, app.height)
+            gameOverLabel = Label("Game Over", app.width/2, app.height/4, fill='white', size = app.width/30)
+            retryLabel = Label("Press Space to Play Again", gameOverLabel.centerX, gameOverLabel.centerY + app.height/8, fill = 'white', size = app.width/30)
+            lastScore = Label("Last Score: %d" %(app.score), retryLabel.centerX, retryLabel.centerY+app.height/8, fill='white', size=app.width/30)
+            hiScore = Label("High Score: %d" %app.hiScore, lastScore.centerX, lastScore.centerY+app.height/8, fill='white', size = app.width/30)
+            gameOver.add(background, gameOverLabel, retryLabel, lastScore, hiScore)
+        else:
+            app.runAway = 0
+            app.level -= 1
 
 def onStep():
     if(app.failed == False):
@@ -148,8 +152,12 @@ def check_word(word):
             count+=1
     if(count == 0):
         app.streak = 0
-        app.level = 1
         fullInfoList[6]+=1
+        if(app.level>=4):
+            app.level-=3
+            app.runAway = 0
+        else:
+            app.level = 1
     else:
         app.streak+=1
     if(app.streak%5 == 0 and app.streak != 0):
@@ -166,6 +174,7 @@ def reset_game():
     activeStrings.clear()
     app.yourWord.value = app.currentWord
     app.failed = False
+    update_stats()
 
 def update_stats():
     '''
