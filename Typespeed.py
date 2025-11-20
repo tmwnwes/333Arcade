@@ -86,14 +86,25 @@ app.hiScore = fullInfoList[2]
 yourHiScore = Label("High Score: %d" %app.hiScore, app.width-10, (1*(app.height/20)), size = app.width/50, align = 'top-right')
 
 def move_words(speed):
+    '''
+    Takes 1 arg: speed which is a number (float or int is fine)
+    Moves all words to the right by that number of pixels every call
+    Returns no values
+    '''
     for word in activeStrings:
         word.centerX += speed
         if(word.left>width):
             activeStrings.remove(word)
             fullInfoList[5]+=1
             app.runAway += 1
+            
 
 def check_loss():
+    '''
+    Takes no args and returns no values
+    When called, check if too many words have passed to the side of the screen
+    If so, decrease multiplier. If that is impossible, the round is over.
+    '''
     if(app.runAway >= app.level*5 + 10):
         if(app.level == 1):
             app.failed = True
@@ -108,6 +119,10 @@ def check_loss():
             app.level -= 1
 
 def onStep():
+    '''
+    Built in CMU function which calls body code app.stepsPerSecond many times every second
+    Used in this game to spawn and move words, update score, check for losing status
+    '''
     if(app.failed == False):
         if(app.autofs<=6):
             app.autofs +=1
@@ -132,6 +147,10 @@ def onStep():
         
         
 def spawn_words(howMany):
+    '''
+    Takes are arg a number, howMany, which must be an int
+    Returns no values, but does create howMany random words, up to 8 maximum
+    '''
     for i in range(howMany):
         if(i<=8):
             newWord = wordList[randrange(len(wordList))]
@@ -142,6 +161,13 @@ def spawn_words(howMany):
     update_stats()
     
 def check_word(word):
+    '''
+    Takes are argument a string called word
+    Returns no values, but checks if that string matches any strings on the screen. 
+    If it matches, score incremented and other checks are made
+    Else, end streak and derease multiplier
+    
+    '''
     if(app.streak>fullInfoList[1]):
         fullInfoList[1] = app.streak
     count = 0
@@ -170,6 +196,11 @@ def check_word(word):
     update_stats()
 
 def reset_game():
+    '''
+    Takes no args and returns no values
+    Should only be called if player has lost the round
+    Resets all game variables to default values and begins again
+    '''
     app.runAway = 0
     app.currentWord = ''
     gameOver.clear()
@@ -191,6 +222,10 @@ def update_stats():
         gameInfo.write((str)(fullInfoList[i])+"\n")         
         
 def onKeyPress(key):
+    '''
+    CMU built in funciton which takes a pressed key as an argument
+    Used on this game to allow for word typing, checking, and resetting the game
+    '''
     if(key == 'enter'):
         check_word(app.currentWord)
         app.currentWord = ''
@@ -204,6 +239,10 @@ def onKeyPress(key):
     app.yourWord.value = app.currentWord
 
 def onMousePress(x,y):
+    '''
+    Built in CMU function taking coordinates of a mouse press as argument
+    Used in this game to close the game or return to launcher
+    '''
     if closeGameButton.contains(x,y):
         update_stats()
         sys.exit(0)
