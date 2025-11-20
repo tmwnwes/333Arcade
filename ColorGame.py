@@ -164,7 +164,7 @@ def onMousePress(x,y):
             fullInfoList[1]+=1
     if(backToLauncher.contains(x,y)):
         update_stats()
-        subprocess.Popen(["Python3", backToLauncher.game])
+        subprocess.Popen([sys.executable, backToLauncher.game])
         sys.exit(0)
     if(escapeButton.contains(x,y)):
         update_stats()

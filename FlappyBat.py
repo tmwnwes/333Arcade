@@ -456,7 +456,7 @@ def onMousePress(x,y):
             mainScreenExit.visible = False
         if(backToLauncherMain.contains(x,y)):
             update_stats()
-            subprocess.Popen(["python3", backToLauncherMain.game])
+            subprocess.Popen([sys.executable, backToLauncherMain.game])
             sys.exit(0)
         if(closeGameButtonMain.contains(x,y)):
             update_stats()
@@ -464,14 +464,14 @@ def onMousePress(x,y):
     else:
         if(backToLauncher.contains(x,y) and app.pause == True):
             update_stats()
-            subprocess.Popen(["python3", backToLauncher.game])
+            subprocess.Popen([sys.executable, backToLauncher.game])
             sys.exit(0)
         if(closeGameButton.contains(x,y) and app.pause == True):
             update_stats()
             sys.exit(0)
         if(backToLauncherMain.contains(x,y) and app.play == False):
             update_stats()
-            subprocess.Popen(["python3", backToLauncherMain.game])
+            subprocess.Popen([sys.executable, backToLauncherMain.game])
             sys.exit(0)
         if(closeGameButtonMain.contains(x,y) and app.play == False):
             update_stats()

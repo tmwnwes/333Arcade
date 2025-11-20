@@ -428,7 +428,7 @@ def press_button(mouseX, mouseY):
             sys.exit(0)
         if(backToLauncher.contains(mouseX, mouseY)):
             update_stats()
-            subprocess.Popen(["Python3", backToLauncher.game])
+            subprocess.Popen([sys.executable, backToLauncher.game])
             sys.exit(0)      
 
 
@@ -661,7 +661,7 @@ def onMousePress(x, y):
                 sys.exit(0)
             if(backToLauncher.contains(x,y)):
                 update_stats()
-                subprocess.Popen(["Python3", backToLauncher.game])
+                subprocess.Popen([sys.executable, backToLauncher.game])
                 sys.exit(0)
             
     else:

@@ -242,7 +242,7 @@ def onMousePress(x,y):
     if(closeGameButton.contains(x,y)):
         sys.exit(0)
     if(backToLauncher.contains(x,y)):
-        subprocess.Popen(['python3', "PretendLauncher.py"])
+        subprocess.Popen([sys.executable, "PretendLauncher.py"])
         sys.exit(0)
     if(app.mode == 'player'):
         for button in buttons:

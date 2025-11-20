@@ -728,7 +728,7 @@ def onMousePress(x,y):
             sys.exit(0)
         if(backToLauncher.contains(x,y)):
             update_stats()
-            subprocess.Popen(["python3", backToLauncher.game])
+            subprocess.Popen([sys.executable, backToLauncher.game])
             sys.exit(0)
         
 ## CMU Built-In Functions Used for Player Motion, Controls, Handling ##

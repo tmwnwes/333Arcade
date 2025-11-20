@@ -577,7 +577,7 @@ def onMousePress(x,y,button):
                     sys.exit(0)
                 else:
                     update_stats()
-                    subprocess.Popen(["python3", button.game])
+                    subprocess.Popen([sys.executable, button.game])
                     sys.exit(0)
     else:
         if(app.help == False):
@@ -597,7 +597,7 @@ def onMousePress(x,y,button):
                         sys.exit(0)
                     else:
                         update_stats()
-                        subprocess.Popen(["python3", button.game])
+                        subprocess.Popen([sys.executable, button.game])
                         sys.exit(0)
     auto_clear_zeros()                
  

@@ -344,7 +344,7 @@ def onMousePress(x,y):
         sys.exit(0)
     for button in buttons:
         if button.contains(x,y):
-            subprocess.Popen(["python3", button.game])
+            subprocess.Popen([sys.executable, button.game])
             sys.exit(0)
           
 def onMouseDrag(x,y):
