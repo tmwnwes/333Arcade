@@ -35,7 +35,7 @@ launcherLabel = Label("Return to Launcher", launcherButton.centerX, launcherButt
 
 default = [0,0,0,0,0,0,0]
 keys = ["WordsTyped", "LongestStreak", "HighScore", "GamesPlayed", "TimesLaunched", "WordsMissed", "Mistakes"]
-
+fullInfoList = []
 
 words = open("Files/words_alpha.txt", "r", -1)
 wordList = []
@@ -68,17 +68,28 @@ def file_checking(path, default):
             f.seek(0)
             for i in range(len(default)):
                 f.write((str)(default[i])+"\n")
+    if("Stats" in properPath):
+        with open(properPath, "r+") as gameInfo:
+            for thing in gameInfo:
+                thing = thing.strip()
+                if thing != '':
+                    fullInfoList.append((int)(thing))
+            if(len(default)>len(fullInfoList)):
+                keysFile = open("Files/"+gameName+"Keys.txt", "r+")
+                start = len(fullInfoList)
+                for i in range(start,len(default)):
+                    fullInfoList.append(default[i])
+                    gameInfo.seek(0,2)
+                    gameInfo.write((str)(fullInfoList[i])+"\n")
+                    keysFile.seek(0,2)
+                    keysFile.write(keys[i])
 
 file_checking(gameName+"Stats.txt", default)
 file_checking(gameName+"Keys.txt", keys)
 
 app.failed = False
 gameInfo = open("Files/TypespeedStats.txt", "r+")
-fullInfoList = [] 
-for thing in gameInfo:
-    thing = thing.strip()
-    if thing != '':
-        fullInfoList.append((int)(thing))
+
 
 app.score = 0
 yourScore = Label("Score: %d" %app.score, 10, (1*(app.height/20)), size = app.width/50, align = 'top-left')
