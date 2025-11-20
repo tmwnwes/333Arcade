@@ -26,6 +26,11 @@ app.yourWord = Label("", app.width/2, 1*(app.height/20), size = app.width/30, al
 app.multLabel = Label("Mulitplier: %d" %app.level, (app.width/2), (19*(app.height/20)), size = app.width/80, align = 'bottom')
 app.runAway = 0
 gameOver = Group()
+closeGameButton = Rect(0,app.height, (1/10)*app.width, (1/10)*app.height, fill=None, border = 'black', align = 'bottom-left')
+launcherButton = Rect(app.width,app.height, (1/10)*app.width, (1/10)*app.height, fill=None, border = 'black', align = 'bottom-right')
+launcherButton.game = "PretendLauncher.py"
+closeGameLabel = Label("Close game", closeGameButton.centerX, closeGameButton.centerY, fill='red', size = 15)
+launcherLabel = Label("Return to Launcher", launcherButton.centerX, launcherButton.centerY, fill='black', size = 15)
 
 
 default = [0,0,0,0,0,0,0]
@@ -197,6 +202,16 @@ def onKeyPress(key):
         if(key == 'space'):
             reset_game()
     app.yourWord.value = app.currentWord
+
+def onMousePress(x,y):
+    if closeGameButton.contains(x,y):
+        update_stats()
+        sys.exit(0)
+    if(launcherButton.contains(x,y)):
+        update_stats()
+        subprocess.Popen([sys.executable, launcherButton.game])
+        sys.exit(0)
+
 
 fullInfoList[3]+=1
 fullInfoList[4]+=1
