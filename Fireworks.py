@@ -53,7 +53,7 @@ def file_checking(path, default):
                     gameInfo.seek(0,2)
                     gameInfo.write((str)(fullInfoList[i])+"\n")
                     keysFile.seek(0,2)
-                    keysFile.write(keys[i])
+                    keysFile.write(keys[i] + "\n")
 
 file_checking(gameName+"Stats.txt", default)
 file_checking(gameName+"Keys.txt", keys)

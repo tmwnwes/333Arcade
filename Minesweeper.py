@@ -11,8 +11,8 @@ height = size[1]
 
 app.autofs = 0
 
-default = [0,0,0,0,0,0,0,0,0,0,0]
-keys = ["WonEasy", "AttemptedEasy", "WonMedium", "AttemptedMedium", "WonHard", "AttemptedHard" ,"WonTotal", "AttemptedTotal", "Achievement1", "FlagsUsed", "TimesLaunched"]
+default = [0,0,0,0,0,0,0,0,0,0,0,0,0]
+keys = ["WonEasy", "AttemptedEasy", "WonMedium", "AttemptedMedium", "WonHard", "AttemptedHard" ,"WonTotal", "AttemptedTotal", "Achievement1", "FlagsUsed", "TimesLaunched", "WonCrazy", "AttemptedCrazy"]
 fullInfoList = [] 
 
 file_path = os.path.abspath(__file__)
@@ -152,7 +152,7 @@ def create_board():
     if(app.mode == 'crazy'):
         app.blocksWide = 60
         app.bombPercentage = 30
-
+        fullInfoList[12]+=1
     fullInfoList[7]+=1
     app.squareSize = (int)((1/app.blocksWide)*width)
     app.rows = (int)(height / app.squareSize)
