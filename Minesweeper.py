@@ -10,6 +10,7 @@ width = size[0]
 height = size[1]
 
 app.autofs = 0
+app.queuedUnlockCall = []
 
 default = [0,0,0,0,0,0,0,0,0,0,0,0,0]
 keys = ["WonEasy", "AttemptedEasy", "WonMedium", "AttemptedMedium", "WonHard", "AttemptedHard" ,"WonTotal", "AttemptedTotal", "Achievement1", "FlagsUsed", "TimesLaunched", "WonCrazy", "AttemptedCrazy"]
@@ -52,7 +53,7 @@ def file_checking(path, default):
                     gameInfo.seek(0,2)
                     gameInfo.write((str)(fullInfoList[i])+"\n")
                     keysFile.seek(0,2)
-                    keysFile.write(keys[i])
+                    keysFile.write(keys[i]+'\n')
 
 file_checking(gameName+"Stats.txt", default)
 file_checking(gameName+"Keys.txt", keys)
@@ -79,7 +80,10 @@ app.achShowing = False
 achievementNote = Group()
 background = Rect(0,0,app.width, app.height, fill='lightGray')
 colors = ['black', 'saddleBrown', 'cornflowerBlue', 'teal', 'cyan', 'yellow', 'orange', 'red', 'magenta']
-app.flagCol = 'orange'
+app.flagColList = ['orange', 'lime', 'white', 'yellow', 'red', gradient('red', 'orange', 'yellow', 'lime', 'blue', 'purple'), 'cyan']
+app.flagColIndex = 0
+app.flagCol = app.flagColList[app.flagColIndex]
+app.indexOfIndexes = 0
 numberLabels = Group()
 buttonLabels = Group()
 buttons = Group()
@@ -93,6 +97,26 @@ escapeButtons = Group()
 helpMenu = Group()
 app.help = False
 app.removeAchTimer = 0
+
+def get_acceptable_flag_indexes():
+    indexList = [0]
+    if(fullInfoList[0]>0):
+        indexList.append(2)
+    if(fullInfoList[2]>0):
+        indexList.append(3)
+    if(fullInfoList[4]>0):
+        indexList.append(4)
+    if(fullInfoList[8]>0):
+        indexList.append(1)
+    if(fullInfoList[11]>0):
+        indexList.append(5)
+    if(fullInfoList[6]>25):
+        indexList.append(6)
+    return indexList
+
+app.indexes = get_acceptable_flag_indexes()
+
+
 
 def create_front_screen():
     '''
@@ -128,6 +152,7 @@ def create_front_screen():
         crazyButton.type = 'crazy'
         buttonLabels.add(labelCrazy)
         buttons.add(crazyButton)
+    update_stats()
 
 def create_board():
     '''
@@ -135,6 +160,7 @@ def create_board():
     Creates the game board and sets global values based on mode selected by player  
     Called only once per game,   
     '''
+    app.indexes = get_acceptable_flag_indexes()
     if(app.mode == None):
         None
     if(app.mode == 'easy'):
@@ -180,11 +206,11 @@ def create_board():
 def update_stats():
     '''
     Takes no arguments and returns no values
-    Updates values relating to stored stats outside of the program
+    Updates stores stats in the associated text file
     '''
     gameInfo.seek(0)
     for i in range(len(fullInfoList)):
-        gameInfo.write((str)(fullInfoList[i])+"\n")
+        gameInfo.write((str)(fullInfoList[i])+"\n")  
 
 def create_bombs_end_game():
     '''
@@ -330,13 +356,27 @@ def fail():
     gameOverScreen.add(Label("Press Escape to Try Again", app.width/2, app.height/2 + 20, size = 25))
     gameOverScreen.add(Label("You're a failure", app.width/2, (app.height/2)-20, size = 50))
     
-def unlock_achievement(type):
+def unlock_achievement(type, color):
     app.achShowing = True
     box = Rect(app.width/2,  1/2*app.width, 8*app.squareSize, 4*app.squareSize, fill = None, border = 'black', align = 'center', borderWidth = 4)
     app.removeAchTimer = app.stepsPerSecond*10
     name = Label("You unlocked the " + type + " Achievement", box.centerX, box.centerY-10, size = app.width/60)
-    instruction = Label("Press (y) to toggle flag color in future games" , name.centerX, name.centerY + 25, size = app.width/60)
-    achievementNote.add(box, name, instruction)
+    achievementNote.add(box, name)
+    if(color != None):
+        instruction = Label("Press (y) to cycle flag color in future games" , name.centerX, name.centerY + 25, size = app.width/60)
+        instruction2 = Label("%s added to selection of colors" %color, name.centerX, name.centerY+50, size = app.width/60)
+        achievementNote.add(instruction, instruction2)
+    
+def get_next_index(list, current):
+    '''
+    Takes 2 args, a list and an index in that list, returns an index in the given list
+    This function specifially provides the index directly after the given index
+    Will return 0 in the case that the next index would be out of bounds
+    '''
+    if  current == len(list) -1:
+        return 0
+    else:
+        return current + 1    
     
 def win_game():
     '''
@@ -344,19 +384,31 @@ def win_game():
     Should only be called if the user has won the game
     '''
     if(app.mode == "easy"):
+        if fullInfoList[0] == 0:
+            unlock_achievement("Win an Easy Game", 'white')
         fullInfoList[0]+=1
     if(app.mode == "medium"):
+        if fullInfoList[2] == 0:
+            unlock_achievement("Win a Medium Game", 'yellow')
         fullInfoList[2]+=1
     if(app.mode=="hard"):
+        if fullInfoList[4] == 0:
+            unlock_achievement("Win a Hard Game", 'red')
         fullInfoList[4]+=1
+    if(app.mode == 'crazy' and fullInfoList[11]):
+        unlock_achievement("Win a Crazy Game", 'rainbow')
+        fullInfoList[11]+=1
     fullInfoList[6]+=1
     gameOverScreen.add(Rect(app.width/4, 2*app.height/5, app.width/2, app.height/5, fill = None, border = 'black'))
     gameOverScreen.add(Label("Press Escape to Try Again", app.width/2, app.height/2 + 20, size = 25))
     gameOverScreen.add(Label("You're a Winner", app.width/2, (app.height/2)-20, size = 50))
-    if(app.noFlags == True):
+    if(app.noFlags == True and fullInfoList[8]==0):
+        if(app.achShowing == False):
+            unlock_achievement("Win Without Using Flags", 'lime')
+        else:
+            app.queuedUnlockCall.append(("Win Without Using Flags", 'lime'))
         fullInfoList[8] = 1
-        unlock_achievement("Win Without Using Flags")
-    update_stats()
+    app.indexes = get_acceptable_flag_indexes()
     app.mode = None
     app.play = False
 
@@ -470,6 +522,7 @@ def check_win():
     '''
     if(app.numSafe == app.numCleared):
         win_game()
+        update_stats()
 
 def disappear_clicked_square(x,y):
     '''
@@ -542,13 +595,13 @@ def onKeyPress(key):
     if(key == "escape"):
         if(app.failed == True or app.play == False):
             reset_game()
+            update_stats()
     if(key == 'y' or key =="Y"):
-        if(fullInfoList[8]==1):
-            if(app.flagCol == 'orange'):
-                app.flagCol = "white"
-            else:
-                app.flagCol = "orange"
-            toggle_flags_color()
+        app.indexes = get_acceptable_flag_indexes()
+        app.indexOfIndexes = get_next_index(app.indexes, app.indexOfIndexes)
+        app.flagColIndex = app.indexes[app.indexOfIndexes]
+        app.flagCol = app.flagColList[app.flagColIndex]
+        toggle_flags_color()
     if((key == 'h' or key == 'H' or key =='p' or key =='P') and app.mode != None):
         toggle_help()
 
@@ -602,7 +655,8 @@ def onMousePress(x,y,button):
                         update_stats()
                         subprocess.Popen([sys.executable, button.game])
                         sys.exit(0)
-    auto_clear_zeros()                
+    auto_clear_zeros()
+    update_stats()                
  
 def onStep():
     '''
@@ -624,6 +678,10 @@ def onStep():
         if(app.removeAchTimer <=0):
             achievementNote.clear()
             app.achShowing = False
+    if(app.queuedUnlockCall != []):
+        if(app.achShowing == False):
+            unlock_achievement(app.queuedUnlockCall[0][0], app.queuedUnlockCall[0][1])
+            app.queuedUnlockCall.pop(0)
 
 fullInfoList[10]+=1
 bombs.toFront()
@@ -635,7 +693,5 @@ escapeButtons.toFront()
 helpMenu.toFront()
 create_front_screen()
 update_stats()
-
-
 
 app.run()
