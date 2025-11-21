@@ -517,7 +517,7 @@ def sub_against_mines():
             explode_object(mine)
             mines.remove(mine)
 
-def chainReaction():
+def chain_reaction():
     '''
     Takes no arguments and returns no values
     Implements a chain reaction for explosions to cause explosions of nearby objects
@@ -526,6 +526,7 @@ def chainReaction():
     for boom in explosion:
         for mine in mines:
             if boom.hitsShape(mine):
+                mines.count-=1
                 if(app.muted==False):
                     mine.note.play(restart = True)
                 explode_object(mine)
@@ -739,7 +740,7 @@ def onStep():
         kaboom_all()
         move_torps()
         move_charges()
-        chainReaction()
+        chain_reaction()
         spawn_handling()
         move_bubbles()
         
