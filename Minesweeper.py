@@ -65,6 +65,7 @@ app.height = height
 
 app.setMaxShapeCount(100000)
 
+app.boom = Sound("Audio/nuke.mp3")
 app.stepsPerSecond = 30
 app.blocksWide = 0
 app.bombPercentage = 0
@@ -343,8 +344,9 @@ def explode_bombs():
         if bomb.radius<=app.squareSize/4:
             bomb.radius +=2
         else:
-            fail()
             app.mode = None
+    if(app.mode == None):
+        fail()
     
 def fail():
     '''
@@ -672,7 +674,8 @@ def onStep():
         pyautogui.press('f')
         pyautogui.keyUp("command")
         pyautogui.keyUp("ctrl")
-    if(app.failed == True):
+    if(app.failed == True and app.mode!=None):
+        app.boom.play()
         explode_bombs()
     if(app.achShowing == True):
         app.removeAchTimer-=1
