@@ -367,6 +367,8 @@ def decrease_health_saucer(saucer):
     Meant to be called when a saucer is shot. Will remove a saucer if health has depleted
     '''
     if saucer.health<=1:
+        if(app.muted == False):
+            Sound("Audio/nuke.mp3").play(restart = True)
         create_scores(saucer.centerX, saucer.centerY, saucer.score*app.multiplier)
         app.score+=saucer.score*app.multiplier
         explosion.add(Star(saucer.centerX, saucer.centerY, 12, 12, fill = None, border = 'white'))
@@ -763,7 +765,6 @@ score.toFront()
 hiScore.toFront()
 fullInfoList[4]+=1
 fullInfoList[3]+=1     
-
 
 
 app.run()
