@@ -80,7 +80,7 @@ app.achShowing = False
 achievementNote = Group()
 background = Rect(0,0,app.width, app.height, fill='lightGray')
 colors = ['black', 'saddleBrown', 'cornflowerBlue', 'teal', 'cyan', 'yellow', 'orange', 'red', 'magenta']
-app.flagColList = ['orange', 'lime', 'white', 'yellow', 'red', gradient('red', 'orange', 'yellow', 'lime', 'blue', 'purple'), 'cyan']
+app.flagColList = ['orange', 'lime', 'white', 'yellow', 'red', gradient('red', 'orange', 'yellow', 'lime', 'blue', 'purple', start = 'bottom'), 'cyan']
 app.flagColIndex = 0
 app.flagCol = app.flagColList[app.flagColIndex]
 app.indexOfIndexes = 0
@@ -176,8 +176,8 @@ def create_board():
         app.bombPercentage = 22
         fullInfoList[5]+=1
     if(app.mode == 'crazy'):
-        app.blocksWide = 60
-        app.bombPercentage = 30
+        app.blocksWide = 70
+        app.bombPercentage = 25
         fullInfoList[12]+=1
     fullInfoList[7]+=1
     app.squareSize = (int)((1/app.blocksWide)*width)
@@ -395,8 +395,9 @@ def win_game():
         if fullInfoList[4] == 0:
             unlock_achievement("Win a Hard Game", 'red')
         fullInfoList[4]+=1
-    if(app.mode == 'crazy' and fullInfoList[11]):
-        unlock_achievement("Win a Crazy Game", 'rainbow')
+    if(app.mode == 'crazy'):
+        if fullInfoList[11] == 0:
+            unlock_achievement("Win a Crazy Game", 'rainbow')
         fullInfoList[11]+=1
     fullInfoList[6]+=1
     gameOverScreen.add(Rect(app.width/4, 2*app.height/5, app.width/2, app.height/5, fill = None, border = 'black'))
