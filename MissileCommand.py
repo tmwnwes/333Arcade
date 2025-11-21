@@ -1371,9 +1371,14 @@ def toggle_pause():
         if app.pause == True:
             app.pause = False
             pauseScreen.visible = False
+            if(app.plane == True):
+                app.planeSound.play()
         else:
             app.pause = True
             pauseScreen.visible = True
+            if(app.plane == True):
+                app.planeSound.play()
+                app.planeSound.pause()
                 
 starting_bat()
 app.bat = batteries[0]
