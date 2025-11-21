@@ -83,6 +83,7 @@ pauseScreen = Group(outerPause, pauseLabel, closeGameButton, backToLauncher, bac
 pauseScreen.visible = False
 shooting = [Sound("Audio/Shooting1.mp3"), Sound("Audio/Shooting2.mp3"), Sound("Audio/Shooting3.mp3")]
 
+app.muted = False
 app.asteroidspeed = (1/80)*app.width
 app.stepsPerSecond = 30
 app.decel= 1/4
@@ -185,9 +186,10 @@ def spawn_shots(x,y,angle):
     new4.next = getPointInDir(x,y,angle+5,app.shotSpeed)
     new5 = Oval(x,y,2,20, fill='white', rotateAngle = angle-5)
     new5.next = getPointInDir(x,y,angle-5,app.shotSpeed)
-    Sound("Audio/UFO_shots.mp3").play(restart = True)
-    Sound("Audio/UFO_shots.mp3").play(restart = True)
-    Sound("Audio/UFO_shots.mp3").play(restart = True)
+    if(app.muted == False):
+        Sound("Audio/UFO_shots.mp3").play(restart = True)
+        Sound("Audio/UFO_shots.mp3").play(restart = True)
+        Sound("Audio/UFO_shots.mp3").play(restart = True)
     shots.add(new, new2, new3, new4, new5)
     
 def create_scores(x,y,val):
@@ -508,7 +510,8 @@ def decrease_health_asteroid(ast, scoring):
     Increases score based on asteroid size and whether or not the player was the destroyer
     '''
     if ast.health<=1:
-        ast.note.play(restart = True)
+        if(app.muted == False):
+            ast.note.play(restart = True)
         if(scoring == True):
             create_scores(ast.centerX, ast.centerY, ast.score*app.multiplier)
             app.score+=ast.score * app.multiplier
@@ -621,9 +624,21 @@ def onKeyHold(keys):
     if('space' in keys):
         if(app.timeSince == 0):
             spawn_balls(head.centerX, head.centerY, ship.rotateAngle%360)
-            shooting[randrange(3)].play(restart = True)
+            if(app.muted == False):
+                shooting[randrange(3)].play(restart = True)
             app.timeSince = app.launchSpeed
         
+def toggle_mute():
+    '''
+    Takes no args and returns no values
+    When called, if sound is on, it will mute audio
+    Else, sound will turn on
+    '''
+    if(app.muted == True):
+        app.muted = False
+    else:
+        app.muted = True
+
 def spawn_trail(x, y, color):
     '''
     Takes 3 args and returns no values
@@ -675,7 +690,8 @@ def onStep():
         if(app.saucerSpawn >= app.saucerTime and app.enemy == True):
             app.saucerSpawn = 0
             spawn_enemy_saucer()
-            Sound("Audio/eerie.mp3").play(restart = True)
+            if(app.muted == False):
+                Sound("Audio/eerie.mp3").play(restart = True)
         wrap_around()
         move_balls()
         move_asteroids()
@@ -722,6 +738,8 @@ def onKeyPress(key):
             reset()
     if(key == "p" or key == "P" or key == "escape"):
         toggle_pause()
+    if(key =='m' or key =='M'):
+        toggle_mute()
         
 
 def wrap_around():
