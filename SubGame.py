@@ -250,7 +250,7 @@ def spawn_mine():
     '''
     spawnX=randrange(10, app.width - 10, 10)
     spawnY=randrange(ocean.top+12, (int)(ocean.bottom) -10, 10)
-    new = Star(spawnX, spawnY , 8, 12, fill='darkGray')
+    new = Circle(spawnX, spawnY , 7, fill='darkGray')
     while safetyShield.hitsShape(new):
         new.centerX = randrange(10, app.width - 10, 10)
         new.centerY = randrange(ocean.top+12, (int)(ocean.bottom) -10, 10)
@@ -748,27 +748,27 @@ def onKeyHold(keys):
     '''
     CMU Built-In Function
     Takes keyboard input as arguments, specifcally looking for key holds, returns no values 
-    Focus is on game motion, moving the submarine, as well as the 
+    Focus is on game motion, moving the submarine and safety shield
     '''
     if(app.failed==False and app.pause == False):
-        if(sub.left>0 and sub.centerY >= ocean.top+5):    
+        if(sub.left>0 and ((sub.rotateAngle>0 and sub.top>ocean.top+3) or (sub.rotateAngle<0 and sub.bottom<ocean.bottom-3))):    
             if('a' in keys):
                 sub.centerX, sub.centerY = getPointInDir(sub.centerX, sub.centerY, sub.rotateAngle+90, -2.5)
-        if(sub.right<app.width and sub.centerY<=ocean.bottom-5):
+        if(sub.right<app.width and ((sub.rotateAngle<0 and sub.top>ocean.top+3) or (sub.rotateAngle>0 and sub.bottom<ocean.bottom-3))):
             if('d' in keys):
                 sub.centerX, sub.centerY = getPointInDir(sub.centerX, sub.centerY, sub.rotateAngle+90, 2.5)
-        if(sub.centerY>ocean.top+2):
+        if(sub.top>ocean.top+5):
             if('w' in keys):
-                sub.centerY -=1 ## slower to ascend than to descend
+                sub.centerY -=2
         if(sub.bottom<ocean.bottom-5):
             if('s' in keys):
                 sub.centerY +=2
-        if(sub.rotateAngle<=50 and ocean.containsShape(sub)):
+        if(sub.rotateAngle<=50 and ((sub.top>ocean.top+2 and sub.bottom<ocean.bottom-2) or sub.rotateAngle<0)):
             if('e' in keys):
-                sub.rotateAngle +=0.5
-        if(sub.rotateAngle>=-50 and ocean.containsShape(sub)):
+                sub.rotateAngle +=1
+        if(sub.rotateAngle>=-50 and ((sub.top>ocean.top+2 and sub.bottom<ocean.bottom-2) or sub.rotateAngle>0)):
             if('q' in keys):
-                sub.rotateAngle -=0.5
+                sub.rotateAngle -=1
         safetyShield.centerX = sub.centerX
         safetyShield.centerY = sub.centerY
     
@@ -809,5 +809,4 @@ if(fullInfoList[2] == 1):
     unlockAcheivement("Yellow Submarine")
 
 ## Bring All Game Object Groups to Front in a Proper Order and Spawn Mines to Start the Game ##
-
 app.run()
