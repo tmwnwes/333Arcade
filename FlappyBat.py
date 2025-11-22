@@ -74,6 +74,7 @@ cities = Group()
 failScreen = Group()
 stars = Group()
 app.pause = False
+app.muted = False
 
 outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center', opacity = 0)
 pauseLabel = Label("Game Paused", app.width/2, app.height/2 -15, size = 30, opacity = 0, fill= 'white')
@@ -357,6 +358,19 @@ def onKeyPress(key):
         Sound("Audio/pop.mp3").play(restart=True)
     if((key =='p' or key =='P') and app.play == True):
         toggle_pause()
+    if(key=='m' or key =='M'):
+        toggle_mute()
+
+def toggle_mute():
+    '''
+    Takes no args and returns no values
+    When called, if sound is on, it will mute audio
+    Else, sound will turn on
+    '''
+    if(app.muted == True):
+        app.muted = False
+    else:
+        app.muted = True
 
 def reset_game():
     '''
