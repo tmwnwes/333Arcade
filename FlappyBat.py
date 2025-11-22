@@ -330,13 +330,13 @@ def onKeyPress(key):
                 app.play = True
                 scoreLabel.toFront()
                 app.ballSpeed = -8
-                ball.rotateAngle
+                ball.rotateAngle = -50
                 if(app.mode == 'easy'):
                     fullInfoList[2]+=1
                 if(app.mode == 'medium'):
                     fullInfoList[3]+=1
-                if(app.mode == 'medium'):
-                    fullInfoList[4]+=1
+                if(app.mode == 'hard'):
+                    fullInfoList[4]+=1          
         elif(key=='enter'):
             failScreen.clear()
             ball.centerX = (1/4)*app.width
@@ -349,11 +349,12 @@ def onKeyPress(key):
                 fullInfoList[2]+=1
             if(app.mode == 'medium'):
                 fullInfoList[3]+=1
-            if(app.mode == 'medium'):
+            if(app.mode == 'hard'):
                 fullInfoList[4]+=1
     if(key=='space' and app.play == True and app.pause == False):
         app.ballSpeed = -8
         ball.rotateAngle = -50
+        Sound("Audio/pop.mp3").play(restart=True)
     if((key =='p' or key =='P') and app.play == True):
         toggle_pause()
 
