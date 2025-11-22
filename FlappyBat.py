@@ -355,7 +355,8 @@ def onKeyPress(key):
     if(key=='space' and app.play == True and app.pause == False):
         app.ballSpeed = -8
         ball.rotateAngle = -50
-        Sound("Audio/pop.mp3").play(restart=True)
+        if(app.muted == False):
+            Sound("Audio/pop.mp3").play(restart=True)
     if((key =='p' or key =='P') and app.play == True):
         toggle_pause()
     if(key=='m' or key =='M'):
