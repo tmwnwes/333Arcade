@@ -1,8 +1,8 @@
 import subprocess
 import os
 
-def launch_app(path:str):
-    if os.path.isFile(path):
+def launch_app(path: str):
+    if os.path.isfile(path):
         subprocess.Popen([path], cwd=os.path.dirname(path))
     else:
         print("Executable not found", path)

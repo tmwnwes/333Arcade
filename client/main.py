@@ -1,1 +1,26 @@
-import common
+from .database import init_db, add_program, list_programs
+from .detection import detect_programs
+from .launcher import launch_app
+
+def main():
+    conn = init_db()
+
+    print("Detecting programs...")
+    for metadata in detect_programs():
+        add_program(conn, metadata)
+        print(f"Added: {metadata.name}")
+
+    programs = list_programs(conn)
+    print("\nInstalled Programs:")
+    for program in programs:
+        print(f"{program[0]}. {program[2]}")  # id, name
+
+    choice = int(input("\nEnter program ID to launch: "))
+    for program in programs:
+        if program[0] == choice:
+            print("Launching", program[2])
+            launch_app(program[4])    # exePath
+            break
+
+if __name__ == "__main__":
+    main()

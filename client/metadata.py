@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from tomllib import toml
+import tomllib
 from pathlib import Path
 
 class ProgramMetadata(BaseModel):
@@ -8,6 +8,7 @@ class ProgramMetadata(BaseModel):
     version: str | None = None
     exePath: str
 
-def load_metadata(path:Path) -> ProgramMetadata:
-    data = toml.load(path)
+def load_metadata(path: Path) -> ProgramMetadata:
+    with open(path, "rb") as f:
+        data = tomllib.load(f)
     return ProgramMetadata(**data)

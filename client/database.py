@@ -8,7 +8,7 @@ def init_db():
     cursor = conn.cursor()
     cursor.execute(
         """CREATE TABLE IF NOT EXISTS programs (
-            id INTEGER PRIMARY KEY
+            id INTEGER PRIMARY KEY,
             idNum TEXT,
             name TEXT,
             version TEXT,
@@ -23,10 +23,11 @@ def add_program(conn, metadata):
     cursor.execute(
         """INSERT OR REPLACE INTO programs (idNum, name, version, exePath)
         VALUES (?,?,?,?)""",
-        (metadata.idNum, metadata.name, metadata.version, metadata.exePath))
+        (metadata.idNum, metadata.name, metadata.version, metadata.exePath)
+    )
     conn.commit()
 
 def list_programs(conn):
     cursor = conn.cursor()
-    cursor.execute("SELECT id, idNum, name, version, exePath FROM apps")
+    cursor.execute("SELECT id, idNum, name, version, exePath FROM programs")
     return cursor.fetchall()
