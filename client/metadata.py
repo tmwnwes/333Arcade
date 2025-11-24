@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-import toml
+from tomllib import toml
 from pathlib import Path
 
 class ProgramMetadata(BaseModel):
