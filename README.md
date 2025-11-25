@@ -49,21 +49,6 @@ cd path/to/this/repository
 python3.13 PretendLauncher.py
 ```
 ____
-### Java Version Requirement and Instructions
-The TicTacToe project requires:
-Java 17 or higher
-
-Older versions may fail due to modern Swing and Java syntax used in the program.
-
-To check your installed version:
-
-```bash
-java -version
-```
-
-Download Java 17+ here if needed:
-https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
-____
 
 ## Windows Instructions
 
@@ -121,6 +106,21 @@ Visit https://academy.cs.cmu.edu/desktop to upgrade.
 
 We run the animations with a different function call so this will always pop up though it is irrelevant
 
+____
+### Java Version Requirement and Instructions
+The TicTacToe project requires:
+Java 17 or higher
+
+Older versions may fail due to modern Swing and Java syntax used in the program.
+
+To check your installed version:
+
+```bash
+java -version
+```
+
+Download Java 17+ here if needed:
+https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
 
  There will then be tests for each game individually separate from this which is better explained in ForCodeReviewers.md 
 
