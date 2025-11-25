@@ -160,8 +160,8 @@ def display_reward_extra_city():
     Used to relay information regarding a score milestone and unlocking a bonus city
     '''
     box = Rect(0, score.centerY * 2, app.width/8, app.height/10, fill=None)
-    label2 = Label("You have unlocked a bonus city", box.centerX+20, box.top, fill='white', align = 'top', size = 15)
-    label3 = Label("Survive this wave to spawn your bonus city", box.centerX+20, label2.bottom+2, fill='white', align = 'top', size = 15)
+    label2 = Label("You have unlocked a bonus city", 5, box.top, fill='white', align = 'top', size = 15)
+    label3 = Label("Survive this wave to spawn your bonus city", 5, label2.bottom+2, fill='white', align = 'top-left', size = 15)
     info.add(box, label2, label3)
     app.infoTimer = app.stepsPerSecond*5
 
@@ -210,9 +210,6 @@ def reset():
     '''
     info.clear()
     fullInfoList[1]+=1
-    flak.clear()
-    flakShots.clear()
-    flakTargets.clear()
     app.spawnTimer = app.stepsPerSecond * 5
     app.enemiesLeftToSpawn = 10
     app.score = 0
@@ -994,6 +991,9 @@ def check_loss():
         targets.clear()
         defense.clear()
         basicMissiles.clear()
+        flak.clear()
+        flakShots.clear()
+        flakTargets.clear()
         explosion.clear()
         cities.clear()
         bubbles.clear()
@@ -1005,6 +1005,8 @@ def check_loss():
         smartMissiles.clear()
         ufos.clear()
         ufoShots.clear()
+        targets.clear()
+        defense.clear()
         gameOver.add(RegularPolygon(app.width/2, app.height/2, app.width/2, 4, fill=None))
         gameOver.add(Label("All Cities Lost", app.width/2, app.height/4, fill='white', size = 30))
         gameOver.add(Label("Final Score: %d" %app.score, app.width/2, 3*app.height/8, fill='white', size = 30))
@@ -1477,7 +1479,7 @@ def fire_flak():
                     accuracyX = app.width/90
                     accuracyY = target[1]/12 
                     offsetX = randrange((int)(-(1/accuracyX)*app.width)-1, (int)((1/accuracyX)*app.width)+1, 1)
-                    offsetY = randrange((int)((3/accuracyY)*app.height)+1)
+                    offsetY = randrange((int)((4/accuracyY)*app.height)+1)
                     while(target[1] + offsetY>= city.top -5):
                         offsetY -= 10
                     create_flak_target(target[0] + offsetX, target[1] + offsetY, app.flakNum)
