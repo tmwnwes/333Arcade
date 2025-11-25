@@ -1,0 +1,6 @@
+idNum = 10000
+name = "TestApp"
+version = "1.0.0"
+exePath = ""                    #put any shared things like .py here
+exePath_win = "run_test.bat"
+exePath_mac = "run_test.sh"

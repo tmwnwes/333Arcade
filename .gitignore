@@ -10,3 +10,8 @@ Files/
 
 TESTSRESULTS/
 
+TESTSRESULTS/
+
+.vscode/
+
+client/db/programs.db
