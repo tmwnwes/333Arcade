@@ -1474,7 +1474,7 @@ def fire_flak():
             if(building.flakTimer == 0):
                 target = find_valuable_enemy(building.centerX, building.top, ((width/4)**2 + (height/4)**2)**0.5)
                 if(target!=None):
-                    accuracyX = 16
+                    accuracyX = app.width/90
                     accuracyY = target[1]/12 
                     offsetX = randrange((int)(-(1/accuracyX)*app.width)-1, (int)((1/accuracyX)*app.width)+1, 1)
                     offsetY = randrange((int)((3/accuracyY)*app.height)+1)
