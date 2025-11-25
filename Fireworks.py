@@ -1,20 +1,20 @@
 ## App Settings ##
 
 from cmu_graphics import *
-import tkinter as tk
 import random
 import sys
 import subprocess
 import os
+import pyautogui
 
-root = tk.Tk()
-width = root.winfo_screenwidth()
-height = root.winfo_screenheight()
-root.wm_attributes('-fullscreen', True) ## This line is a workaround for macOs devices with no ill effects for Windows users. It forces a new window to open in fullscreen and focus on it, before destroying it on the next line. The main canvas is then created and players will see it. Players must still maximise this window manually however
-root.destroy()
+size = pyautogui.size()
+width = size[0]
+height = size[1]
+app.autofs = 0
 
 default = [0,0,0,0,0,0,0,0,0,0,0]
 keys = ["white", "pink", "red", "yellow", "orange", "green", "cyan", "blue", "magenta", "totalPopped", "TimesLaunched"]
+fullInfoList = []
 
 file_path = os.path.abspath(__file__)
 directory_path = os.path.dirname(file_path)
@@ -39,16 +39,26 @@ def file_checking(path, default):
             f.seek(0)
             for i in range(len(default)):
                 f.write((str)(default[i])+"\n")
+    if("Stats" in properPath):
+        with open(properPath, "r+") as gameInfo:
+            for thing in gameInfo:
+                thing = thing.strip()
+                if thing != '':
+                    fullInfoList.append((int)(thing))
+            if(len(default)>len(fullInfoList)):
+                keysFile = open("Files/"+gameName+"Keys.txt", "r+")
+                start = len(fullInfoList)
+                for i in range(start,len(default)):
+                    fullInfoList.append(default[i])
+                    gameInfo.seek(0,2)
+                    gameInfo.write((str)(fullInfoList[i])+"\n")
+                    keysFile.seek(0,2)
+                    keysFile.write(keys[i] + "\n")
 
 file_checking(gameName+"Stats.txt", default)
 file_checking(gameName+"Keys.txt", keys)
 
 gameInfo = open("Files/FireworksStats.txt", "r+")
-fullInfoList = []
-for thing in gameInfo:
-    thing = thing.strip()
-    if thing != '':
-        fullInfoList.append((int)(thing))
 
 
 app.width = width
@@ -140,7 +150,9 @@ helpText6 = Label("Disabling Starry Night Mode will not remove your stars unless
 helpText7 = Label("Access this menu anytime by pressing 'h'. This will pause your game and retain your stars and active fireworks upon closing the menu.", helpBackground.left+2, helpBackground.top + (1/2)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
 helpText8 = Label("Firework launch frequency can be altered using the speed selector on the main page (top right), only while in screensaver mode", helpBackground.left+2, helpBackground.top + (11/20)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
 helpText8a = Label("Please note that frequency is measured in 'Fireworks per Minute,' ranges from 1 to 100, The dafault, 20, launches 1 firework every 3 seconds", helpBackground.left+2, helpBackground.top + (3/5)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
-helpText9 = Label("Access to settings and program features are disabled in this menu. To close this menu, press escpape or the X in the top left of this window", helpBackground.left+2, helpBackground.top + (13/20)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
+helpText9 = Label("You can toggle sound at any time using the M key. Sound will begin with next explosion after toggling the sound on", helpBackground.left+2, helpBackground.top+(13/20)*app.height, size = (1/80)*app.width, fill = 'white', align = 'left')
+helpText9a = Label("Access to settings and program features are disabled in this menu. To close this menu, press escpape or the X in the top left of this window", helpBackground.left+2, helpBackground.top + (7/10)*app.height, size = (1/80)*app.width, fill = "white", align = "left")
+
 closeHelpMenuButton = Rect(helpBackground.left+2, helpBackground.top+2, (1/40)*app.width, (1/40)*app.width, fill = "red")
 closeHelpMenuLabel = Label("X", closeHelpMenuButton.centerX, closeHelpMenuButton.centerY, size = (1/40)*app.width)
 closeGameButton = Rect(helpBackground.left, helpBackground.bottom, helpBackground.width/2, helpBackground.height/10, align = 'bottom-left', fill=None, border = 'red')
@@ -166,7 +178,7 @@ starterScreen = Group(colorButtons, title, instructions, goButton, goLabel, scre
                       deselectAllButton, deselectAllLabel, helpButton, helpLabel, soundBox, soundLabel)
 starterScreen.add(speedSwitches)
 helpMenu = Group(helpBackground, helpTitle, closeHelpMenuButton, closeHelpMenuLabel, helpText0, helpText1, helpText2, helpText3, 
-                 helpText4, helpText4a, helpText5, helpText6, helpText7, helpText8, helpText8a, helpText9, backToLauncher, returnLabel, closeGameButton, closeGameLabel)
+                 helpText4, helpText4a, helpText5, helpText6, helpText7, helpText8, helpText8a, helpText9, helpText9a, backToLauncher, returnLabel, closeGameButton, closeGameLabel)
 helpMenu.visible = False
 
 ## Creation of Groups and Lists
@@ -429,7 +441,7 @@ def press_button(mouseX, mouseY):
             sys.exit(0)
         if(backToLauncher.contains(mouseX, mouseY)):
             update_stats()
-            subprocess.Popen(["Python3", backToLauncher.game])
+            subprocess.Popen([sys.executable, backToLauncher.game])
             sys.exit(0)      
 
 
@@ -639,6 +651,8 @@ def onKeyPress(key):
             despawn_help_menu()
     if(key == 'c' or key == 'C'):
         stars.clear()
+    if(key == 'm' or key == "M"):
+        toggle_mute()
     if(key == 'h' or key =='H'):
         spawn_help_menu()
             
@@ -662,7 +676,7 @@ def onMousePress(x, y):
                 sys.exit(0)
             if(backToLauncher.contains(x,y)):
                 update_stats()
-                subprocess.Popen(["Python3", backToLauncher.game])
+                subprocess.Popen([sys.executable, backToLauncher.game])
                 sys.exit(0)
             
     else:
@@ -674,6 +688,14 @@ def onStep():
     Calls body code app.stepsPerSecond many times every second
     Used to show motion and effects
     '''
+    if(app.autofs<=1):
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
     if(app.play == True):
         if(app.mode == "screensaver"):
             app.up +=1

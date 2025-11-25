@@ -3,13 +3,13 @@ import sys
 from cmu_graphics import *
 import tkinter as tk
 import subprocess
+import pyautogui
 
+size = pyautogui.size()
+width = size[0]
+height = size[1]
 
-root = tk.Tk()
-width = root.winfo_screenwidth()
-height = root.winfo_screenheight()
-root.wm_attributes('-fullscreen', True) ## This line is a workaround for macOs devices with no ill effects for Windows users. It forces a new window to open in fullscreen and focus on it, before destroying it on the next line. The main canvas is then created and players will see it. Players must still maximise this window manually however
-root.destroy()
+app.autofs = 0
 
 file_path = os.path.abspath(__file__)
 directory_path = os.path.dirname(file_path)
@@ -27,8 +27,8 @@ app.slider = False
 app.dragSpeed = (1/80)*width
 
 unknownStats = Group()
-knownGames = ["Asteroids.py", "ColorGame.py", "Fireworks.py", "Hangman.py", "Minesweeper.py", "SubGame.py", "MissileCommand.py", "FlappyBat.py", "Simon.py"]
-thumbnails = ["Images/Thumbnails/AsteroidsImage.png", "Images/Thumbnails/ColorGameImage.png", "Images/Thumbnails/FireworksImage.png", "Images/Thumbnails/FlappyBatImage.png", "Images/Thumbnails/HangmanImage.png", "Images/Thumbnails/MinesweeperImage.png", "Images/Thumbnails/MissileCommandImage.png", "Images/Thumbnails/SimonImage.png", "Images/Thumbnails/SubGameImage.png"]
+knownGames = ["Asteroids.py", "ColorGame.py", "Fireworks.py", "Hangman.py", "Minesweeper.py", "SubGame.py", "MissileCommand.py", "FlappyBat.py", "Simon.py", "Typespeed.py"]
+thumbnails = ["Images/Thumbnails/AsteroidsImage.png", "Images/Thumbnails/ColorGameImage.png", "Images/Thumbnails/FireworksImage.png", "Images/Thumbnails/FlappyBatImage.png", "Images/Thumbnails/HangmanImage.png", "Images/Thumbnails/MinesweeperImage.png", "Images/Thumbnails/MissileCommandImage.png", "Images/Thumbnails/SimonImage.png", "Images/Thumbnails/SubGameImage.png", "Images/Thumbnails/TypespeedImage.png"]
 images = Group()
 unknownGames = []
 
@@ -45,11 +45,11 @@ HangmanKeys = ["Solved", "Attempted", "ShortestLengthWordSolved", "ShortestLengt
 HangmanDisplay = ["Solved", "Attempted", "Success Rate"]
 HangmanStatsDisplay = []
 HangmanInfoFull =[0,0,0,0,0,0,0]
-MinesweeperDefault = [0,0,0,0,0,0,0,0,0,0,0]
-MinesweeperKeys = ["WonEasy", "AttemptedEasy", "WonMedium", "AttemptedMedium", "WonHard", "AttemptedHard" ,"WonTotal", "AttemptedTotal", "Achievement1", "FlagsUsed", "TimesLaunched"]
+MinesweeperDefault = [0,0,0,0,0,0,0,0,0,0,0,0,0]
+MinesweeperKeys = ["WonEasy", "AttemptedEasy", "WonMedium", "AttemptedMedium", "WonHard", "AttemptedHard" ,"WonTotal", "AttemptedTotal", "Achievement1", "FlagsUsed", "TimesLaunched", "WonCrazy", "AttemptedCrazy"]
 MinesweeperDisplay = ["Total Wins", "Total Attempts", "Total Flags Used"]
 MinesweeperStatsDisplay = []
-MinesweeperInfoFull = [0,0,0,0,0,0,0,0,0,0,0]
+MinesweeperInfoFull = [0,0,0,0,0,0,0,0,0,0,0,0,0]
 FireworksDefault = [0,0,0,0,0,0,0,0,0,0,0]
 FireworksColors = ["White", "Pink", "Red", "Yellow", "Orange", "Green", "Cyan", "Blue", "Magenta"]
 FireworksKeys = ["white", "pink", "red", "yellow", "orange", "green", "cyan", "blue", "magenta", "totalPopped", "TimesLaunched"]
@@ -81,8 +81,12 @@ SimonKeys = ["HighScore", "GamesPlayed", "TimesLaunched"]
 SimonDisplay = ["High Score"]
 SimonStatsDisplay = []
 SimonInfoFull = [0,0,0]
+TypespeedDefault = [0,0,0,0,0,0,0]
+TypespeedKeys = ["WordsTyped", "LongestStreak", "HighScore", "GamesPlayed", "TimesLaunched", "WordsMissed", "Mistakes"]
+TypespeedDisplay = ["High Score", "Words Typed", "Longest Streak"]
+TypespeedStatsDisplay = []
+TypespeedInfoFull = [0,0,0,0,0,0,0]
 ### Default Values, Keys, Simple Stat Display Keys, Display Values, and General Info about each known and created game. Must update for each additional game made. Add to the known game list and create the necessary values above
-
 
 def file_checking(path, default, gameInfo):
     '''
@@ -112,7 +116,6 @@ def file_checking(path, default, gameInfo):
                 gameInfo[counter] = ((int)(info))
                 counter+=1
  
-
 def find_files_by_extension(directory, extension):
     '''
     Takes 2 args, directory and extension, which are self-explanatory
@@ -139,7 +142,6 @@ for file in games[:]:
         games.remove(file)
 
 app.games = len(games)
-
 
 def find_favorite_firework_color():
     '''
@@ -174,8 +176,7 @@ displays = []
 realKeys = []
 statsDisplay = []
 
-tempList = [SubGameStatsDisplay, HangmanStatsDisplay, MinesweeperStatsDisplay, FireworksStatsDisplay, ColorGameStatsDisplay, AsteroidsStatsDisplay, MissileCommandStatsDisplay, FlappyBatStatsDisplay, SimonStatsDisplay]
-
+tempList = [SubGameStatsDisplay, HangmanStatsDisplay, MinesweeperStatsDisplay, FireworksStatsDisplay, ColorGameStatsDisplay, AsteroidsStatsDisplay, MissileCommandStatsDisplay, FlappyBatStatsDisplay, SimonStatsDisplay, TypespeedStatsDisplay]
 
 def accuracy_check(indexYes, indexTotal, source, destination, destIndex):
     '''
@@ -232,7 +233,6 @@ def create_all_paths_and_game_buttons(gamesAvailable):
         file_checking(dataPaths[i], default[i], realGameInfoPaths[i])
         file_checking(keyPaths[i], realKeys[i], [])
 
-
 create_all_paths_and_game_buttons(games)
 
 ## Simple Stats
@@ -245,6 +245,7 @@ AsteroidsStatsDisplay+=[0, AsteroidsInfoFull[2]]
 MissileCommandStatsDisplay+=[MissileCommandInfoFull[0], MissileCommandInfoFull[4], 0, MissileCommandInfoFull[5], MissileCommandInfoFull[7]]
 FlappyBatStatsDisplay+=[FlappyBatInfoFull[8], find_favorite_game_mode_flappy_bat(), (0 if FlappyBatInfoFull[9]==0 else FlappyBatInfoFull[9]/FlappyBatInfoFull[1])]
 SimonStatsDisplay+=[SimonInfoFull[0]]
+TypespeedStatsDisplay+=[TypespeedInfoFull[2], TypespeedInfoFull[0], TypespeedInfoFull[1]]
 ## Simple Stats
 
 accuracy_check(5, 4, SubGameInfoFull, SubGameStatsDisplay, 3)
@@ -252,7 +253,6 @@ accuracy_check(0,1,HangmanStatsDisplay, HangmanStatsDisplay, 2)
 accuracy_check(0,1,ColorGameInfoFull, ColorGameStatsDisplay, 0)
 accuracy_check(1, 0, AsteroidsInfoFull, AsteroidsStatsDisplay, 0)
 accuracy_check(3,2, MissileCommandInfoFull, MissileCommandStatsDisplay, 2)
-
 
 def create_buttons_for_unknown_games():
     '''
@@ -267,7 +267,7 @@ def create_buttons_for_unknown_games():
         newButton = Rect(app.left + ((i+app.games)/4)*app.width, app.top, app.width/4,app.width/4, fill = 'gray', border = 'black')
         newButton.game = gamePath
         buttons.append(newButton)
-        newLabel = Label("Launch "+ data, newButton.centerX, newButton.centerY, size = app.width/50, bold = True)
+        newLabel = Label("Launch "+ data, newButton.centerX, newButton.centerY, size = app.width/55, bold = True)
         gameLabels.add(newLabel)
         unknownLabel = Label(UnknownGameKeys[0], newButton.left, (1/4)*app.width+10, size = 20, align = 'left')
         unknownStats.add(unknownLabel)
@@ -280,6 +280,10 @@ sliderLine = Line(0,app.height-10, app.width, app.height-10, fill='grey', lineWi
 slider = Rect(0, statsButton.bottom, (4/(app.games+len(unknownGames)))*app.width, 20) 
 escapeButton = Rect(app.width, app.bottom-40, app.width/10, 20, fill=None, border = "black", align = 'top-right')
 excapeLabel = Label("ExitLauncher", escapeButton.centerX, escapeButton.centerY)
+nextPage = Rect(app.width, app.bottom-60, app.width/10, 20, fill=None, border = "black", align = 'top-right')
+nextPageLabel = Label("Next Page", nextPage.centerX, nextPage.centerY)
+prevPage = Rect(0, app.bottom-60, app.width/10, 20, fill=None, border = "black")
+nextPageLabel = Label("Prev Page", prevPage.centerX, prevPage.centerY)
 
 def post_advanced_stats():
     '''
@@ -310,13 +314,31 @@ def onMousePress(x,y):
     CMU built in function to accept mouse press coordinates
     For this script, a press either toggles stats or launches a game, or simply does nothing if no buttons were pressed
     '''
+    if(nextPage.contains(x,y)):
+        if(slider.right<app.width):
+            for button in buttons:
+                button.centerX-=app.width
+            shownStats.centerX-=app.width
+            gameLabels.centerX-=app.width
+            unknownStats.centerX-=app.width
+            images.centerX-=app.width
+            slider.centerX+=(4/(app.games+len(unknownGames)))*(app.width)
+    if(prevPage.contains(x,y)):
+        if(slider.left>0):
+            for button in buttons:
+                button.centerX+=app.width
+            shownStats.centerX+=app.width
+            gameLabels.centerX+=app.width
+            unknownStats.centerX+=app.width
+            images.centerX+=app.width
+            slider.centerX-=(4/(app.games+len(unknownGames)))*(app.width)        
     if (statsButton.contains(x,y)):
         toggle_stats()
     if (escapeButton.contains(x,y)):
         sys.exit(0)
     for button in buttons:
         if button.contains(x,y):
-            subprocess.Popen(["python3", button.game])
+            subprocess.Popen([sys.executable, button.game])
             sys.exit(0)
           
 def onMouseDrag(x,y):
@@ -377,8 +399,18 @@ def toggle_stats():
         post_advanced_stats()
         statsLabel.value = "Show Simple Stats"
 
+def onStep(): ### Forces Full screen on mac
+    if(app.autofs<=4):
+        app.autofs += 1
+    if(app.autofs == 3):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
+    
 post_simple_stats()
 images.toFront()
 gameLabels.toFront()
-app.run()
 
+app.run()

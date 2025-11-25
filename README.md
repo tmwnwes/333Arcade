@@ -1,8 +1,11 @@
 # 333Arcade
  Repository for COMP333 Fall Semester Project
 ________
+At Current Date (11/14/2025) the Assignment is Milestone 4. If you are a code reviewer for this project and you are reading this sentence, you are in the WRONG BRANCH
 
-# Python 3.14 is not currently supported. Please use Python 3.9 - 3.13*
+It is imperative that you switch to the Milestone-4-Code-Review-Branch-(Never-Merge) branch
+
+# Python 3.14 is not currently supported. Please use Python 3.13*
 
 *You may download Python 3.13.9 at https://www.python.org/downloads/release/python-3139/ and then navigating to your specific platform and downloading the installer.
 
@@ -11,7 +14,7 @@ This project is built using the Carnegie Mellon University graphics library. In 
 
 # How to play
 
-Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplised by clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Then download the CMU graphics library mentioned above directly from the source. Take the "cmu_graphics" folder from that download (not the entire installer folder, just the cmu_graphics folder) and put it in the same directory as the files from this repository. Then follow the platform dependent instructions below
+Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplised by navigting to the named branch, and then clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Then download the CMU graphics library mentioned above directly from the source. Take the "cmu_graphics" folder from that download (not the entire installer folder, just the cmu_graphics folder) and put it in the same directory as the files from this repository. Then make sure you have pyautogui installed. This can be accomplished on Windows and Mac with pip or pip3 just by opening a terminal / command prompt and typing pip install pyautogui or pip3 pyautogui. If this function fails, instead type python3 -m pip install pyautogui or python3 -m pip3 install pyautogui.
 
 ## MacOS Instructions
 If you are on MacOS, you have 3 options for running the launcher:
@@ -63,6 +66,14 @@ ____
 
 #### This folder will come populated with a slightly altered version of the words_alpha.txt file available at https://github.com/dwyl/english-words/blob/master/words_alpha.txt. The alterations are just the removal of words that are 4 letters or fewer, but you can feel free to look at the source or replace the file attached in this repository with that file instead. Upon running the launcher, Files will become populated with stats and key files for use by the game included with this project.
 
+## Audio
+
+#### This folder comes populated with mp3 files used in some of the games. Deleting this folder or files within the folder may cause game crashes as audio files are attempted to be played.
+
+## Images
+
+#### This folder contains thumbnail images for each of the created games as well as images for fruit ninja
+
 ## PretendLauncher.py
 
 #### This file acts as the launcher file for all of the games released with this project. It will make and maintain stats and key files for all of the included games. If you wish to know what stats are kept, you may check the keys files which should make it clear what game events are being tracked. In an upcoming release planned for November 7th, 2025, you will be able to automatically delete and recreate the stats files, or update them to match new game updates without necessitating the manual deletion of the files in the Files folder.
@@ -111,11 +122,16 @@ ____
 
 #### There are certain score milestones which enable you to unlock bonus cities, which will replace a destroyed city at the start of the next level in the event that you were unable to protect it. Bonus cities will only spawn if you survived the level, by keeping at least one city alive. Since you gain points for destruction, including a 5x muliplier on direct hit, and bonus points for unspent ammo, and cities kept alive, you will earn bonus cities faster the better you are at the game. Cities will spawn at the start of a new level if you ahve space for a new city. If ypu do not have space, you will retain your bonus city until you reach the start of a level and have space for the city. Bonus cities stack, so it is possible to have several bonus cities, and therfore multiple cities created at the start of a level. There is no win condition for this game, as eventually, you will be unable to protect all of your cities, despite your best efforts.
 
+#### Allied flak gunners have arrived to support the play in the Nov 24 2025 update, each city building has an operational flak gun which will automatically take aim and target incoming enemies. They have an incredible rate of fire, tempered by a lack of accuracy, but they can deal serious damgage. It would be unwise to rely soley on the flak gunners, but they are valuable teammates capable of destroying each type of enemy projectile if they are lucky enough to make contact. They can even provide cover for player missile batteries and save the player from an exposion causing damage and increasing the delay for repairs. Projectiles destroyed my the flak gunners also count towards player score.
+
+## Simon.py
+
+#### This is the standard Simon experience, as the computer makes a sequence using the available 4 colored buttons and you must click the same pattern to succeed. The pattern grows longer as time progresses, always building on the existing pattern until you lose. Gameplay is simple, just watch the computer play the pattern, and repeat it. 
+
 ## SubGame.py
 
 #### This game places you as the commander of a submarine in an underwater minefield, targeted by mines, depth charges, and (in an upcoming update in december, other submarines.) It is your job to survive as long as possible. You have torpedoes to preotect yourself against mines fired with left arrow key (front of sub) and right arrow key (back of sub). Torpedoes can cause a chain reaction of mine explosions You may also angle your submarine counterclockwise with Q or clockwise with E. Finally, actually moving your submarine is accomplished with WASD keys, where W and S move the submarine upwards and downwards with respect to the screen and general notions of up and down while A and D move the ship forward or backwards relative to its rotation. Periodically, you willbe targeted with depth charges which will target your general location within the ocean and explode near your last known coordinates. Depth charges can also start a chain reaction, blowing up nearby mines. You will earn score for all depth charges avoided and mines destroyed by your torpedoes, depth charges or chain reactions. There is no win condition in this game, your goal is to survive as long as possible. 
 
+## Typespeed.py
 
-
-
-
+#### This game is a simple typing exercise in typing ability, as words move from left to right across the screen and it is the players job to type the words correctly. As you go on a streak, your score multiplier will increase which also leads to a higher frequency of word spawns. It is impossible to get every word, and that's why you are not severely penalized for words getting passed you. Depending on your multiplier, after a certain number of words pass by without you typing a correct word, your multiplier will decrease. Be careful, because typing an incorrect word will drop the muliplier by a lot more and reset your streak. The game is played using the keyboard to type the words. Your current typed word appears at the top of the screen, and you press enter to submit. Backspace works as expected, where 1 press deletes the most recent letter only.  

@@ -1,19 +1,18 @@
 from cmu_graphics import *
-import tkinter as tk
 import random
 import sys
 import subprocess
 import os
+import pyautogui
 
-root = tk.Tk()
-width = root.winfo_screenwidth()
-height = root.winfo_screenheight()
-root.wm_attributes('-fullscreen', True) ## This line is a workaround for macOs devices with no ill effects for Windows users. It forces a new window to open in fullscreen and focus on it, before destroying it on the next line. The main canvas is then created and players will see it. Players must still maximise this window manually however
-root.destroy()
+size = pyautogui.size()
+width = size[0]
+height = size[1]
+app.autofs = 0
 
 default = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 keys = ["TimesLaunched", "GamesPlayed", "GamesEasy", "GamesMed", "GamesHard", "HighScoreEasy", "HighScoreMed", "HighScoreHard", "OverallHighScore", "TotalPoints", "AvgEasy", "AvgMed", "AvgHard", "TotalEasy", "TotalMed", "TotalHard"]
-
+fullInfoList = []
 
 file_path = os.path.abspath(__file__)
 directory_path = os.path.dirname(file_path)
@@ -38,16 +37,26 @@ def file_checking(path, default):
             f.seek(0)
             for i in range(len(default)):
                 f.write((str)(default[i])+"\n")
+    if("Stats" in properPath):
+        with open(properPath, "r+") as gameInfo:
+            for thing in gameInfo:
+                thing = thing.strip()
+                if thing != '':
+                    fullInfoList.append((int)(thing))
+            if(len(default)>len(fullInfoList)):
+                keysFile = open("Files/"+gameName+"Keys.txt", "r+")
+                start = len(fullInfoList)
+                for i in range(start,len(default)):
+                    fullInfoList.append(default[i])
+                    gameInfo.seek(0,2)
+                    gameInfo.write((str)(fullInfoList[i])+"\n")
+                    keysFile.seek(0,2)
+                    keysFile.write(keys[i] + "\n")
 
 file_checking(gameName+"Stats.txt", default)
 file_checking(gameName+"Keys.txt", keys)
 
 gameInfo = open("Files/FlappyBatStats.txt", "r+")
-fullInfoList = [] 
-for thing in gameInfo:
-    thing = thing.strip()
-    if thing != '':
-        fullInfoList.append((int)(thing))
         
 app.hiScore = fullInfoList[8]
 app.easyHi = fullInfoList[5]
@@ -65,6 +74,7 @@ cities = Group()
 failScreen = Group()
 stars = Group()
 app.pause = False
+app.muted = False
 
 outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center', opacity = 0)
 pauseLabel = Label("Game Paused", app.width/2, app.height/2 -15, size = 30, opacity = 0, fill= 'white')
@@ -321,13 +331,13 @@ def onKeyPress(key):
                 app.play = True
                 scoreLabel.toFront()
                 app.ballSpeed = -8
-                ball.rotateAngle
+                ball.rotateAngle = -50
                 if(app.mode == 'easy'):
                     fullInfoList[2]+=1
                 if(app.mode == 'medium'):
                     fullInfoList[3]+=1
-                if(app.mode == 'medium'):
-                    fullInfoList[4]+=1
+                if(app.mode == 'hard'):
+                    fullInfoList[4]+=1          
         elif(key=='enter'):
             failScreen.clear()
             ball.centerX = (1/4)*app.width
@@ -340,13 +350,28 @@ def onKeyPress(key):
                 fullInfoList[2]+=1
             if(app.mode == 'medium'):
                 fullInfoList[3]+=1
-            if(app.mode == 'medium'):
+            if(app.mode == 'hard'):
                 fullInfoList[4]+=1
     if(key=='space' and app.play == True and app.pause == False):
         app.ballSpeed = -8
         ball.rotateAngle = -50
+        if(app.muted == False):
+            Sound("Audio/pop.mp3").play(restart=True)
     if((key =='p' or key =='P') and app.play == True):
         toggle_pause()
+    if(key=='m' or key =='M'):
+        toggle_mute()
+
+def toggle_mute():
+    '''
+    Takes no args and returns no values
+    When called, if sound is on, it will mute audio
+    Else, sound will turn on
+    '''
+    if(app.muted == True):
+        app.muted = False
+    else:
+        app.muted = True
 
 def reset_game():
     '''
@@ -400,6 +425,14 @@ def onStep():
     '''
     Built in CMU function which calls all body code app.stepsPerSecond many times per second
     '''
+    if(app.autofs<=1):
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
     if(app.play==True and app.pause == False):
         move_cities()
         scoring_counter()
@@ -449,7 +482,7 @@ def onMousePress(x,y):
             mainScreenExit.visible = False
         if(backToLauncherMain.contains(x,y)):
             update_stats()
-            subprocess.Popen(["python3", backToLauncherMain.game])
+            subprocess.Popen([sys.executable, backToLauncherMain.game])
             sys.exit(0)
         if(closeGameButtonMain.contains(x,y)):
             update_stats()
@@ -457,14 +490,14 @@ def onMousePress(x,y):
     else:
         if(backToLauncher.contains(x,y) and app.pause == True):
             update_stats()
-            subprocess.Popen(["python3", backToLauncher.game])
+            subprocess.Popen([sys.executable, backToLauncher.game])
             sys.exit(0)
         if(closeGameButton.contains(x,y) and app.pause == True):
             update_stats()
             sys.exit(0)
         if(backToLauncherMain.contains(x,y) and app.play == False):
             update_stats()
-            subprocess.Popen(["python3", backToLauncherMain.game])
+            subprocess.Popen([sys.executable, backToLauncherMain.game])
             sys.exit(0)
         if(closeGameButtonMain.contains(x,y) and app.play == False):
             update_stats()

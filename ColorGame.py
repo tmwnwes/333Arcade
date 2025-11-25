@@ -1,22 +1,23 @@
 from cmu_graphics import *
 import random
-import tkinter as tk
 import sys
 import subprocess
 import os
+import pyautogui
 
 
-root = tk.Tk()
-width = root.winfo_screenwidth()
-height = root.winfo_screenheight()
-root.wm_attributes('-fullscreen', True) ## This line is a workaround for macOs devices with no ill effects for Windows users. It forces a new window to open in fullscreen and focus on it, before destroying it on the next line. The main canvas is then created and players will see it. Players must still maximise this window manually however
-root.destroy()
+size = pyautogui.size()
+width = size[0]
+height = size[1]
+app.autofs = 0
+
 
 app.width = width
 app.height = height
 
 default = [0,0,0,0,0,0]
 keys = ["Correct", "TotalAttempts", "LongestStreak", "GamesPlayed", "TimesLaunched", "HighScore"]
+fullInfoList =[]
 
 file_path = os.path.abspath(__file__)
 directory_path = os.path.dirname(file_path)
@@ -41,17 +42,28 @@ def file_checking(path, default):
             f.seek(0)
             for i in range(len(default)):
                 f.write((str)(default[i])+"\n")
+    if("Stats" in properPath):
+        with open(properPath, "r+") as gameInfo:
+            for thing in gameInfo:
+                thing = thing.strip()
+                if thing != '':
+                    fullInfoList.append((int)(thing))
+            if(len(default)>len(fullInfoList)):
+                keysFile = open("Files/"+gameName+"Keys.txt", "r+")
+                start = len(fullInfoList)
+                for i in range(start,len(default)):
+                    fullInfoList.append(default[i])
+                    gameInfo.seek(0,2)
+                    gameInfo.write((str)(fullInfoList[i])+"\n")
+                    keysFile.seek(0,2)
+                    keysFile.write(keys[i] + "\n")
 
 file_checking(gameName+"Stats.txt", default)
 file_checking(gameName+"Keys.txt", keys)
 
 
 gameInfo = open("Files/ColorGameStats.txt", "r+")
-fullInfoList = [] 
-for thing in gameInfo:
-    thing = thing.strip()
-    if thing != '':
-        fullInfoList.append((int)(thing))
+
 app.hi = fullInfoList[5]
 
 app.time = 1000
@@ -164,7 +176,7 @@ def onMousePress(x,y):
             fullInfoList[1]+=1
     if(backToLauncher.contains(x,y)):
         update_stats()
-        subprocess.Popen(["Python3", backToLauncher.game])
+        subprocess.Popen([sys.executable, backToLauncher.game])
         sys.exit(0)
     if(escapeButton.contains(x,y)):
         update_stats()
@@ -216,6 +228,14 @@ def onStep():
     Built in CMU function which calls all of the body code app.stepsPerSecond many times per second
     Used in this script to descrement timeers and show scores
     '''
+    if(app.autofs<=1): ## Forces mac fullscreen
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
     if(app.failed == False):
         check_time()
         app.time -= 1

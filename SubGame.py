@@ -1,17 +1,17 @@
 ## Creating the screen and wide-scoped variables/groups/labels/objects ##
-
 import sys
 from cmu_graphics import *
-import tkinter as tk
 import subprocess
 import os
 import random
+import pyautogui
 
 
 default = [0,0,0,0,0,0,0,0,0]
 keys = ["HighScore", "GamesPlayed", "YellowSubAch", "MinesBlownUp", "TorpsFired", "TorpsHit" ,"PowerUpsCollected", "TimesLaunched", "HideStartScreen"] 
+fullInfoList = [] 
 
-
+app.autofs = 0
 file_path = os.path.abspath(__file__)
 directory_path = os.path.dirname(file_path)
 os.chdir(directory_path)
@@ -35,26 +35,31 @@ def file_checking(path, default):
             f.seek(0)
             for i in range(len(default)):
                 f.write((str)(default[i])+"\n")
+    if("Stats" in properPath):
+        with open(properPath, "r+") as gameInfo:
+            for thing in gameInfo:
+                thing = thing.strip()
+                if thing != '':
+                    fullInfoList.append((int)(thing))
+            if(len(default)>len(fullInfoList)):
+                keysFile = open("Files/"+gameName+"Keys.txt", "r+")
+                start = len(fullInfoList)
+                for i in range(start,len(default)):
+                    fullInfoList.append(default[i])
+                    gameInfo.seek(0,2)
+                    gameInfo.write((str)(fullInfoList[i])+"\n")
+                    keysFile.seek(0,2)
+                    keysFile.write(keys[i] + "\n")
 
 file_checking(gameName+"Stats.txt", default)
 file_checking(gameName+"Keys.txt", keys)
 
 gameInfo = open("Files/SubGameStats.txt", "r+")
-fullInfoList = [] 
-for thing in gameInfo:
-    thing = thing.strip()
-    if thing != '':
-        fullInfoList.append((int)(thing))
 hi = fullInfoList[0]
 
-root = tk.Tk()
-width = root.winfo_screenwidth()
-height = root.winfo_screenheight()
-root.wm_attributes('-fullscreen', True) ## This line is a workaround for macOs devices with no ill effects for Windows users. It forces a new window to open in fullscreen and focus on it, before destroying it on the next line. The main canvas is then created and players will see it. Players must still maximise this window manually however
-root.destroy()
-
-app.width = width
-app.height = height
+size = pyautogui.size()
+app.width = size[0]
+app.height = size[1]
 
 app.failed = False
 app.pause = False
@@ -64,6 +69,7 @@ app.stepsPerSecond=30
 app.powerCounter = 0
 app.removeAchTimer = 200
 app.yellow = False
+app.muted = False
 
 powerUps=Group()
 powerUpTimers = Group()
@@ -99,8 +105,9 @@ torpSpeed = 150 / app.stepsPerSecond
 bubbleSpeed = 100 / app.stepsPerSecond
 maxRange = app.width/3
 mines.count = 0
-minesAtStart = 80
+minesAtStart = 40
 sub.health = 3
+app.warning = Sound("Audio/depthChargeWarning.mp3")
 
 ammo = Label("Ammo:", sky.left+30, 10, size = 20)
 torpedoes=Label(30, ammo.centerX, ammo.centerY+20, bold=True, size=20)
@@ -131,6 +138,8 @@ def move_charges():
     for charge in depthCharges:
         charge.centerY+=3
         if charge.centerY>=charge.depth or charge.bottom>=ocean.bottom-10:
+            if(app.muted==False):
+                charge.note.play(restart = True)
             explode_object(charge)
             depthCharges.remove(charge)
             score.value +=3
@@ -230,6 +239,7 @@ def spawn_depth_charges(x, y):
     randX = randrange(left, right)
     randY = randrange(top, bottom)
     charge = create_depth_charge(randX, randY)
+    charge.note = Sound("Audio/uwexplosion.mp3")
     depthCharges.add(charge)
     
 def spawn_mine():
@@ -240,10 +250,11 @@ def spawn_mine():
     '''
     spawnX=randrange(10, app.width - 10, 10)
     spawnY=randrange(ocean.top+12, (int)(ocean.bottom) -10, 10)
-    new = Star(spawnX, spawnY , 8, 12, fill='darkGray')
+    new = Circle(spawnX, spawnY , 7, fill='darkGray')
     while safetyShield.hitsShape(new):
         new.centerX = randrange(10, app.width - 10, 10)
         new.centerY = randrange(ocean.top+12, (int)(ocean.bottom) -10, 10)
+    new.note = Sound("Audio/uwexplosion.mp3")
     mines.add(new)
     mines.count+=1
 
@@ -262,13 +273,17 @@ def launch_torpedo(x,y, dir, angle):
         new.dist = getPointInDir(new.centerX, new.centerY, angle+90, app.width/3)
         new.dir = dir
         new.rotateAngle =  angle
+        new.note = Sound("Audio/uwexplosion.mp3")
         allTorpedoes.add(new)
     if(dir == "left"):
         new = Oval(x-10, y+4, 20, 6, fill=col)
         new.dir = dir
         new.dist = getPointInDir(new.centerX, new.centerY, angle+90, -app.width/3)
         new.rotateAngle = angle
+        new.note = Sound("Audio/uwexplosion.mp3")
         allTorpedoes.add(new)
+    if(app.muted == False):
+        Sound("Audio/fireTorpedo.mp3").play(restart = True)
 
 def starter_mines():
     '''
@@ -290,6 +305,8 @@ def spawn_powerup():
     randY= randrange((int)(ocean.top)+10 ,(int)(ocean.bottom) - 10,10)
     if(not(safetyShield.hits(randX, randY))):
         powerUps.power=randrange(100)
+        if(app.muted==False):
+            Sound("Audio/shooting2.mp3").play(restart = True)
         if(powerUps.power>=70):
             newPowerUp = Circle(randX, randY, 8, fill=rgb(255, 0, 0))
             newPowerUp.time = 20
@@ -366,6 +383,8 @@ def spawn_warning():
     Adds the depth charge warning
     '''
     warning.visible = True
+    if(app.muted == False):
+        app.warning.play(restart = True)
 
 ## Object Spawning ##
 
@@ -378,6 +397,8 @@ def depth_charge_check():
     '''
     for charge in depthCharges:
         if charge.hitsShape(sub):
+            if(app.muted==False):
+                charge.note.play(restart = True)
             explode_object(charge)
             depthCharges.remove(charge)
 
@@ -468,10 +489,14 @@ def torps_destroying_mines():
     '''
     for torp in allTorpedoes:
         if((torp.dir == 'left' and torp.centerX < torp.dist[0]) or (torp.dir =='right' and torp.centerX > torp.dist[0]) or (torp.top<= ocean.top+3 or torp.bottom >= ocean.bottom -3)):
+            if(app.muted==False):
+                torp.note.play(restart = True)
             explode_object(torp)
             allTorpedoes.remove(torp)
         for mine in mines:
             if torp.hitsShape(mine):
+                if(app.muted==False):
+                    mine.note.play(restart = True)
                 explode_object(mine)
                 fullInfoList[3]+=1
                 mines.remove(mine)
@@ -487,10 +512,12 @@ def sub_against_mines():
     '''
     for mine in mines:
         if sub.hitsShape(mine):
+            if(app.muted==False):
+                    mine.note.play(restart = True)
             explode_object(mine)
             mines.remove(mine)
 
-def chainReaction():
+def chain_reaction():
     '''
     Takes no arguments and returns no values
     Implements a chain reaction for explosions to cause explosions of nearby objects
@@ -499,6 +526,9 @@ def chainReaction():
     for boom in explosion:
         for mine in mines:
             if boom.hitsShape(mine):
+                mines.count-=1
+                if(app.muted==False):
+                    mine.note.play(restart = True)
                 explode_object(mine)
                 mines.remove(mine)
                 score.value+=1
@@ -583,7 +613,7 @@ def toggle_pause():
             pauseScreen.visible = True
 ## Timing, Scoring, Collisions, and Destruction ##
 
-## Ending and Resetting ##
+## Ending and Resetting and Sound##
 def game_over():
     '''
     Takes no arguments and returns no values
@@ -600,6 +630,8 @@ def game_over():
     app.failed=True
     app.pause = True
     pauseScreen.visible = True
+    app.warning.play()
+    app.warning.pause()
     update_stats()
     
 def restartGame():
@@ -640,7 +672,18 @@ def restartGame():
     fullInfoList[1]+=1
     update_stats()
 
-## Ending and Resetting ##
+def toggle_mute():
+    '''
+    Takes no args and returns no values
+    When called, if sound is on, it will mute audio
+    Else, sound will turn on
+    '''
+    if(app.muted == True):
+        app.muted = False
+    else:
+        app.muted = True
+
+## Ending and Resetting and Sound##
  
 ## CMU Built-In Functions Used for Player Motion, Controls, Handling ##
 
@@ -666,6 +709,8 @@ def onKeyPress(key):
                 toggle_yellow_sub()
     if(key == "escape" or key =='p' or key =='P'):
         toggle_pause() 
+    if(key == 'm' or key =="M"):
+        toggle_mute()
             
 def onStep():
     '''
@@ -673,6 +718,14 @@ def onStep():
     Takes no arguments and returns no values
     Anything called in this function is called app.stepsPerSecond many times per second
     '''
+    if(app.autofs<=1):
+        app.autofs += 1
+    if(app.autofs == 1):
+        pyautogui.keyDown("command")
+        pyautogui.keyDown('ctrl')
+        pyautogui.press('f')
+        pyautogui.keyUp("command")
+        pyautogui.keyUp("ctrl")
     if(app.achShowing == True):
         app.removeAchTimer-=1
         if(app.removeAchTimer <=0):
@@ -687,7 +740,7 @@ def onStep():
         kaboom_all()
         move_torps()
         move_charges()
-        chainReaction()
+        chain_reaction()
         spawn_handling()
         move_bubbles()
         
@@ -695,38 +748,42 @@ def onKeyHold(keys):
     '''
     CMU Built-In Function
     Takes keyboard input as arguments, specifcally looking for key holds, returns no values 
-    Focus is on game motion, moving the submarine, as well as the 
+    Focus is on game motion, moving the submarine and safety shield
     '''
     if(app.failed==False and app.pause == False):
-        if(sub.left>0 and sub.centerY >= ocean.top+5):    
+        if(sub.left>0 and ((sub.rotateAngle>0 and sub.top>ocean.top+3) or (sub.rotateAngle<0 and sub.bottom<ocean.bottom-3))):    
             if('a' in keys):
                 sub.centerX, sub.centerY = getPointInDir(sub.centerX, sub.centerY, sub.rotateAngle+90, -2.5)
-        if(sub.right<app.width and sub.centerY<=ocean.bottom-5):
+        if(sub.right<app.width and ((sub.rotateAngle<0 and sub.top>ocean.top+3) or (sub.rotateAngle>0 and sub.bottom<ocean.bottom-3))):
             if('d' in keys):
                 sub.centerX, sub.centerY = getPointInDir(sub.centerX, sub.centerY, sub.rotateAngle+90, 2.5)
-        if(sub.centerY>ocean.top+2):
+        if(sub.top>ocean.top+5):
             if('w' in keys):
-                sub.centerY -=1 ## slower to ascend than to descend
+                sub.centerY -=2
         if(sub.bottom<ocean.bottom-5):
             if('s' in keys):
                 sub.centerY +=2
-        if(sub.rotateAngle<=50 and ocean.containsShape(sub)):
+        if(sub.rotateAngle<=50 and ((sub.top>ocean.top+2 and sub.bottom<ocean.bottom-2) or sub.rotateAngle<0)):
             if('e' in keys):
-                sub.rotateAngle +=0.5
-        if(sub.rotateAngle>=-50 and ocean.containsShape(sub)):
+                sub.rotateAngle +=1
+        if(sub.rotateAngle>=-50 and ((sub.top>ocean.top+2 and sub.bottom<ocean.bottom-2) or sub.rotateAngle>0)):
             if('q' in keys):
-                sub.rotateAngle -=0.5
+                sub.rotateAngle -=1
         safetyShield.centerX = sub.centerX
         safetyShield.centerY = sub.centerY
     
 def onMousePress(x,y):
+    ''' 
+    CMU Built in function which takes the coordinates of a mouse press as argument
+    Used in this game to close game or return to launcher
+    '''
     if(pauseScreen.visible == True):
         if(closeGameButton.contains(x,y)):
             update_stats()
             sys.exit(0)
         if(backToLauncher.contains(x,y)):
             update_stats()
-            subprocess.Popen(["python3", backToLauncher.game])
+            subprocess.Popen([sys.executable, backToLauncher.game])
             sys.exit(0)
         
 ## CMU Built-In Functions Used for Player Motion, Controls, Handling ##
@@ -752,5 +809,4 @@ if(fullInfoList[2] == 1):
     unlockAcheivement("Yellow Submarine")
 
 ## Bring All Game Object Groups to Front in a Proper Order and Spawn Mines to Start the Game ##
-
 app.run()
