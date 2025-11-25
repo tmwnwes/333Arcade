@@ -1,3 +1,4 @@
 @echo off
 echo TestApp launched successfully!
-pause
+start notepad.exe
+

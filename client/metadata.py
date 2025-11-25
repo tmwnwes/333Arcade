@@ -23,6 +23,14 @@ class ProgramMetadata(BaseModel):
         # Determine OS
         os_name = platform.system()
 
+        # Fixes null not working in TOML
+        if self.exePath == "":
+            self.exePath = None
+        if self.exePath_win == "":
+            self.exePath_win = None
+        if self.exePath_mac == "":
+            self.exePath_mac = None
+
         # Pick correct executable path
         if os_name == "Windows":
             exe = self.exePath_win or self.exePath
@@ -38,7 +46,7 @@ class ProgramMetadata(BaseModel):
             self.fullExePath = None
 
         # Debug prints
-        print("Resolved full path:", str(self.fullExePath).absolute() if self.fullExePath else None)
+        print("Resolved full path:", self.fullExePath.absolute() if self.fullExePath else None)
         import os
         if self.fullExePath:
             print("Files in folder:", os.listdir(self.fullExePath.parent))
