@@ -48,6 +48,18 @@ For example, if you have vesion 3.13.7, you would run:
 cd path/to/this/repository
 python3.13 PretendLauncher.py
 ```
+### Java Version Requirement
+The TicTacToe project requires:
+Java 17 or higher
+
+Older versions may fail due to modern Swing and Java syntax used in the program.
+
+To check your installed version:
+
+java -version
+
+Download Java 17+ here if needed:
+https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
 ____
 
 ## Windows Instructions
@@ -177,6 +189,42 @@ We run the animations with a different function call so this will always pop up 
 
 
 # For each game, there are 2 other files, a TestOnly file and a UserTests file. 
+
+## TicTacToe.java
+
+#### This game is a classic implementation of Tic-Tac-Toe using Java Swing. It features a simple 3×3 game board where two players alternate turns, attempting to get three in a row horizontally, vertically, or diagonally. The game automatically resets after each round.
+
+How to Run the Game
+MacOS, Windows, and Linux
+You may run the game in any of the following ways:
+
+1. Run from an IDE (Recommended)
+Open the project in IntelliJ, Eclipse, or VS Code (with Java extensions).
+Then simply run:
+GameMain.java
+This will launch the Tic-Tac-Toe game window.
+
+2. Run from Terminal / Command Prompt
+Navigate to the folder containing the .java files:
+
+cd path/to/tictactoe
+Compile the game:
+
+javac GameMain.java TicTacToeFrame.java
+Run the game:
+
+java GameMain
+
+How to Play
+* Player X always goes first
+* Players alternate turns by clicking any empty square
+* The game automatically checks for:
+    * Horizontal wins
+    * Vertical wins
+    * Diagonal wins
+    * Draws
+After the game ends, a popup shows the result and the board resets automatically.
+If your version includes a Reset button, you can restart at any time.
 
 ### ForCodeReviewers will explain what to do with these files but if you are only interested in playing the games, then ignore those files and just use the main branch. It is assumed that anybody on this branch is here for Comp 333 Milestone 4
 
