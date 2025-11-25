@@ -9,3 +9,5 @@ Files/
 !FIles/words_alpha.txt
 
 .vscode/
+
+client/db/programs.db
