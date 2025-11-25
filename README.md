@@ -49,7 +49,7 @@ cd path/to/this/repository
 python3.13 PretendLauncher.py
 ```
 ____
-### Java Version Requirement
+### Java Version Requirement and Instructions
 The TicTacToe project requires:
 Java 17 or higher
 
@@ -57,7 +57,9 @@ Older versions may fail due to modern Swing and Java syntax used in the program.
 
 To check your installed version:
 
+```bash
 java -version
+```
 
 Download Java 17+ here if needed:
 https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
