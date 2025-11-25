@@ -48,6 +48,7 @@ For example, if you have vesion 3.13.7, you would run:
 cd path/to/this/repository
 python3.13 PretendLauncher.py
 ```
+____
 ### Java Version Requirement
 The TicTacToe project requires:
 Java 17 or higher
