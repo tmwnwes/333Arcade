@@ -204,20 +204,29 @@ You may run the game in any of the following ways:
 1. Run from an IDE (Recommended)
 Open the project in IntelliJ, Eclipse, or VS Code (with Java extensions).
 Then simply run:
+
+```bash
 GameMain.java
+```
+
 This will launch the Tic-Tac-Toe game window.
 
-2. Run from Terminal / Command Prompt
+3. Run from Terminal / Command Prompt
 Navigate to the folder containing the .java files:
 
+```bash
 cd path/to/tictactoe
+```
 Compile the game:
 
+```bash
 javac GameMain.java TicTacToeFrame.java
+```
 Run the game:
 
+```bash
 java GameMain
-
+```
 How to Play
 * Player X always goes first
 * Players alternate turns by clicking any empty square
@@ -230,5 +239,3 @@ After the game ends, a popup shows the result and the board resets automatically
 If your version includes a Reset button, you can restart at any time.
 
 ### ForCodeReviewers will explain what to do with these files but if you are only interested in playing the games, then ignore those files and just use the main branch. It is assumed that anybody on this branch is here for Comp 333 Milestone 4
-
-
