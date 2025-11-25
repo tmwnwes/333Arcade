@@ -853,6 +853,11 @@ def decrease_health(item, group, x3):
         points = item.score * app.mult
         if(x3 == True):
             points = points * 3
+            if(app.muted == False):
+                Sound("Audio/uwexplosion.mp3").play(restart = True)
+        else:
+            if(app.muted == False):
+                Sound("Audio/medium.mp3").play(restart = True)
         app.score+= points
         create_scores(item.centerX, item.centerY, points)
         explode_object(item, True)  
@@ -1415,13 +1420,13 @@ def find_closest_of_group(x,y,range, group, importance):
     range is the max distance to check for
     group is the shape group to search through for finding closest shape of that group
     importance is an int which will later act as a multiplier for how valuable a target is
-    Returns a tuple containing the coordinates of the shape closest to given x, y, the distance from x,y to the shape, and a calculation representing how valuable the target is
+    Returns a tuple containing the coordinates of the shape closest to given x, y, the distance from x,y to the shape, and a calculation representing how valuable the target is, and the importance value itself
     '''
     info = []
     for shape in group:
         dist = distance(x,y, shape.centerX, shape.centerY)
         if(dist<range):
-            info.append((shape.centerX, shape.centerY, dist, ((1000/dist))*importance))
+            info.append((shape.centerX, shape.centerY, dist, ((1000/dist))*importance, importance))
     if(len(info)>0):
         return min(info, key= lambda t: t[2])
     else:
@@ -1436,14 +1441,14 @@ def find_valuable_enemy(x,y, range):
     Intended to be used in conjunction with fire_flak() to aim the flak being fired
     '''
     options = []
-    basic = find_closest_of_group(x,y,range, basicMissiles, 1.5)
-    bomb = find_closest_of_group(x,y,range, bombs, 1)
-    multiBomb = find_closest_of_group(x,y,range, multiBombs, 10)
-    smart = find_closest_of_group(x,y,range, smartMissiles, 5)
-    fun = find_closest_of_group(x,y,range, nonbasicMissiles, 5)
-    plane = find_closest_of_group(x,y,range, planes, 5)
-    tiny = find_closest_of_group(x,y,range, multiBombPostSplit, 1)
-    ufoBullets = find_closest_of_group(x,y,range, ufoShots, 1)
+    basic = find_closest_of_group(x,y,range, basicMissiles, 0.75)
+    bomb = find_closest_of_group(x,y,range, bombs, 0.6)
+    multiBomb = find_closest_of_group(x,y,range, multiBombs, 1)
+    smart = find_closest_of_group(x,y,range, smartMissiles, 0.3)
+    fun = find_closest_of_group(x,y,range, nonbasicMissiles, 0.85)
+    plane = find_closest_of_group(x,y,range, planes, 0.2)
+    tiny = find_closest_of_group(x,y,range, multiBombPostSplit, 0.6)
+    ufoBullets = find_closest_of_group(x,y,range, ufoShots, 0.6)
     options+=[basic, bomb, multiBomb, smart, fun, plane, tiny, ufoBullets]
     for item in options[:]:
         if(item == None or item[1]>y):
@@ -1467,22 +1472,22 @@ def fire_flak():
             if(building.flakTimer>0):
                 building.flakTimer -=1
             if(building.flakTimer == 0):
-                target = find_valuable_enemy(building.centerX, building.top, ((width/4)**2 + (height/2)**2)**0.5)
+                target = find_valuable_enemy(building.centerX, building.top, ((width/4)**2 + (height/4)**2)**0.5)
                 if(target!=None):
-                    accuracyX = 30
-                    accuracyY = target[1]/4 ## Lower means less accurate but this is not a 0-100 scale
+                    accuracyX = 1
+                    accuracyY = target[1]/12 
                     offsetX = randrange((int)(-(1/accuracyX)*app.width)-1, (int)((1/accuracyX)*app.width)+1, 1)
-                    offsetY = randrange((int)(-(1/accuracyY)*app.height)-1, (int)((5/accuracyY)*app.height)+1, 1)
+                    offsetY = randrange((int)((3/accuracyY)*app.height)+1)
                     while(target[1] + offsetY>= city.top -5):
                         offsetY -= 10
                     create_flak_target(target[0] + offsetX, target[1] + offsetY, app.flakNum)
-                    new = Circle(building.centerX, building.top, 1, fill = 'gray')
+                    new = Circle(building.centerX, building.top, 2, fill = 'white')
                     new.target = (target[0] + offsetX, target[1] + offsetY)
                     new.id = app.flakNum
                     new.rotateAngle = angleTo(new.centerX, new.centerY, new.target[0], new.target[1])
                     new.next = getPointInDir(new.centerX, new.centerY, new.rotateAngle, app.flakSpeed)
                     flakShots.add(new)
-                    building.flakTimer = app.stepsPerSecond
+                    building.flakTimer = app.stepsPerSecond//target[4]
                     app.flakNum+=1
 
 def move_flak_shots():
@@ -1611,7 +1616,7 @@ def toggle_mute():
     if(app.muted == True):
         app.muted = False
     else:
-        app.muted = True            
+        app.muted = True        
             
 def toggle_pause():
     '''
