@@ -12,7 +12,8 @@ def init_db():
             idNum TEXT,
             name TEXT,
             version TEXT,
-            exePath TEXT
+            exePath TEXT,
+            fullExePath TEXT
         )"""
     )
     conn.commit()
@@ -21,13 +22,13 @@ def init_db():
 def add_program(conn, metadata):
     cursor = conn.cursor()
     cursor.execute(
-        """INSERT OR REPLACE INTO programs (idNum, name, version, exePath)
-        VALUES (?,?,?,?)""",
-        (metadata.idNum, metadata.name, metadata.version, metadata.exePath)
+        """INSERT OR REPLACE INTO programs (idNum, name, version, exePath, fullExePath)
+        VALUES (?,?,?,?,?)""",
+        (metadata.idNum, metadata.name, metadata.version, metadata.exePath, str(metadata.fullExePath))
     )
     conn.commit()
 
 def list_programs(conn):
     cursor = conn.cursor()
-    cursor.execute("SELECT id, idNum, name, version, exePath FROM programs")
+    cursor.execute("SELECT id, idNum, name, version, exePath, fullExePath FROM programs")
     return cursor.fetchall()

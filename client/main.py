@@ -19,7 +19,7 @@ def main():
     for program in programs:
         if program[0] == choice:
             print("Launching", program[2])
-            launch_app(program[4])    # exePath
+            launch_app(program[5])                  # FullExePath
             break
 
 if __name__ == "__main__":

@@ -1,0 +1,4 @@
+idNum = 10000
+name = "TestApp"
+version = "1.0.0"
+exePath = "run_test.bat"
