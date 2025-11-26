@@ -306,7 +306,7 @@ def spawn_plane(y, canScore):
     hitbox.angle = angleTo(hitbox.centerX, hitbox.centerY, app.width+30, hitbox.centerY)
     hitbox.next = getPointInDir(hitbox.centerX, hitbox.centerY, hitbox.angle, app.planeSpeed)
     hitbox.dropZones = []
-    hitbox.flakHP = 2*hitbox.bombs + 10 ### Only relevant for city flak hits 
+    hitbox.flakHP = hitbox.bombs//2 + 10 ### Only relevant for city flak hits 
     if(canScore == True):
         hitbox.score = 625
     else:
@@ -1221,7 +1221,7 @@ def spawn_ufo(canScore):
     else:
         saucer.score = 0   
     saucer.firing = app.level//10 + 1
-    saucer.flakHP = 225
+    saucer.flakHP = 200
     saucer.hitIDs =[]
     ufos.add(saucer)              
                 
@@ -1482,11 +1482,11 @@ def fire_flak():
                 target = find_valuable_enemy(building.centerX, building.top, ((width/4)**2 + (height/4)**2)**0.5)
                 if(target!=None):
                     accuracyX = app.width/100 + app.level*2 if app.level<12 else app.width/100 + 22 
-                    accuracyY = target[1]/4 if (target[4] == 1.8 or target[4] == 0.65) else target[1]/12 #Special case is ufos
+                    accuracyY = target[1]/4 if (target[4] == 1.8 or target[4] == 0.65) else target[1]/12 #Special case is ufos and planes
                     offsetX = randrange((int)(-(1/accuracyX)*app.width)-1, (int)((1/accuracyX)*app.width)+1, 1)
                     offsetY = randrange((int)(-(0.5/accuracyY)*app.height)-1, (int)((1.5/accuracyY)*app.height)+1, 5)
                     if(target[4] == 0.65): #Special case is planes
-                        offsetX+=(app.width/25)
+                        offsetX+=(app.width/20)
                     while(target[1] + offsetY>= city.top -5):
                         offsetY -= 10
                     create_flak_target(target[0] + offsetX, target[1] + offsetY, app.flakNum)
