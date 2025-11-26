@@ -71,7 +71,7 @@ nightSky = Rect(0,0,app.width, app.height)
 app.cities = 6
 app.gate = 3500
 app.generalReload = app.stepsPerSecond*2.5
-app.level = 1 
+app.level = 1
 app.mult = app.level
 app.shotSpeedLR = ((width*height)**0.5)/88 ### Roughly around 15 on standard macbook screen, but it is now relative to screen size
 app.shotSpeedMid = ((width*height)**0.5)/66 ### Roughly around 20 on standard macbook screen, but it is now relative to screen size
@@ -160,7 +160,7 @@ def display_reward_extra_city():
     Used to relay information regarding a score milestone and unlocking a bonus city
     '''
     box = Rect(0, score.centerY * 2, app.width/8, app.height/10, fill=None)
-    label2 = Label("You have unlocked a bonus city", 5, box.top, fill='white', align = 'top', size = 15)
+    label2 = Label("You have unlocked a bonus city", 5, box.top, fill='white', align = 'top-left', size = 15)
     label3 = Label("Survive this wave to spawn your bonus city", 5, label2.bottom+2, fill='white', align = 'top-left', size = 15)
     info.add(box, label2, label3)
     app.infoTimer = app.stepsPerSecond*5
@@ -306,14 +306,14 @@ def spawn_plane(y, canScore):
     hitbox.angle = angleTo(hitbox.centerX, hitbox.centerY, app.width+30, hitbox.centerY)
     hitbox.next = getPointInDir(hitbox.centerX, hitbox.centerY, hitbox.angle, app.planeSpeed)
     hitbox.dropZones = []
-    hitbox.flakHP = 5 ### Only relevant for city flak hits 
+    hitbox.flakHP = 2*hitbox.bombs + 10 ### Only relevant for city flak hits 
     if(canScore == True):
         hitbox.score = 625
     else:
         hitbox.score = 0
     spacing = app.width// hitbox.bombs
     for i in range(hitbox.bombs):
-        hitbox.dropZones.append(spacing * (i+1) + randrange(-50, 51, 1))
+        hitbox.dropZones.append(spacing * (i) + randrange(-50, 51, 1))
     app.plane = True
     hitbox.hitIDs = []
     planes.add(hitbox)
@@ -357,7 +357,7 @@ def move_planes():
     for plane in planes:
         plane.centerX, plane.centerY = plane.next 
         plane.next = getPointInDir(plane.centerX, plane.centerY, plane.angle, app.planeSpeed)
-        if(plane.centerX>=app.width+plane.width):
+        if(plane.left>=app.width):
             planes.remove(plane)
 
 def get_next_index(list, current):
@@ -508,7 +508,7 @@ def kaboom_all():
             explosion.remove(object)
     for flakShot in flak:
         if(flakShot.time <= 0):
-            flakShot.opacity-=10
+            flakShot.opacity-=20
         else:
             flakShot.time-=1
         if flakShot.opacity == 0:
@@ -636,7 +636,7 @@ def spawn_basic_missile(x,y, canScore):
         new.score = 0
     new.rotateAngle = angleTo(x,y,x,app.height)
     new.next = getPointInDir(new.centerX, new.centerY, new.rotateAngle, app.basicMissileSpeed)
-    new.flakHP = 15 ### Only relevant for city flak hits 
+    new.flakHP = 14 ### Only relevant for city flak hits 
     new.hitIDs = []
     basicMissiles.add(new)
 
@@ -832,24 +832,24 @@ def missiles_vs_anti_missiles(type):
                 fullInfoList[4]+=1
        
        
-def decrease_health(item, group, x3):
+def decrease_health(item, group, x2):
     '''
     Takes 3 arguments:
     item, which is a shape
     group, which is the group the shape belongs to
-    x3 is a boolean such that True means the score should get a 3x multiplier
+    x2 is a boolean such that True means the score should get a 2x multiplier
     Returns no values
     Decreases the hp of the item and destroys it if appropriate, removing it from the group
     In destruction case, adds appropriate score to player score
     '''
-    if(x3 == True):
-        item.flakHP-=3
+    if(x2 == True):
+        item.flakHP-=2
     else:
         item.flakHP-=1 
     if(item.flakHP<=0):
         points = item.score * app.mult
-        if(x3 == True):
-            points = points * 3
+        if(x2 == True):
+            points = points * 2
             if(app.muted == False):
                 Sound("Audio/uwexplosion.mp3").play(restart = True)
         else:
@@ -888,7 +888,7 @@ def direct_flak_vs_group(group):
                 for target in flakTargets:
                     if(flakBullet.id == target.id):
                         new = Circle(target.centerX, target.centerY, 3, fill='grey', border = 'yellow', borderWidth = 0.5)
-                        new.time = app.stepsPerSecond
+                        new.time = app.stepsPerSecond//2
                         new.id = target.id
                         flak.add(new)
                         flakTargets.remove(target)
@@ -953,6 +953,8 @@ def hit_detection():
     direct_flak_vs_group(multiBombPostSplit)
     direct_flak_vs_group(ufoShots)
     direct_flak_vs_group(smartMissiles)
+    flak_vs_group(ufos)
+    direct_flak_vs_group(ufos)
     
     
 def move_trail():
@@ -1066,7 +1068,7 @@ def spawn_multi_bomb(x, detHeight, canScore):
     new.speed = app.multiBombSpeed
     new.rotateAngle = angleTo(new.centerX,new.centerY,randrange(app.width//4, 3*(app.width//4)),detHeight)
     new.next = getPointInDir(new.centerX, new.centerY, new.rotateAngle, new.speed)
-    new.flakHP = 4 ### Only relevant for city flak hits 
+    new.flakHP = new.bombs+1 ### Only relevant for city flak hits 
     new.hitIDs = []
     multiBombs.add(new)
     
@@ -1110,9 +1112,9 @@ def spawn_shots(x, y, angle, canScore):
         new3.score = 0
     if(app.muted == False):
         Sound("Audio/UFO_shots.mp3").play(restart = True)
-    new.flakHP = 1 ### Only relevant for city flak hits 
-    new2.flakHP = 1 ### Only relevant for city flak hits 
-    new3.flakHP = 1 ### Only relevant for city flak hits 
+    new.flakHP = 2 ### Only relevant for city flak hits 
+    new2.flakHP = 2 ### Only relevant for city flak hits 
+    new3.flakHP = 2 ### Only relevant for city flak hits 
     new.hitIDs = []
     new2.hitIDs = []
     new3.hitIDs = []
@@ -1156,7 +1158,7 @@ def spawn_fun_missile(canScore):
     new.gravSpeed = app.gravity
     new.rotateAngle = angleTo(new.centerX, new.centerY, randrange(5*(app.width//40), 35*(app.width//40)), app.height)
     new.next = getPointInDir(new.centerX, new.centerY, new.rotateAngle, new.speed)
-    new.flakHP = 3 ### Only relevant for city flak hits 
+    new.flakHP = 6 ### Only relevant for city flak hits 
     new.hitIDs = []
     nonbasicMissiles.add(new)
     
@@ -1203,7 +1205,7 @@ def spawn_smart_bomb(canScore):
         new.score = 0
     new.rotateAngle = angleTo(new.centerX, new.centerY, randrange((int)((1/5)*app.width), (int)((4/5)*app.width)), app.height)
     new.next = getPointInDir(new.centerX, new.centerY, new.rotateAngle, new.speed)
-    new.flakHP = 2 ### Only relevant for city flak hits and low health because in the lore, it is a delicate complicated device such that damage messes it up quickly
+    new.flakHP = 5 ### Only relevant for city flak hits and low health because in the lore, it is a delicate complicated device such that damage messes it up quickly
     new.hitIDs = []
     smartMissiles.add(new)
                 
@@ -1219,6 +1221,8 @@ def spawn_ufo(canScore):
     else:
         saucer.score = 0   
     saucer.firing = app.level//10 + 1
+    saucer.flakHP = 225
+    saucer.hitIDs =[]
     ufos.add(saucer)              
                 
 def spawn_handling():
@@ -1445,15 +1449,16 @@ def find_valuable_enemy(x,y, range):
     options = []
     basic = find_closest_of_group(x,y,range, basicMissiles, 0.75)
     bomb = find_closest_of_group(x,y,range, bombs, 0.6)
-    multiBomb = find_closest_of_group(x,y,range, multiBombs, 1)
+    multiBomb = find_closest_of_group(x,y,range, multiBombs, 2)
     smart = find_closest_of_group(x,y,range, smartMissiles, 0.3)
-    fun = find_closest_of_group(x,y,range, nonbasicMissiles, 0.85)
-    plane = find_closest_of_group(x,y,range, planes, 0.2)
+    fun = find_closest_of_group(x,y,range*1.2, nonbasicMissiles, 1.4)
+    plane = find_closest_of_group(x,y,range*2, planes, 0.65)
     tiny = find_closest_of_group(x,y,range, multiBombPostSplit, 0.6)
     ufoBullets = find_closest_of_group(x,y,range, ufoShots, 0.6)
-    options+=[basic, bomb, multiBomb, smart, fun, plane, tiny, ufoBullets]
+    ufo = find_closest_of_group(x,y,range*3, ufos, 1.8)
+    options+=[basic, bomb, multiBomb, smart, fun, plane, tiny, ufoBullets, ufo]
     for item in options[:]:
-        if(item == None or item[1]>y):
+        if(item == None or item[1]>y or item[0]<leftBattery.left-6 or item[0]>rightBattery.right+6):
             options.remove(item)
     if(len(options)>0):    
         bestTarget = max(options, key = lambda t: t[3])
@@ -1476,10 +1481,12 @@ def fire_flak():
             if(building.flakTimer == 0):
                 target = find_valuable_enemy(building.centerX, building.top, ((width/4)**2 + (height/4)**2)**0.5)
                 if(target!=None):
-                    accuracyX = app.width/90
-                    accuracyY = target[1]/12 
+                    accuracyX = app.width/100 + app.level*2 if app.level<12 else app.width/100 + 22 
+                    accuracyY = target[1]/4 if (target[4] == 1.8 or target[4] == 0.65) else target[1]/12 #Special case is ufos
                     offsetX = randrange((int)(-(1/accuracyX)*app.width)-1, (int)((1/accuracyX)*app.width)+1, 1)
-                    offsetY = randrange((int)((4/accuracyY)*app.height)+1)
+                    offsetY = randrange((int)(-(0.5/accuracyY)*app.height)-1, (int)((1.5/accuracyY)*app.height)+1, 5)
+                    if(target[4] == 0.65): #Special case is planes
+                        offsetX+=(app.width/25)
                     while(target[1] + offsetY>= city.top -5):
                         offsetY -= 10
                     create_flak_target(target[0] + offsetX, target[1] + offsetY, app.flakNum)
@@ -1506,7 +1513,7 @@ def move_flak_shots():
             for target in flakTargets:
                 if shot.id == target.id:
                     new = Circle(target.centerX, target.centerY, 3, fill='grey', border = 'yellow', borderWidth = 0.5)
-                    new.time = app.stepsPerSecond
+                    new.time = app.stepsPerSecond//2
                     new.id = shot.id
                     flak.add(new)
                     flakTargets.remove(target)
@@ -1542,13 +1549,13 @@ def onStep():
                 app.planeSound.pause()                
             app.infoTimer-=1
             app.spawnTimer -= 1
-            update_score()
+            fire_flak()
+            move_flak_shots()
             reload_all()
             move_shots()
             move_smart_bombs()
             move_ufo()
             move_ufo_shots()
-            kaboom_all()
             move_basic_missiles()
             hit_detection()
             move_trail()
@@ -1562,8 +1569,8 @@ def onStep():
             bombing_logic()
             move_multi_bomb()
             move_fun_missiles()
-            fire_flak()
-            move_flak_shots()
+            update_score()
+            kaboom_all()
             if(app.infoTimer ==0):
                 info.clear()
             update_stats()
