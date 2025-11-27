@@ -12,6 +12,8 @@ It is imperative that you switch to the Milestone-4-Code-Review-Branch-(Never-Me
 
 This project is built using the Carnegie Mellon University graphics library. In order to run the launcher and games in their current state, the cmu_graphics folder must be in the same directory as the launcher and games. For your safety, you must download the graphics library yourself. The installer package for this library can be found at the following link: https://academy.cs.cmu.edu/desktop
 
+## UPDATE: place cmu_graphics inside the libraries folder as well for proper usage of the new launcher
+
 # How to play
 
 Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplised by navigting to the named branch, and then clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Then download the CMU graphics library mentioned above directly from the source. Take the "cmu_graphics" folder from that download (not the entire installer folder, just the cmu_graphics folder) and put it in the same directory as the files from this repository. Then make sure you have pyautogui installed. This can be accomplished on Windows and Mac with pip or pip3 just by opening a terminal / command prompt and typing pip install pyautogui or pip3 pyautogui. If this function fails, instead type python3 -m pip install pyautogui or python3 -m pip3 install pyautogui.
