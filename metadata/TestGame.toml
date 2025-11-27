@@ -1,6 +1,7 @@
-idNum = 10000
+idNum = "000001"
 name = "TestApp"
 version = "1.0.0"
 exePath = ""                    #put any shared things like .py here
 exePath_win = "run_test.bat"
 exePath_mac = "run_test.sh"
+launchVersion = ""              #use this to specify python/java version
