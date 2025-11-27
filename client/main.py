@@ -24,7 +24,7 @@ def main():
     for program in programs:
         if program[0] == choice:
             print("Launching", program[2])
-            launch_app(program[7])                  # FullExePath
+            launch_app(program[7], program[8])      # FullExePath, launchVersion
             break
 
 if __name__ == "__main__":
