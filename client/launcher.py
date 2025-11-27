@@ -32,23 +32,36 @@ def launch_app(path, launch_version=None):
 
     # detect correct interpreter for .py files
     if ext == ".py":
-        if runtime and runtime.startswith("python"):
 
-            # custom absolute interpreter
+        # set PYTHONPATH to include only the libraries folder
+        project_root = full_path.parents[2]     # <project_root>
+        libraries_path = project_root / "libraries"
+
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(libraries_path)
+
+        if runtime and runtime.startswith("python"):
             if custom_path:
                 python_exec = custom_path
-
-            # version-based detection (python3.11 → use that executable)
             else:
                 python_exec = shutil.which(runtime) or sys.executable
 
             print("Launching Python using:", python_exec)
-            subprocess.Popen([python_exec, str(full_path)], cwd=str(full_path.parent))
+            subprocess.Popen(
+                [python_exec, str(full_path)],
+                cwd=str(full_path.parent),
+                env=env
+            )
             return
 
-        # fallback
-        subprocess.Popen([sys.executable, str(full_path)], cwd=str(full_path.parent))
+        # fallback Python
+        subprocess.Popen(
+            [sys.executable, str(full_path)],
+            cwd=str(full_path.parent),
+            env=env
+        )
         return
+
 
     # JAR files
     if ext == ".jar":
