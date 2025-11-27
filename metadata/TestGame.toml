@@ -1,7 +1,7 @@
-idNum = "000001"
-name = "TestApp"
-version = "1.0.0"
-exePath = ""                    #put any shared things like .py here
-exePath_win = "run_test.bat"
-exePath_mac = "run_test.sh"
-launchVersion = ""              #use this to specify python/java version
+idNum = "000001"                #represents the unique id of the program, would only apply to things bundled/downloaded from launcher
+name = "TestApp"                #this name matches the folder in apps
+version = "1.0.0"               #version for keeping track
+exePath = ""                    #put any shared things like .py or .jar here, leave blank if of specific ""
+exePath_win = "run_test.bat"    #if program is windows only
+exePath_mac = "run_test.sh"     #if program is mac only
+launchVersion = ""              #use this to specify python/java version else leave blank ""
