@@ -75,6 +75,7 @@ app.numCleared = 0
 app.firstClick = True
 app.failed = False
 app.play = True
+app.bombCount = 0
 app.mode = None
 app.noFlags = True
 app.achShowing = False
@@ -235,6 +236,7 @@ def plant_bombs(blocks):
         if (bombChance<=app.bombPercentage):
             square.bomb = True
             app.numSafe-=1
+            app.bombCount+=1
                     
 def bomb_Check_Algorithm():
     '''
@@ -354,13 +356,14 @@ def fail():
     will update stats and create a fail message, offering a chance to play again
     '''
     update_stats()
-    gameOverScreen.add(Rect(app.width/4, 2*app.height/5, app.width/2, app.height/5, fill = None, border = 'black'))
-    gameOverScreen.add(Label("Press Escape to Try Again", app.width/2, app.height/2 + 20, size = 25))
-    gameOverScreen.add(Label("You're a failure", app.width/2, (app.height/2)-20, size = 50))
+    gameOverScreen.add(Rect(app.width/4, 1*app.height/5, app.width/2, app.height/5, fill = None, border = 'black'))
+    gameOverScreen.add(Label("Press Escape to Try Again", app.width/2, 7*app.height/20 + 20, size = 25))
+    gameOverScreen.add(Label("You're a failure", app.width/2, app.height/4, size = 50))
+    app.bombCount = 0
     
 def unlock_achievement(type, color):
     app.achShowing = True
-    box = Rect(app.width/2,  1/2*app.width, 8*app.squareSize, 4*app.squareSize, fill = None, border = 'black', align = 'center', borderWidth = 4)
+    box = Rect(app.width/2,  3/4*app.height, 1/2*app.width, 1/2*app.height, fill = None, border = 'black', align = 'center', borderWidth = 4)
     app.removeAchTimer = app.stepsPerSecond*10
     name = Label("You unlocked the " + type + " Achievement", box.centerX, box.centerY-10, size = app.width/60)
     achievementNote.add(box, name)
@@ -402,9 +405,10 @@ def win_game():
             unlock_achievement("Win a Crazy Game", 'rainbow')
         fullInfoList[11]+=1
     fullInfoList[6]+=1
-    gameOverScreen.add(Rect(app.width/4, 2*app.height/5, app.width/2, app.height/5, fill = None, border = 'black'))
-    gameOverScreen.add(Label("Press Escape to Try Again", app.width/2, app.height/2 + 20, size = 25))
-    gameOverScreen.add(Label("You're a Winner", app.width/2, (app.height/2)-20, size = 50))
+    box = Rect(app.width/4, 1*app.height/5, app.width/2, app.height/5, fill = None, border = 'black')
+    gameOverScreen.add(box)
+    gameOverScreen.add(Label("Press Escape to Try Again", app.width/2, 7*app.height/20, size = 25))
+    gameOverScreen.add(Label("You're a Winner", app.width/2, app.height/4, size = 50))
     if(app.noFlags == True and fullInfoList[8]==0):
         if(app.achShowing == False):
             unlock_achievement("Win Without Using Flags", 'lime')
@@ -414,6 +418,7 @@ def win_game():
     app.indexes = get_acceptable_flag_indexes()
     app.mode = None
     app.play = False
+    app.bombCount = 0
 
 def toggle_flags_color():
     '''
