@@ -91,6 +91,7 @@ buttonLabels = Group()
 buttons = Group()
 squares = Group()
 flags = Group()
+bottomStuff = Group()
 preGame = Group()
 bombs = Group()
 gameOverScreen = Group()
@@ -186,7 +187,7 @@ def create_board():
     app.rows = (int)(height / app.squareSize)
     app.cols = (int)(width / app.squareSize)
     for i in range(app.cols):
-        for j in range(app.rows):
+        for j in range(app.rows-1):
             if (i+j)%2 == 0:
                 color = "yellowGreen"
             else:
@@ -203,8 +204,14 @@ def create_board():
             app.numSafe+=1
     plant_bombs(squares)
     bomb_Check_Algorithm()
+    show_info()
     update_stats()
     
+def show_info():
+    app.bombInfo = Label("Mines: %d" %app.bombCount, 5, app.height-app.squareSize/2, size = app.squareSize/2, align = 'top-left')
+    app.squaresInfo = Label("Squares Left to Reveal: %d" %(len(squares)-app.bombCount), app.width-5, app.height-app.squareSize/2, size = app.squareSize/2, align = 'top-right')
+    bottomStuff.add(app.bombInfo, app.squaresInfo)
+
 def update_stats():
     '''
     Takes no arguments and returns no values
@@ -409,6 +416,7 @@ def win_game():
     gameOverScreen.add(box)
     gameOverScreen.add(Label("Press Escape to Try Again", app.width/2, 7*app.height/20, size = 25))
     gameOverScreen.add(Label("You're a Winner", app.width/2, app.height/4, size = 50))
+    app.squaresInfo.value = "Squares Left to Reveal: 0"
     if(app.noFlags == True and fullInfoList[8]==0):
         if(app.achShowing == False):
             unlock_achievement("Win Without Using Flags", 'lime')
@@ -461,6 +469,7 @@ def reset_game():
     squares.clear()
     flags.clear()
     bombs.clear()
+    bottomStuff.clear()
     create_front_screen()
     app.mode = None
     app.noFlags = True
@@ -664,6 +673,8 @@ def onMousePress(x,y,button):
                         subprocess.Popen([sys.executable, button.game])
                         sys.exit(0)
     auto_clear_zeros()
+    if(len(bottomStuff)>0 and len(gameOverScreen)==0):
+        app.squaresInfo.value = "Squares Left to Reveal: %d" %(len(squares)-app.bombCount)
     update_stats()                
  
 def onStep():
