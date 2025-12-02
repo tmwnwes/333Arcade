@@ -330,12 +330,7 @@ def move_fun_missiles():
         missile.centerY += missile.gravSpeed
         missile.gravSpeed += app.gravity
         spawn_trail(missile.centerX, missile.centerY, missile.fill)
-        if(missile.rotateAngle<270):
-            missile.rotateAngle+=2
-        else:
-            missile.rotateAngle-=2
-        missile.rotateAngle 
-        missile.next = getPointInDir(missile.centerX, missile.centerY, missile.rotateAngle, missile.speed)
+        missile.next = getPointInDir(missile.centerX, missile.centerY, missile.rotateAngle, missile.speed*3)
     
 def move_bombs(type):
     '''
@@ -357,6 +352,7 @@ def move_planes():
     for plane in planes:
         plane.centerX, plane.centerY = plane.next 
         plane.next = getPointInDir(plane.centerX, plane.centerY, plane.angle, app.planeSpeed)
+        spawn_trail(plane.centerX, plane.centerY, plane.fill)
         if(plane.left>=app.width):
             planes.remove(plane)
 
@@ -965,7 +961,7 @@ def move_trail():
     '''
     for bubble in bubbles:
         if(bubble.opacity>0):
-            bubble.opacity -=1
+            bubble.opacity -=2
         else:
             bubbles.remove(bubble)
 
@@ -976,9 +972,9 @@ def move_basic_missiles():
     No horizontal movement, no gravity
     '''
     for thing in basicMissiles:
-        spawn_trail(thing.centerX, thing.centerY, thing.fill)
         thing.centerX, thing.centerY = thing.next
         thing.next = getPointInDir(thing.centerX, thing.centerY, thing.rotateAngle, app.basicMissileSpeed)
+        spawn_trail(thing.centerX, thing.centerY, thing.fill)
         if(thing.centerY>=app.height):
             basicMissiles.remove(thing)
 
@@ -1148,7 +1144,7 @@ def spawn_fun_missile(canScore):
     Creates a shape with specific attributes and adds it to the appropriate shape group
     This enemy type is affected by horizontal motion and gravity
     '''
-    new = Circle(randrange(app.width), -100, 6, fill='red')
+    new = Circle(randrange((app.width//10), (9*app.width//10)), -100, 6, fill='red')
     if(canScore == True):
         new.score = 1000
     else:
@@ -1156,7 +1152,7 @@ def spawn_fun_missile(canScore):
     new.num = app.munitionCounter
     new.speed = app.basicMissileSpeed - 1
     new.gravSpeed = app.gravity
-    new.rotateAngle = angleTo(new.centerX, new.centerY, randrange(5*(app.width//40), 35*(app.width//40)), app.height)
+    new.rotateAngle = angleTo(new.centerX, new.centerY, randrange(3*(app.width//40), 37*(app.width//40)), app.height)
     new.next = getPointInDir(new.centerX, new.centerY, new.rotateAngle, new.speed)
     new.flakHP = 6 ### Only relevant for city flak hits 
     new.hitIDs = []
@@ -1239,7 +1235,7 @@ def spawn_handling():
             if(app.spawnTimer <= 0):
                 spawn_basic_missile(randrange(0,app.width), -10, canScore)
                 app.spawnTimer = app.stepsPerSecond * 4
-                if(app.bat.top<=app.height):
+                if(canScore==True):
                     app.enemiesLeftToSpawn -=1
                 newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
     elif(app.level <= 3): ## missiles and bomber planes
@@ -1249,11 +1245,11 @@ def spawn_handling():
                     if(app.muted == False):
                         app.planeSound.play(restart = True)
                     spawn_plane(randrange(app.height//4, app.height//2), canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 else:
                     spawn_basic_missile(randrange(0,app.width), -10, canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 app.spawnTimer = app.stepsPerSecond * 4
                 newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
@@ -1264,15 +1260,15 @@ def spawn_handling():
                         if(app.muted == False):
                             app.planeSound.play(restart = True)
                         spawn_plane(randrange(20, app.height//4), canScore)
-                        if(app.bat.top<=app.height):
+                        if(canScore==True):
                             app.enemiesLeftToSpawn -=1
                     elif(app.enemiesLeftToSpawn%7 == 0):
                         spawn_fun_missile(canScore)
-                        if(app.bat.top<=app.height):
+                        if(canScore==True):
                             app.enemiesLeftToSpawn -=1
                     else:
                         spawn_basic_missile(randrange(0,app.width), -10, canScore)
-                        if(app.bat.top<=app.height):
+                        if(canScore==True):
                             app.enemiesLeftToSpawn -=1
                     app.spawnTimer = app.stepsPerSecond * 4
                     newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
@@ -1281,21 +1277,21 @@ def spawn_handling():
             if(app.spawnTimer <= 0):
                 if(app.enemiesLeftToSpawn% 9 == 0):
                     spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8), canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 elif(app.enemiesLeftToSpawn%8 == 0):
                     if(app.muted == False):
                         app.planeSound.play(restart = True)
                     spawn_plane(randrange(20, 3*app.height//4), canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 elif(app.enemiesLeftToSpawn%7 == 0):
                     spawn_fun_missile(canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 else:
                     spawn_basic_missile(randrange(0,app.width), -10, canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 app.spawnTimer = app.stepsPerSecond * 4
                 newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
@@ -1304,25 +1300,25 @@ def spawn_handling():
                 if(app.spawnTimer <= 0):
                     if(app.enemiesLeftToSpawn%11 == 0):
                         spawn_smart_bomb(canScore)
-                        if(app.bat.top<=app.height):
+                        if(canScore==True):
                             app.enemiesLeftToSpawn -=1
                     elif(app.enemiesLeftToSpawn% 9 == 0):
                         spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8), canScore)
-                        if(app.bat.top<=app.height):
+                        if(canScore==True):
                             app.enemiesLeftToSpawn -=1
                     elif(app.enemiesLeftToSpawn%8 == 0):
                         if(app.muted == False):
                             app.planeSound.play(restart = True)
                         spawn_plane(randrange(20, app.height//4), canScore)
-                        if(app.bat.top<=app.height):
+                        if(canScore==True):
                             app.enemiesLeftToSpawn -=1
                     elif(app.enemiesLeftToSpawn%7 == 0):
                         spawn_fun_missile(canScore)
-                        if(app.bat.top<=app.height):
+                        if(canScore==True):
                             app.enemiesLeftToSpawn -=1
                     else:
                         spawn_basic_missile(randrange(0,app.width), -10, canScore)
-                        if(app.bat.top<=app.height):
+                        if(canScore==True):
                             app.enemiesLeftToSpawn -=1
                     app.spawnTimer = app.stepsPerSecond * 4
                     newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
@@ -1331,29 +1327,29 @@ def spawn_handling():
             if(app.spawnTimer <= 0):
                 if(app.enemiesLeftToSpawn%23 == 0): ##Rare event, on purpose
                     spawn_ufo(canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 elif(app.enemiesLeftToSpawn%11 == 0):
                     spawn_smart_bomb(canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 elif(app.enemiesLeftToSpawn% 9 == 0):
                     spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8), canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 elif(app.enemiesLeftToSpawn%8 == 0):
                     if(app.muted == False):
                         app.planeSound.play(restart = True)
                     spawn_plane(randrange(20, app.height//4), canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 elif(app.enemiesLeftToSpawn%7 == 0):
                     spawn_fun_missile(canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 else:
                     spawn_basic_missile(randrange(0,app.width), -10, canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 app.spawnTimer = app.stepsPerSecond * 4
                 newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
@@ -1362,29 +1358,29 @@ def spawn_handling():
             if(app.spawnTimer <= 0):
                 if(app.enemiesLeftToSpawn%23 == 0): ##Rare event, on purpose
                     spawn_ufo(canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 elif(app.enemiesLeftToSpawn%11 == 0):
                     spawn_smart_bomb(canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 if(app.enemiesLeftToSpawn% 9 == 0):
                     spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8), canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 elif(app.enemiesLeftToSpawn%8 == 0):
                     if(app.muted == False):
                         app.planeSound.play(restart = True)
                     spawn_plane(randrange(20, app.height//4), canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 if(app.enemiesLeftToSpawn%7 == 0):
                     spawn_fun_missile(canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 else:
                     spawn_basic_missile(randrange(0,app.width), -10, canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 app.spawnTimer = app.stepsPerSecond * 4
                 newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
@@ -1393,28 +1389,28 @@ def spawn_handling():
             if(app.spawnTimer == 0):
                 if(app.enemiesLeftToSpawn%23 == 0): ##Rare event, on purpose
                     spawn_ufo(canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 if(app.enemiesLeftToSpawn% 9 == 0):
                     spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8), canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 if(app.enemiesLeftToSpawn%8 == 0):
                     if(app.muted == False):
                         app.planeSound.play(restart = True)
                     spawn_plane(randrange(20, app.height//4), canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 if(app.enemiesLeftToSpawn%7 == 0):
                     spawn_fun_missile(canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 if(app.enemiesLeftToSpawn%11 == 0):
                     spawn_smart_bomb(canScore)
-                    if(app.bat.top<=app.height):
+                    if(canScore==True):
                         app.enemiesLeftToSpawn -=1
                 spawn_basic_missile(randrange(0,app.width), -10, canScore)
-                if(app.bat.top<=app.height):
+                if(canScore==True):
                     app.enemiesLeftToSpawn -=1
                 app.spawnTimer = app.stepsPerSecond * 4
                 newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
@@ -1428,6 +1424,16 @@ def find_closest_of_group(x,y,range, group, importance):
     importance is an int which will later act as a multiplier for how valuable a target is
     Returns a tuple containing the coordinates of the shape closest to given x, y, the distance from x,y to the shape, and a calculation representing how valuable the target is, and the importance value itself
     '''
+    if(group == ufos):
+        if(len(group)>0):
+            for ufo in group:
+                if(ufo.firing<1):
+                    return None
+    if(group == planes):
+        if(len(group)>0):
+            for plane in group:
+                if(plane.bombs<=0):
+                    return None
     info = []
     for shape in group:
         dist = distance(x,y, shape.centerX, shape.centerY)
@@ -1455,14 +1461,13 @@ def find_valuable_enemy(x,y, range):
     plane = find_closest_of_group(x,y,range*2, planes, 0.65)
     tiny = find_closest_of_group(x,y,range, multiBombPostSplit, 0.6)
     ufoBullets = find_closest_of_group(x,y,range, ufoShots, 0.6)
-    ufo = find_closest_of_group(x,y,range*3, ufos, 1.8)
+    ufo = find_closest_of_group(x,y,range*2.25, ufos, 1.8)
     options+=[basic, bomb, multiBomb, smart, fun, plane, tiny, ufoBullets, ufo]
     for item in options[:]:
         if(item == None or item[1]>y or item[0]<leftBattery.left-6 or item[0]>rightBattery.right+6):
             options.remove(item)
     if(len(options)>0):    
-        bestTarget = max(options, key = lambda t: t[3])
-        return bestTarget
+        return max(options, key = lambda t: t[3])
     else:
         return None    
 
@@ -1476,19 +1481,17 @@ def fire_flak():
     '''
     for city in cities:
         for building in city:
-            if(building.flakTimer>0):
-                building.flakTimer -=1
-            if(building.flakTimer == 0):
+            building.flakTimer -=1
+            if(building.flakTimer <= 0):
                 target = find_valuable_enemy(building.centerX, building.top, ((width/4)**2 + (height/4)**2)**0.5)
                 if(target!=None):
+                    building.flakTimer = app.stepsPerSecond//target[4]
                     accuracyX = app.width/100 + app.level*2 if app.level<12 else app.width/100 + 22 
-                    accuracyY = target[1]/4 if (target[4] == 1.8 or target[4] == 0.65) else target[1]/12 #Special case is ufos and planes
-                    offsetX = randrange((int)(-(1/accuracyX)*app.width)-1, (int)((1/accuracyX)*app.width)+1, 1)
-                    offsetY = randrange((int)(-(0.5/accuracyY)*app.height)-1, (int)((1.5/accuracyY)*app.height)+1, 5)
+                    accuracyY = 30 if (target[4] == 1.8 or target[4] == 0.65) else target[1]/12 #Special case is ufos and planes
+                    offsetX = randrange((int)(-(1/accuracyX)*app.width), (int)((1/accuracyX)*app.width)+1)
+                    offsetY = randrange((int)(-(0.5/accuracyY)*app.height), (int)((1.5/accuracyY)*app.height)+1)
                     if(target[4] == 0.65): #Special case is planes
                         offsetX+=(app.width/20)
-                    while(target[1] + offsetY>= city.top -5):
-                        offsetY -= 10
                     create_flak_target(target[0] + offsetX, target[1] + offsetY, app.flakNum)
                     new = Circle(building.centerX, building.top, 2, fill = 'white')
                     new.target = (target[0] + offsetX, target[1] + offsetY)
@@ -1496,7 +1499,6 @@ def fire_flak():
                     new.rotateAngle = angleTo(new.centerX, new.centerY, new.target[0], new.target[1])
                     new.next = getPointInDir(new.centerX, new.centerY, new.rotateAngle, app.flakSpeed)
                     flakShots.add(new)
-                    building.flakTimer = app.stepsPerSecond//target[4]
                     app.flakNum+=1
 
 def move_flak_shots():
