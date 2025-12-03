@@ -751,10 +751,10 @@ def onKeyHold(keys):
     Focus is on game motion, moving the submarine and safety shield
     '''
     if(app.failed==False and app.pause == False):
-        if(sub.left>0 and ((sub.rotateAngle>0 and sub.top>ocean.top+3) or (sub.rotateAngle<0 and sub.bottom<ocean.bottom-3))):    
+        if(sub.left>0 and ((sub.rotateAngle>=0 and sub.top>ocean.top+3) or (sub.rotateAngle<=0 and sub.bottom<ocean.bottom-3))):    
             if('a' in keys):
                 sub.centerX, sub.centerY = getPointInDir(sub.centerX, sub.centerY, sub.rotateAngle+90, -2.5)
-        if(sub.right<app.width and ((sub.rotateAngle<0 and sub.top>ocean.top+3) or (sub.rotateAngle>0 and sub.bottom<ocean.bottom-3))):
+        if(sub.right<app.width and ((sub.rotateAngle<=0 and sub.top>ocean.top+3) or (sub.rotateAngle>=0 and sub.bottom<ocean.bottom-3))):
             if('d' in keys):
                 sub.centerX, sub.centerY = getPointInDir(sub.centerX, sub.centerY, sub.rotateAngle+90, 2.5)
         if(sub.top>ocean.top+5):
