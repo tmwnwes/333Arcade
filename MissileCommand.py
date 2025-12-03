@@ -1424,21 +1424,26 @@ def find_closest_of_group(x,y,range, group, importance):
     importance is an int which will later act as a multiplier for how valuable a target is
     Returns a tuple containing the coordinates of the shape closest to given x, y, the distance from x,y to the shape, and a calculation representing how valuable the target is, and the importance value itself
     '''
-    if(group == ufos):
-        if(len(group)>0):
-            for ufo in group:
-                if(ufo.firing<1):
-                    return None
     if(group == planes):
         if(len(group)>0):
             for plane in group:
                 if(plane.bombs<=0):
                     return None
+    willHit = []
+    if(group == basicMissiles):
+        for thing in batteries:
+            willHit.append((thing.left-7, thing.right+7))
+        for thing in cities:
+            willHit.append((thing.left-7, thing.right+7))
+    else:
+        willHit.append((leftBattery.left-7, rightBattery.right+7))
     info = []
     for shape in group:
-        dist = distance(x,y, shape.centerX, shape.centerY)
-        if(dist<range):
-            info.append((shape.centerX, shape.centerY, dist, ((1000/dist))*importance, importance))
+        for tuple in willHit:
+            if(shape.centerX>tuple[0] and shape.centerX<tuple[1]):
+                dist = distance(x,y, shape.centerX, shape.centerY)
+                if(dist<range):
+                    info.append((shape.centerX, shape.centerY, dist, ((1000/dist))*importance, importance))
     if(len(info)>0):
         return min(info, key= lambda t: t[2])
     else:
@@ -1453,18 +1458,17 @@ def find_valuable_enemy(x,y, range):
     Intended to be used in conjunction with fire_flak() to aim the flak being fired
     '''
     options = []
-    basic = find_closest_of_group(x,y,range, basicMissiles, 0.75)
-    bomb = find_closest_of_group(x,y,range, bombs, 0.6)
+    basic = find_closest_of_group(x,y,range, basicMissiles, 0.8)
+    bomb = find_closest_of_group(x,y,range*0.7, bombs, 0.6)
     multiBomb = find_closest_of_group(x,y,range, multiBombs, 2)
-    smart = find_closest_of_group(x,y,range, smartMissiles, 0.3)
+    smart = find_closest_of_group(x,y,range, smartMissiles, 0.5)
     fun = find_closest_of_group(x,y,range*1.2, nonbasicMissiles, 1.4)
-    plane = find_closest_of_group(x,y,range*2, planes, 0.65)
-    tiny = find_closest_of_group(x,y,range, multiBombPostSplit, 0.6)
+    plane = find_closest_of_group(x,y,range*1.4, planes, 0.65)
+    tiny = find_closest_of_group(x,y,range*0.7, multiBombPostSplit, 0.6)
     ufoBullets = find_closest_of_group(x,y,range, ufoShots, 0.6)
-    ufo = find_closest_of_group(x,y,range*2.25, ufos, 1.8)
-    options+=[basic, bomb, multiBomb, smart, fun, plane, tiny, ufoBullets, ufo]
+    options+=[basic, bomb, multiBomb, smart, fun, plane, tiny, ufoBullets]
     for item in options[:]:
-        if(item == None or item[1]>y or item[0]<leftBattery.left-6 or item[0]>rightBattery.right+6):
+        if(item == None or item[1]>y):
             options.remove(item)
     if(len(options)>0):    
         return max(options, key = lambda t: t[3])
@@ -1479,6 +1483,8 @@ def fire_flak():
     flak will sometimes manage to save a city or a building but it is not powerful enough to rely heavily on
     Cities are no longer defenseless
     '''
+    xRange = 68 - app.level*2 if app.level<12 else 44
+    yRange = 50 - app.level if app.level<8 else 42
     for city in cities:
         for building in city:
             building.flakTimer -=1
@@ -1486,10 +1492,8 @@ def fire_flak():
                 target = find_valuable_enemy(building.centerX, building.top, ((width/4)**2 + (height/4)**2)**0.5)
                 if(target!=None):
                     building.flakTimer = app.stepsPerSecond//target[4]
-                    accuracyX = app.width/100 + app.level*2 if app.level<12 else app.width/100 + 22 
-                    accuracyY = 30 if (target[4] == 1.8 or target[4] == 0.65) else target[1]/12 #Special case is ufos and planes
-                    offsetX = randrange((int)(-(1/accuracyX)*app.width), (int)((1/accuracyX)*app.width)+1)
-                    offsetY = randrange((int)(-(0.5/accuracyY)*app.height), (int)((1.5/accuracyY)*app.height)+1)
+                    offsetX = randrange(-xRange, xRange, 1)
+                    offsetY = randrange((int)(-0.5*yRange), (int)(1.5*yRange))
                     if(target[4] == 0.65): #Special case is planes
                         offsetX+=(app.width/20)
                     create_flak_target(target[0] + offsetX, target[1] + offsetY, app.flakNum)
