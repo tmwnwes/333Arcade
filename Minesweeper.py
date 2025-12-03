@@ -76,6 +76,7 @@ app.firstClick = True
 app.failed = False
 app.play = True
 app.bombCount = 0
+app.flagCount = 0
 app.mode = None
 app.noFlags = True
 app.achShowing = False
@@ -202,15 +203,21 @@ def create_board():
             new.bomb = False
             squares.add(new)
             app.numSafe+=1
+    app.flagCount = 0
     plant_bombs(squares)
     bomb_Check_Algorithm()
     show_info()
     update_stats()
     
 def show_info():
+    '''
+    Takes no args and returns no values
+    Uses app variables to create labels at the bottom of the screen detailing number of bombs, number of flags, and squares left to clear
+    '''
     app.bombInfo = Label("Mines: %d" %app.bombCount, 5, app.height-app.squareSize/2, size = app.squareSize/2, align = 'top-left')
     app.squaresInfo = Label("Squares Left to Reveal: %d" %(len(squares)-app.bombCount), app.width-5, app.height-app.squareSize/2, size = app.squareSize/2, align = 'top-right')
-    bottomStuff.add(app.bombInfo, app.squaresInfo)
+    app.flagsInfo = Label("Flags Placed: %d" %app.flagCount, (app.bombInfo.right + app.squaresInfo.left)/2, app.height-app.squareSize/2, size = app.squareSize/2, align = 'top')
+    bottomStuff.add(app.bombInfo, app.squaresInfo, app.flagsInfo)
 
 def update_stats():
     '''
@@ -238,6 +245,7 @@ def plant_bombs(blocks):
     Iterates through each shape in the group and decides whether or not to plant a bomb
     Chance for planting a bomb is determined by game mode
     '''
+    app.bombCount = 0
     for square in blocks:
         bombChance = randrange(100)
         if (bombChance<=app.bombPercentage):
@@ -470,9 +478,9 @@ def reset_game():
     flags.clear()
     bombs.clear()
     bottomStuff.clear()
-    create_front_screen()
     app.mode = None
     app.noFlags = True
+    create_front_screen()
 
 def toggle_flag(x,y, real):
     '''
@@ -488,9 +496,11 @@ def toggle_flag(x,y, real):
                         if(flag.opacity == 100):
                             flag.opacity = 0
                             square.flag = False
+                            app.flagCount-=1
                         else:
                             flag.opacity = 100
                             square.flag = True
+                            app.flagCount+=1
                             if(real==True):
                                 app.noFlags = False
                                 fullInfoList[9] +=1
@@ -675,6 +685,7 @@ def onMousePress(x,y,button):
     auto_clear_zeros()
     if(len(bottomStuff)>0 and len(gameOverScreen)==0):
         app.squaresInfo.value = "Squares Left to Reveal: %d" %(len(squares)-app.bombCount)
+        app.flagsInfo.value = "Flags Placed: %d" %app.flagCount
     update_stats()                
  
 def onStep():
