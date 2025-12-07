@@ -75,6 +75,8 @@ app.numCleared = 0
 app.firstClick = True
 app.failed = False
 app.play = True
+app.bombCount = 0
+app.flagCount = 0
 app.mode = None
 app.noFlags = True
 app.achShowing = False
@@ -90,6 +92,7 @@ buttonLabels = Group()
 buttons = Group()
 squares = Group()
 flags = Group()
+bottomStuff = Group()
 preGame = Group()
 bombs = Group()
 gameOverScreen = Group()
@@ -185,7 +188,7 @@ def create_board():
     app.rows = (int)(height / app.squareSize)
     app.cols = (int)(width / app.squareSize)
     for i in range(app.cols):
-        for j in range(app.rows):
+        for j in range(app.rows-1):
             if (i+j)%2 == 0:
                 color = "yellowGreen"
             else:
@@ -200,10 +203,22 @@ def create_board():
             new.bomb = False
             squares.add(new)
             app.numSafe+=1
+    app.flagCount = 0
     plant_bombs(squares)
     bomb_Check_Algorithm()
+    show_info()
     update_stats()
     
+def show_info():
+    '''
+    Takes no args and returns no values
+    Uses app variables to create labels at the bottom of the screen detailing number of bombs, number of flags, and squares left to clear
+    '''
+    app.bombInfo = Label("Mines: %d" %app.bombCount, 5, app.height-app.squareSize/2, size = app.squareSize/2, align = 'top-left')
+    app.squaresInfo = Label("Squares Left to Reveal: %d" %(len(squares)-app.bombCount), app.width-5, app.height-app.squareSize/2, size = app.squareSize/2, align = 'top-right')
+    app.flagsInfo = Label("Flags Placed: %d" %app.flagCount, (app.bombInfo.right + app.squaresInfo.left)/2, app.height-app.squareSize/2, size = app.squareSize/2, align = 'top')
+    bottomStuff.add(app.bombInfo, app.squaresInfo, app.flagsInfo)
+
 def update_stats():
     '''
     Takes no arguments and returns no values
@@ -230,11 +245,13 @@ def plant_bombs(blocks):
     Iterates through each shape in the group and decides whether or not to plant a bomb
     Chance for planting a bomb is determined by game mode
     '''
+    app.bombCount = 0
     for square in blocks:
         bombChance = randrange(100)
         if (bombChance<=app.bombPercentage):
             square.bomb = True
             app.numSafe-=1
+            app.bombCount+=1
                     
 def bomb_Check_Algorithm():
     '''
@@ -354,13 +371,14 @@ def fail():
     will update stats and create a fail message, offering a chance to play again
     '''
     update_stats()
-    gameOverScreen.add(Rect(app.width/4, 2*app.height/5, app.width/2, app.height/5, fill = None, border = 'black'))
-    gameOverScreen.add(Label("Press Escape to Try Again", app.width/2, app.height/2 + 20, size = 25))
-    gameOverScreen.add(Label("You're a failure", app.width/2, (app.height/2)-20, size = 50))
+    gameOverScreen.add(Rect(app.width/4, 1*app.height/5, app.width/2, app.height/5, fill = None, border = 'black'))
+    gameOverScreen.add(Label("Press Escape to Try Again", app.width/2, 7*app.height/20 + 20, size = 25))
+    gameOverScreen.add(Label("You're a failure", app.width/2, app.height/4, size = 50))
+    app.bombCount = 0
     
 def unlock_achievement(type, color):
     app.achShowing = True
-    box = Rect(app.width/2,  1/2*app.width, 8*app.squareSize, 4*app.squareSize, fill = None, border = 'black', align = 'center', borderWidth = 4)
+    box = Rect(app.width/2,  3/4*app.height, 1/2*app.width, 1/2*app.height, fill = None, border = 'black', align = 'center', borderWidth = 4)
     app.removeAchTimer = app.stepsPerSecond*10
     name = Label("You unlocked the " + type + " Achievement", box.centerX, box.centerY-10, size = app.width/60)
     achievementNote.add(box, name)
@@ -402,9 +420,11 @@ def win_game():
             unlock_achievement("Win a Crazy Game", 'rainbow')
         fullInfoList[11]+=1
     fullInfoList[6]+=1
-    gameOverScreen.add(Rect(app.width/4, 2*app.height/5, app.width/2, app.height/5, fill = None, border = 'black'))
-    gameOverScreen.add(Label("Press Escape to Try Again", app.width/2, app.height/2 + 20, size = 25))
-    gameOverScreen.add(Label("You're a Winner", app.width/2, (app.height/2)-20, size = 50))
+    box = Rect(app.width/4, 1*app.height/5, app.width/2, app.height/5, fill = None, border = 'black')
+    gameOverScreen.add(box)
+    gameOverScreen.add(Label("Press Escape to Try Again", app.width/2, 7*app.height/20, size = 25))
+    gameOverScreen.add(Label("You're a Winner", app.width/2, app.height/4, size = 50))
+    app.squaresInfo.value = "Squares Left to Reveal: 0"
     if(app.noFlags == True and fullInfoList[8]==0):
         if(app.achShowing == False):
             unlock_achievement("Win Without Using Flags", 'lime')
@@ -414,6 +434,7 @@ def win_game():
     app.indexes = get_acceptable_flag_indexes()
     app.mode = None
     app.play = False
+    app.bombCount = 0
 
 def toggle_flags_color():
     '''
@@ -456,9 +477,10 @@ def reset_game():
     squares.clear()
     flags.clear()
     bombs.clear()
-    create_front_screen()
+    bottomStuff.clear()
     app.mode = None
     app.noFlags = True
+    create_front_screen()
 
 def toggle_flag(x,y, real):
     '''
@@ -474,9 +496,11 @@ def toggle_flag(x,y, real):
                         if(flag.opacity == 100):
                             flag.opacity = 0
                             square.flag = False
+                            app.flagCount-=1
                         else:
                             flag.opacity = 100
                             square.flag = True
+                            app.flagCount+=1
                             if(real==True):
                                 app.noFlags = False
                                 fullInfoList[9] +=1
@@ -659,6 +683,9 @@ def onMousePress(x,y,button):
                         subprocess.Popen([sys.executable, button.game])
                         sys.exit(0)
     auto_clear_zeros()
+    if(len(bottomStuff)>0 and len(gameOverScreen)==0):
+        app.squaresInfo.value = "Squares Left to Reveal: %d" %(len(squares)-app.bombCount)
+        app.flagsInfo.value = "Flags Placed: %d" %app.flagCount
     update_stats()                
  
 def onStep():

@@ -107,7 +107,7 @@ maxRange = app.width/3
 mines.count = 0
 minesAtStart = 40
 sub.health = 3
-app.warning = Sound("Audio/depthChargeWarning.mp3")
+app.warning = Sound("../../libraries/Audio/depthChargeWarning.mp3")
 
 ammo = Label("Ammo:", sky.left+30, 10, size = 20)
 torpedoes=Label(30, ammo.centerX, ammo.centerY+20, bold=True, size=20)
@@ -239,7 +239,7 @@ def spawn_depth_charges(x, y):
     randX = randrange(left, right)
     randY = randrange(top, bottom)
     charge = create_depth_charge(randX, randY)
-    charge.note = Sound("Audio/uwexplosion.mp3")
+    charge.note = Sound("../../libraries/Audio/uwexplosion.mp3")
     depthCharges.add(charge)
     
 def spawn_mine():
@@ -254,7 +254,7 @@ def spawn_mine():
     while safetyShield.hitsShape(new):
         new.centerX = randrange(10, app.width - 10, 10)
         new.centerY = randrange(ocean.top+12, (int)(ocean.bottom) -10, 10)
-    new.note = Sound("Audio/uwexplosion.mp3")
+    new.note = Sound("../../libraries/Audio/uwexplosion.mp3")
     mines.add(new)
     mines.count+=1
 
@@ -273,17 +273,17 @@ def launch_torpedo(x,y, dir, angle):
         new.dist = getPointInDir(new.centerX, new.centerY, angle+90, app.width/3)
         new.dir = dir
         new.rotateAngle =  angle
-        new.note = Sound("Audio/uwexplosion.mp3")
+        new.note = Sound("../../libraries/Audio/uwexplosion.mp3")
         allTorpedoes.add(new)
     if(dir == "left"):
         new = Oval(x-10, y+4, 20, 6, fill=col)
         new.dir = dir
         new.dist = getPointInDir(new.centerX, new.centerY, angle+90, -app.width/3)
         new.rotateAngle = angle
-        new.note = Sound("Audio/uwexplosion.mp3")
+        new.note = Sound("../../libraries/Audio/uwexplosion.mp3")
         allTorpedoes.add(new)
     if(app.muted == False):
-        Sound("Audio/fireTorpedo.mp3").play(restart = True)
+        Sound("../../libraries/Audio/fireTorpedo.mp3").play(restart = True)
 
 def starter_mines():
     '''
@@ -306,7 +306,7 @@ def spawn_powerup():
     if(not(safetyShield.hits(randX, randY))):
         powerUps.power=randrange(100)
         if(app.muted==False):
-            Sound("Audio/shooting2.mp3").play(restart = True)
+            Sound("../../libraries/Audio/shooting2.mp3").play(restart = True)
         if(powerUps.power>=70):
             newPowerUp = Circle(randX, randY, 8, fill=rgb(255, 0, 0))
             newPowerUp.time = 20
@@ -751,10 +751,10 @@ def onKeyHold(keys):
     Focus is on game motion, moving the submarine and safety shield
     '''
     if(app.failed==False and app.pause == False):
-        if(sub.left>0 and ((sub.rotateAngle>0 and sub.top>ocean.top+3) or (sub.rotateAngle<0 and sub.bottom<ocean.bottom-3))):    
+        if(sub.left>0 and ((sub.rotateAngle>=0 and sub.top>ocean.top+3) or (sub.rotateAngle<=0 and sub.bottom<ocean.bottom-3))):    
             if('a' in keys):
                 sub.centerX, sub.centerY = getPointInDir(sub.centerX, sub.centerY, sub.rotateAngle+90, -2.5)
-        if(sub.right<app.width and ((sub.rotateAngle<0 and sub.top>ocean.top+3) or (sub.rotateAngle>0 and sub.bottom<ocean.bottom-3))):
+        if(sub.right<app.width and ((sub.rotateAngle<=0 and sub.top>ocean.top+3) or (sub.rotateAngle>=0 and sub.bottom<ocean.bottom-3))):
             if('d' in keys):
                 sub.centerX, sub.centerY = getPointInDir(sub.centerX, sub.centerY, sub.rotateAngle+90, 2.5)
         if(sub.top>ocean.top+5):
