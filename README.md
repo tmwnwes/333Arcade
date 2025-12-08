@@ -1,24 +1,22 @@
 # 333Arcade
  Repository for COMP333 Fall Semester Project
 ________
-At Current Date (11/14/2025) the Assignment is Milestone 4. If you are a code reviewer for this project and you are reading this sentence, you are in the WRONG BRANCH
 
-It is imperative that you switch to the Milestone-4-Code-Review-Branch-(Never-Merge) branch
 
 # Python 3.14 is not currently supported. Please use Python 3.13*
 
 *You may download Python 3.13.9 at https://www.python.org/downloads/release/python-3139/ and then navigating to your specific platform and downloading the installer.
 
 
-This project is built using the Carnegie Mellon University graphics library. In order to run the launcher and games in their current state, the cmu_graphics folder must be in the same directory as the launcher and games. For your safety, you must download the graphics library yourself. The installer package for this library can be found at the following link: https://academy.cs.cmu.edu/desktop
+This project is built using the CMU graphics library which can be found at https://academy.cs.cmu.edu/desktop. The December 8th update now installs the graphics package for you on your 1st running of the pretend launcher or any game. If this process fails (which should not happen), then you should follow the above link, download the package as a zip, extract/expand, and then copy the cmu_graphics folder from the cmu_graphics_installer folder, and place it into this project directory.
 
 ## UPDATE: place cmu_graphics inside the libraries folder as well for proper usage of the new launcher
 
 # How to play
 
-Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplised by navigting to the named branch, and then clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Then download the CMU graphics library mentioned above directly from the source. Take the "cmu_graphics" folder from that download (not the entire installer folder, just the cmu_graphics folder) and put it in the same directory as the files from this repository. Then make sure you have pyautogui installed. This can be accomplished on Windows and Mac with pip or pip3 just by opening a terminal / command prompt and typing pip install pyautogui or pip3 pyautogui. If this function fails, instead type python3 -m pip install pyautogui or python3 -m pip3 install pyautogui.
+Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplised by navigting to the named branch, and then clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Running any of the games or the Pretend Launcher will install all dependencies, though you may need to allow certain bits of access and control, but these should come up automatically.
 
-## MacOS Instructions for OLD LAUNCHER
+## MacOS Instructions for OLD LAUNCHER (PretendLauncher.py)
 If you are on MacOS, you have 3 options for running the launcher:
 
 1. Open with VS code, and run through the play button at the top right  
@@ -53,7 +51,7 @@ python3.13 PretendLauncher.py
 ```
 ____
 
-## Windows Instructions for OLD LAUNCHER
+## Windows Instructions for OLD LAUNCHER (PretendLauncher.py)
 
 If you are on Windows you have 2 simple options to run the launcher:
 
@@ -122,11 +120,6 @@ This is a mindless stress relief style of "game", where you click on the screen 
 <details>
 <summary>FlappyBat.py</summary>
 This is a knockoff of flappy bird, a popular phone app from the early 2010s. There are aspects of the game that set it apart, however. The creator of this game was bitten by a bat at Wesleyan and so chose to model a bat at the player character for this game. The game also takes place at night with a starry background, and the cities in the distance are generated from the same model that generates the cities in MissileCommand.py which is mentioned later in this document. You will select your difficulty from the main menu. Difficulty is relating to the speed at which the pipes move in the beginning. In all difficulty modes, speed will increase over time. Your bat is affected by gravity and you flap by pressing spacebar which will send you upwarards. Be careful to avoid the green pipes, the ground, and flying too high into the sky, as your bat will crash and your round will end. You may pause and unpause at any point with 'p' and you may reselect difficulty upon failure by pressing escape, or simply replay at the same difficulty upon failure with enter.
-</details>
-
-<details>
-<summary>FruitNinja.py</summary>
-This game is more of a joke than a real project. You can "slice" fruit that is launched from the bottom of the screen. You slice with the use of a mouse drag (meaning clicking, holding down, and moving, not just moving). There are 2 powerup types, freeze and double points, activated by special bananas. The countdown time is represented by a circular timer towards the top left of the screen visible when the powerups are active. Freeze will freeze all whole fruits powerups and bombs on the screen and still allow sliced items to fall away. Double points will score all slices as double (including negative point bombs). No combo system or fail system has been implemented at the time of this README but it is anticipated in the future, but it considered low priority as this game is just a joke inclusion.
 </details>
 
 <details>
