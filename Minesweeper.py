@@ -1,9 +1,57 @@
-from cmu_graphics import *
-import random
+import os
 import sys
 import subprocess
-import os
-import pyautogui
+import zipfile
+import shutil
+
+try:
+    import pyautogui
+    import requests
+except ImportError as e:
+    os.system("pip3 install -r requirements.txt")
+    import pyautogui
+    import requests
+
+file_path = os.path.abspath(__file__)
+directory_path = os.path.dirname(file_path)
+os.chdir(directory_path)
+currentFile =  os.path.basename(__file__)
+gameName = currentFile[:-3]
+
+def download_zip_file(url, destination_folder, filename):
+    '''
+    Takes 3 args, a url for the file, a destination folder, and a name to give the file
+    Downloads the file found at url, gives it filename as a name and places it in the destination folder
+    '''
+    file_path = os.path.join(destination_folder, filename)
+    response = requests.get(url, stream=True)
+    with open(file_path, 'wb') as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            f.write(chunk)
+            
+def unzip_all(zip_file_path, destination_directory):
+    """
+    Takes 2 args, a path to a zip file and a path to the destination folder
+    """
+    if not os.path.exists(destination_directory):
+        os.makedirs(destination_directory)
+    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+        zip_ref.extractall(destination_directory)
+
+try:
+    from cmu_graphics import *
+except ImportError as e:
+    zip_url = 'https://s3.amazonaws.com/cmu-cs-academy.lib.prod/desktop-cmu-graphics/cmu_graphics_installer.zip'  
+    output_directory = directory_path
+    output_filename = "cmu_graphics_installer.zip"
+    new_dir = directory_path+"/cmu_graphics_installer"
+    download_zip_file(zip_url, output_directory, output_filename)
+    unzip_all('cmu_graphics_installer.zip', directory_path)
+    shutil.move(directory_path+"/cmu_graphics_installer/cmu_graphics", directory_path)
+    os.remove(output_filename)
+    shutil.rmtree("cmu_graphics_installer")
+    from cmu_graphics import *
+
 
 size = pyautogui.size()
 width = size[0]
@@ -15,12 +63,6 @@ app.queuedUnlockCall = []
 default = [0,0,0,0,0,0,0,0,0,0,0,0,0]
 keys = ["WonEasy", "AttemptedEasy", "WonMedium", "AttemptedMedium", "WonHard", "AttemptedHard" ,"WonTotal", "AttemptedTotal", "Achievement1", "FlagsUsed", "TimesLaunched", "WonCrazy", "AttemptedCrazy"]
 fullInfoList = [] 
-
-file_path = os.path.abspath(__file__)
-directory_path = os.path.dirname(file_path)
-os.chdir(directory_path)
-currentFile =  os.path.basename(__file__)
-gameName = currentFile[:-3]
 
 def file_checking(path, default):
     '''
