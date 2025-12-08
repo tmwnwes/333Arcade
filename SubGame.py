@@ -417,7 +417,7 @@ def spawn_handling():
         spawn_warning()
     if(app.timer%(app.stepsPerSecond*25) == (app.stepsPerSecond*4)):
         despawn_warning()
-    if((int)(app.timer%(app.stepsPerSecond*(2/3))) == 0):  
+    if((app.timer%app.stepsPerSecond) == 0):  
         spawn_mine()
     if((int)(app.timer%(app.stepsPerSecond*17) == 0)):
         app.powerCounter+=1
