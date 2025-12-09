@@ -16,6 +16,10 @@ file_path = os.path.abspath(__file__)
 directory_path = os.path.dirname(file_path)
 os.chdir(directory_path)
 currentFile =  os.path.basename(__file__)
+rootPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+lib_path = os.path.join(rootPath, "libraries")
+if lib_path not in sys.path:
+    sys.path.insert(0, lib_path)
 
 def download_zip_file(url, destination_folder, filename):
     '''
@@ -70,7 +74,7 @@ app.dragSpeed = (1/80)*width
 
 unknownStats = Group()
 knownGames = ["Asteroids.py", "ColorGame.py", "Fireworks.py", "Hangman.py", "Minesweeper.py", "SubGame.py", "MissileCommand.py", "FlappyBat.py", "Simon.py", "Typespeed.py"]
-thumbnails = ["Thumbnails/AsteroidsImage.png", "Thumbnails/ColorGameImage.png", "Thumbnails/FireworksImage.png", "Thumbnails/FlappyBatImage.png", "Thumbnails/HangmanImage.png", "Thumbnails/MinesweeperImage.png", "Thumbnails/MissileCommandImage.png", "Thumbnails/SimonImage.png", "Thumbnails/SubGameImage.png", "Thumbnails/TypespeedImage.png"]
+thumbnails = ["../../libraries/Thumbnails/AsteroidsImage.png", "../../libraries/Thumbnails/ColorGameImage.png", "../../libraries/Thumbnails/FireworksImage.png", "../../libraries/Thumbnails/FlappyBatImage.png", "../../libraries/Thumbnails/HangmanImage.png", "../../libraries/Thumbnails/MinesweeperImage.png", "../../libraries/Thumbnails/MissileCommandImage.png", "../../libraries/Thumbnails/SimonImage.png", "../../libraries/Thumbnails/SubGameImage.png", "../../libraries/Thumbnails/TypespeedImage.png"]
 images = Group()
 unknownGames = []
 
@@ -130,7 +134,7 @@ TypespeedStatsDisplay = []
 TypespeedInfoFull = [0,0,0,0,0,0,0]
 ### Default Values, Keys, Simple Stat Display Keys, Display Values, and General Info about each known and created game. Must update for each additional game made. Add to the known game list and create the necessary values above
 
-def file_checking(path, default, gameInfo):
+def file_checking(path, default, gameInfo, game):
     '''
     Takes 3 args, path for which file to look for, 
     default is the default info for the game, 
@@ -140,16 +144,15 @@ def file_checking(path, default, gameInfo):
     Takes the values from the files, whether already existing or new and puts the values into a list for use later
     '''
     counter = 0
-    directory = "Files"
-    properPath = os.path.join(directory, path)
+    directory = path[:-len(game)]
     if(not os.path.exists(directory)):
         os.makedirs(directory, exist_ok=True)
-    if not os.path.exists(properPath):
-        with open(properPath, 'w') as f:
+    if not os.path.exists(path):
+        with open(path, 'w') as f:
                 f.seek(0)
                 for i in range(len(default)):
                     f.write((str)(default[i])+"\n")
-    for info in open(properPath, "r+"):
+    for info in open(path, "r+"):
         if "Keys" in path:
             None
         else:
@@ -164,15 +167,14 @@ def find_files_by_extension(directory, extension):
     Returns a list of strings representing files of the requested extension in the requested directory
     '''
     found_files = []
-    for item in os.listdir(directory):
-        full_path = os.path.join(directory, item)
-        if os.path.isfile(full_path):
-            _, file_extension = os.path.splitext(item)
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            _, file_extension = os.path.splitext(file)
             if file_extension.lower() == extension.lower():
-                found_files.append(item)
+                found_files.append(file)
     return found_files
 
-targetDirectory = "."
+targetDirectory = "../"
 targetExtension = ".py"
 games = find_files_by_extension(targetDirectory, targetExtension)
 
@@ -247,10 +249,10 @@ def create_all_paths_and_game_buttons(gamesAvailable):
         data = gamePath[:-3]
         dataPath = data+"Stats.txt"
         keyPath = data+"Keys.txt"
-        dataPaths.append(dataPath)
-        keyPaths.append(keyPath)
+        dataPaths.append("../"+data+"/Files/"+dataPath)
+        keyPaths.append("../"+data+"/Files/"+keyPath)
         newButton = Rect(app.left + (i/4)*app.width, app.top, app.width/4,3*(app.width/10), fill = 'gray', border = 'black')
-        newButton.game = gamePath
+        newButton.game = "../"+data+"/"+gamePath
         buttons.append(newButton)
         for j in range(len(thumbnails)):
             if(data in thumbnails[j]):
@@ -272,8 +274,8 @@ def create_all_paths_and_game_buttons(gamesAvailable):
                     statsDisplay.append((name, value))
                 elif "Display" in name:
                     displays.append(value)
-        file_checking(dataPaths[i], default[i], realGameInfoPaths[i])
-        file_checking(keyPaths[i], realKeys[i], [])
+        file_checking(dataPaths[i], default[i], realGameInfoPaths[i], dataPath)
+        file_checking(keyPaths[i], realKeys[i], [], keyPath)
 
 create_all_paths_and_game_buttons(games)
 
