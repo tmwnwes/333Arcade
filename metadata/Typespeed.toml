@@ -1,0 +1,7 @@
+idNum = "000010"
+name = "Typespeed"
+version = "1.0.0"
+exePath = "Typespeed.py" 
+exePath_win = ""
+exePath_mac = ""
+launchVersion = "python3"

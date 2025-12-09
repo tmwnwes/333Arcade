@@ -1,7 +1,0 @@
-idNum = "000002"
-name = "SubGameTest"
-version = "1.0.0"
-exePath = "SubGame.py"
-exePath_win = ""
-exePath_mac = ""
-launchVersion = "python3.13"

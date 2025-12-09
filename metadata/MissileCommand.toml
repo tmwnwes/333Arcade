@@ -1,0 +1,7 @@
+idNum = "000007"
+name = "MissileCommand"
+version = "1.0.0"
+exePath = "MissileCommand.py" 
+exePath_win = ""
+exePath_mac = ""
+launchVersion = "python3"
