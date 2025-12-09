@@ -1,10 +1,68 @@
 ## Creating the screen and wide-scoped variables/groups/labels/objects ##
-import sys
-from cmu_graphics import *
-import subprocess
 import os
-import random
-import pyautogui
+import sys
+import subprocess
+import zipfile
+import shutil
+from pathlib import Path
+
+file_path = os.path.abspath(__file__)
+directory_path = os.path.dirname(file_path)
+os.chdir(directory_path)
+currentFile =  os.path.basename(__file__)
+gameName = currentFile[:-3]
+rootPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+lib_path = os.path.join(rootPath, "libraries")
+if lib_path not in sys.path:
+    sys.path.insert(0, lib_path)
+    
+try:
+    import pyautogui
+    import requests
+except ImportError as e:
+    os.system("pip3 install -r requirements.txt")
+    import pyautogui
+    import requests
+
+def download_zip_file(url, destination_folder, filename):
+    '''
+    Takes 3 args, a url for the file, a destination folder, and a name to give the file
+    Downloads the file found at url, gives it filename as a name and places it in the destination folder
+    '''
+    file_path = os.path.join(destination_folder, filename)
+    response = requests.get(url, stream=True)
+    with open(file_path, 'wb') as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            f.write(chunk)
+            
+def unzip_all(zip_file_path, destination_directory):
+    """
+    Takes 2 args, a path to a zip file and a path to the destination folder
+    """
+    if not os.path.exists(destination_directory):
+        os.makedirs(destination_directory)
+    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+        zip_ref.extractall(destination_directory)
+
+try:
+    from cmu_graphics import *
+except ImportError as e:
+    zip_url = 'https://s3.amazonaws.com/cmu-cs-academy.lib.prod/desktop-cmu-graphics/cmu_graphics_installer.zip'  
+    output_directory = "../../libraries"
+    output_filename = "cmu_graphics_installer.zip"
+    download_zip_file(zip_url, output_directory, output_filename)
+    unzip_all(output_directory+'/cmu_graphics_installer.zip', output_directory)
+    shutil.move("../../libraries/cmu_graphics_installer/cmu_graphics", "../../libraries")
+    os.remove("../../libraries/"+output_filename)
+    shutil.rmtree("../../libraries/cmu_graphics_installer")
+    from cmu_graphics import *
+
+
+size = pyautogui.size()
+width = size[0]
+height = size[1]
+app.width = width
+app.height = height
 
 
 default = [0,0,0,0,0,0,0,0,0]
@@ -12,11 +70,6 @@ keys = ["HighScore", "GamesPlayed", "YellowSubAch", "MinesBlownUp", "TorpsFired"
 fullInfoList = [] 
 
 app.autofs = 0
-file_path = os.path.abspath(__file__)
-directory_path = os.path.dirname(file_path)
-os.chdir(directory_path)
-currentFile =  os.path.basename(__file__)
-gameName = currentFile[:-3]
 
 def file_checking(path, default):
     '''
@@ -57,9 +110,6 @@ file_checking(gameName+"Keys.txt", keys)
 gameInfo = open("Files/SubGameStats.txt", "r+")
 hi = fullInfoList[0]
 
-size = pyautogui.size()
-app.width = size[0]
-app.height = size[1]
 
 app.failed = False
 app.pause = False
@@ -107,7 +157,7 @@ maxRange = app.width/3
 mines.count = 0
 minesAtStart = 40
 sub.health = 3
-app.warning = Sound("../../libraries/Audio/depthChargeWarning.mp3")
+app.warning = Sound("../../Audio/depthChargeWarning.mp3")
 
 ammo = Label("Ammo:", sky.left+30, 10, size = 20)
 torpedoes=Label(30, ammo.centerX, ammo.centerY+20, bold=True, size=20)
@@ -239,7 +289,7 @@ def spawn_depth_charges(x, y):
     randX = randrange(left, right)
     randY = randrange(top, bottom)
     charge = create_depth_charge(randX, randY)
-    charge.note = Sound("../../libraries/Audio/uwexplosion.mp3")
+    charge.note = Sound("../../Audio/uwexplosion.mp3")
     depthCharges.add(charge)
     
 def spawn_mine():
@@ -254,7 +304,7 @@ def spawn_mine():
     while safetyShield.hitsShape(new):
         new.centerX = randrange(10, app.width - 10, 10)
         new.centerY = randrange(ocean.top+12, (int)(ocean.bottom) -10, 10)
-    new.note = Sound("../../libraries/Audio/uwexplosion.mp3")
+    new.note = Sound("../../Audio/uwexplosion.mp3")
     mines.add(new)
     mines.count+=1
 
@@ -273,17 +323,17 @@ def launch_torpedo(x,y, dir, angle):
         new.dist = getPointInDir(new.centerX, new.centerY, angle+90, app.width/3)
         new.dir = dir
         new.rotateAngle =  angle
-        new.note = Sound("../../libraries/Audio/uwexplosion.mp3")
+        new.note = Sound("../../Audio/uwexplosion.mp3")
         allTorpedoes.add(new)
     if(dir == "left"):
         new = Oval(x-10, y+4, 20, 6, fill=col)
         new.dir = dir
         new.dist = getPointInDir(new.centerX, new.centerY, angle+90, -app.width/3)
         new.rotateAngle = angle
-        new.note = Sound("../../libraries/Audio/uwexplosion.mp3")
+        new.note = Sound("../../Audio/uwexplosion.mp3")
         allTorpedoes.add(new)
     if(app.muted == False):
-        Sound("../../libraries/Audio/fireTorpedo.mp3").play(restart = True)
+        Sound("../../Audio/fireTorpedo.mp3").play(restart = True)
 
 def starter_mines():
     '''
@@ -306,7 +356,7 @@ def spawn_powerup():
     if(not(safetyShield.hits(randX, randY))):
         powerUps.power=randrange(100)
         if(app.muted==False):
-            Sound("../../libraries/Audio/shooting2.mp3").play(restart = True)
+            Sound("../../Audio/shooting2.mp3").play(restart = True)
         if(powerUps.power>=70):
             newPowerUp = Circle(randX, randY, 8, fill=rgb(255, 0, 0))
             newPowerUp.time = 20
