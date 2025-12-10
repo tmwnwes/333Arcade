@@ -46,14 +46,13 @@ try:
     from cmu_graphics import *
 except ImportError as e:
     zip_url = 'https://s3.amazonaws.com/cmu-cs-academy.lib.prod/desktop-cmu-graphics/cmu_graphics_installer.zip'  
-    output_directory = directory_path
+    output_directory = "../../libraries"
     output_filename = "cmu_graphics_installer.zip"
-    new_dir = directory_path+"/cmu_graphics_installer"
     download_zip_file(zip_url, output_directory, output_filename)
-    unzip_all('cmu_graphics_installer.zip', directory_path)
-    shutil.move(directory_path+"/cmu_graphics_installer/cmu_graphics", directory_path)
-    os.remove(output_filename)
-    shutil.rmtree("cmu_graphics_installer")
+    unzip_all(output_directory+'/cmu_graphics_installer.zip', output_directory)
+    shutil.move(output_directory+"/cmu_graphics_installer/cmu_graphics", "../../libraries")
+    os.remove("../../libraries/"+output_filename)
+    shutil.rmtree("../../libraries/cmu_graphics_installer")
     from cmu_graphics import *
 
 
