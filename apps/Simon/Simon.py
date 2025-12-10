@@ -300,7 +300,7 @@ def onMousePress(x,y):
         sys.exit(0)
     if(backToLauncher.contains(x,y)):
         update_stats()
-        os.chdir("../../")
+        os.chdir("../")
         subprocess.Popen([sys.executable, backToLauncher.game])
         sys.exit(0)
     if(app.mode == 'player'):

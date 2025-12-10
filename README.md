@@ -19,11 +19,11 @@ Regardless of platform, please download or clone this entire project repository 
 ## MacOS Instructions for OLD LAUNCHER (PretendLauncher.py)
 If you are on MacOS, you have 3 options for running the launcher:
 
-1. Open with VS code, and run through the play button at the top right  
+1. Open PretendLauncher.py with VS code, and run through the play button at the top right  
 or  
 2. Open in Python Launcher (NOT IDLE) and run the script  
 or  
-3. Open a terminal window, navigate to the directory the launcher is in and run the launcher*
+3. Open a terminal window, navigate to the directory the launcher is in and run the launcher. Note that the launcher is in 333Arcade/apps/PretendLauncher, so you will have to navigate to the location you placed this repository*
 
 
 ```bash
@@ -58,6 +58,8 @@ If you are on Windows you have 2 simple options to run the launcher:
 1. Double click the PretendLauncher.py file as if it were an executable  
 or  
 2. Open the repository folder through VS code and click the play button at the top right while having the launcher file selected
+or
+3. Open command prompt and navigate to the directory PretendLauncher.py is stored in, type "python3 PretendLauncher.py" and press Enter
 ____
 
 ## INSTRUCTIONS FOR NEW LAUNCHER:
@@ -69,27 +71,14 @@ open a terminal in /333Arcade and run:
 python -m client.main
 ```
 
-#### This will prompt you to run two files:
-
-1. TestGame
-2. SubGameTest
-
-#### if you are on mac follow instructions in /333Arcade/apps/TestGame/run_test.sh This has only been tested on windows so it may not work correctly
+#### This will prompt you to run any found game files:
 
 
 # Included in this Repository
 
-## Files
+## libraries
 
-#### This folder will come populated with a slightly altered version of the words_alpha.txt file available at https://github.com/dwyl/english-words/blob/master/words_alpha.txt. The alterations are just the removal of words that are 4 letters or fewer, but you can feel free to look at the source or replace the file attached in this repository with that file instead. Upon running the launcher, Files will become populated with stats and key files for use by the game included with this project.
-
-## Audio
-
-#### This folder comes populated with mp3 files used in some of the games. Deleting this folder or files within the folder may cause game crashes as audio files are attempted to be played.
-
-## Images
-
-#### This folder contains thumbnail images for each of the created games as well as images for fruit ninja
+#### This folder will come populated with a slightly altered version of the words_alpha.txt file available at https://github.com/dwyl/english-words/blob/master/words_alpha.txt. The alterations are just the removal of words that are 4 letters or fewer, but you can feel free to look at the source or replace the file attached in this repository with that file instead. Upon running the launcher or any game, the libraries folder will become populated with the cmu_graphics package via an automatic download if it was not already added manually by the user. libraries also contains the Audio Folder. This folder comes populated with mp3 files used in some of the games. Deleting this folder or files within the folder may cause game crashes as audio files are attempted to be played. Additionally, there is a Thumbnails folder containing images used to represent games via the Pretend Lancher. Finally, there is a txt file called requirements.txt containing a list of required installations for the project to run. These packages will be installed upon running the Pretend Launcher or one of the games.
 
 ## Old Launcher
 

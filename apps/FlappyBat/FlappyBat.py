@@ -529,7 +529,7 @@ def onMousePress(x,y):
             mainScreenExit.visible = False
         if(backToLauncherMain.contains(x,y)):
             update_stats()
-            os.chdir("../../")
+            os.chdir("../")
             subprocess.Popen([sys.executable, backToLauncherMain.game])
             sys.exit(0)
         if(closeGameButtonMain.contains(x,y)):
@@ -538,7 +538,7 @@ def onMousePress(x,y):
     else:
         if(backToLauncher.contains(x,y) and app.pause == True):
             update_stats()
-            os.chdir("../../")
+            os.chdir("../")
             subprocess.Popen([sys.executable, backToLauncher.game])
             sys.exit(0)
         if(closeGameButton.contains(x,y) and app.pause == True):
@@ -546,7 +546,7 @@ def onMousePress(x,y):
             sys.exit(0)
         if(backToLauncherMain.contains(x,y) and app.play == False):
             update_stats()
-            os.chdir("../../")
+            os.chdir("../")
             subprocess.Popen([sys.executable, backToLauncherMain.game])
             sys.exit(0)
         if(closeGameButtonMain.contains(x,y) and app.play == False):

@@ -67,7 +67,7 @@ app.typeyTime = False
 app.width = width
 app.height = height
 
-wordList = open("Files/words_alpha.txt", "r", -1) ### 365k words, incliuding names, places, plurals, and weird old english words like symphysy
+wordList = open("../../libraries/words_alpha.txt", "r", -1) ### 365k words, incliuding names, places, plurals, and weird old english words like symphysy
 words = []
 words2 = []
 
@@ -396,7 +396,7 @@ def onMousePress(x,y):
         sys.exit(0)
     if(backToLauncher.contains(x,y)):
         update_stats()
-        os.chdir("../../")
+        os.chdir("../")
         subprocess.Popen([sys.executable, backToLauncher.game])
         sys.exit(0)
 

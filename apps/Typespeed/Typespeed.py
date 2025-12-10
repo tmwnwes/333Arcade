@@ -89,7 +89,7 @@ default = [0,0,0,0,0,0,0]
 keys = ["WordsTyped", "LongestStreak", "HighScore", "GamesPlayed", "TimesLaunched", "WordsMissed", "Mistakes"]
 fullInfoList = []
 
-words = open("Files/words_alpha.txt", "r", -1)
+words = open("../../libraries/words_alpha.txt", "r", -1)
 wordList = []
 for thing in words:
     thing = thing.strip()
@@ -306,7 +306,7 @@ def onMousePress(x,y):
         sys.exit(0)
     if(launcherButton.contains(x,y)):
         update_stats()
-        os.chdir("../../")
+        os.chdir("../")
         subprocess.Popen([sys.executable, launcherButton.game])
         sys.exit(0)
 

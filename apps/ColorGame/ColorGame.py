@@ -4,14 +4,6 @@ import subprocess
 import zipfile
 import shutil
 
-try:
-    import pyautogui
-    import requests
-except ImportError as e:
-    os.system("pip3 install -r requirements.txt")
-    import pyautogui
-    import requests
-
 file_path = os.path.abspath(__file__)
 directory_path = os.path.dirname(file_path)
 os.chdir(directory_path)
@@ -21,6 +13,14 @@ rootPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 lib_path = os.path.join(rootPath, "libraries")
 if lib_path not in sys.path:
     sys.path.insert(0, lib_path)
+
+try:
+    import pyautogui
+    import requests
+except ImportError as e:
+    os.system("pip3 install -r requirements.txt")
+    import pyautogui
+    import requests
 
 def download_zip_file(url, destination_folder, filename):
     '''
@@ -222,7 +222,7 @@ def onMousePress(x,y):
             fullInfoList[1]+=1
     if(backToLauncher.contains(x,y)):
         update_stats()
-        os.chdir("../../")
+        os.chdir("../")
         subprocess.Popen([sys.executable, backToLauncher.game])
         sys.exit(0)
     if(escapeButton.contains(x,y)):

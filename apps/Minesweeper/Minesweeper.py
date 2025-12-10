@@ -706,7 +706,7 @@ def onMousePress(x,y,button):
                     sys.exit(0)
                 else:
                     update_stats()
-                    os.chdir("../../")
+                    os.chdir("../")
                     subprocess.Popen([sys.executable, button.game])
                     sys.exit(0)
     else:
@@ -727,7 +727,7 @@ def onMousePress(x,y,button):
                         sys.exit(0)
                     else:
                         update_stats()
-                        os.chdir("../../")
+                        os.chdir("../")
                         subprocess.Popen([sys.executable, button.game])
                         sys.exit(0)
     auto_clear_zeros()

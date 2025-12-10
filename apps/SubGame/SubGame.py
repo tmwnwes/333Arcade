@@ -168,7 +168,7 @@ pauseLabel = Label("Game Paused", app.width/2, app.height/2 - 15, size = 30)
 closeGameButton = Rect(outerPause.left, outerPause.centerY, outerPause.width//2, outerPause.height//2, fill=None, border = 'red')
 closeGameButton.words = Label("Close Game", closeGameButton.centerX, closeGameButton.centerY, size = 15)
 backToLauncher = Rect(closeGameButton.right+1, closeGameButton.top, outerPause.width//2, outerPause.height//2, fill=None, border = 'gray')
-backToLauncher.game = "PretendLauncher.py"
+backToLauncher.game = "PretendLauncher/PretendLauncher.py"
 backToLauncher.words = Label("Return to Launcher", backToLauncher.centerX, backToLauncher.centerY, size = 15)
 
 pauseScreen = Group(outerPause, pauseLabel, closeGameButton, backToLauncher, backToLauncher.words, closeGameButton.words)
@@ -832,6 +832,7 @@ def onMousePress(x,y):
             sys.exit(0)
         if(backToLauncher.contains(x,y)):
             update_stats()
+            os.chdir("../")
             subprocess.Popen([sys.executable, backToLauncher.game])
             sys.exit(0)
         
