@@ -425,7 +425,7 @@ def reset_game():
     Resets all alterable values and positions to starting values and positions
     Sets block heights randomly
     '''
-    app.foo=(random.randrange(0, (int)((3/10)*app.height)))
+    app.foo=(randrange(0, (int)((3/10)*app.height)))
     a1.y2=app.foo-40
     b1.y2=app.foo
     c1.y2=app.foo+20
