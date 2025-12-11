@@ -403,7 +403,7 @@ def spawn_plane(y):
     hitbox.flakHP = hitbox.bombs//2 + 10 ### Only relevant for city flak hits 
     hitbox.type = 'plane'
     hitbox.speed = app.planeSpeed
-    hitbox.importance = 0.65 + app.level/100
+    hitbox.importance = 0.55 + app.level/100
     hitbox.gravity=0
     hitbox.score = 625
     spacing = app.width// hitbox.bombs
@@ -481,9 +481,10 @@ def spawn_bombs(x,y):
     '''
     bomb = Oval(x,y,2,8, fill = 'white')
     bomb.speed = app.bombSpeed
-    bomb.rotateAngle = angleTo(bomb.centerX, bomb.centerY, bomb.centerX + randrange(30, 80), app.height)
+    bomb.targetX = bomb.centerX + randrange(30, 80)
+    bomb.rotateAngle = angleTo(bomb.centerX, bomb.centerY, bomb.targetX, app.height)
     bomb.angle = bomb.rotateAngle
-    bomb.importance = 1 + app.level/100
+    bomb.importance = 0.5 + app.level/100
     bomb.next = getPointInDir(bomb.centerX, bomb.centerY, bomb.rotateAngle, bomb.speed)
     bomb.flakHP = 1 ### Only relevant for city flak hits 
     bomb.score = app.level * 50
@@ -639,7 +640,7 @@ def spawn_basic_missile(x,y):
     new = Circle(x,y, 6, fill = 'limeGreen')
     new.type = "basic"
     new.gravity = 0
-    new.importance = 0.8 + app.level/100
+    new.importance = 0.7 + app.level/100
     new.score = 100
     new.flakHP = 14 ### Only relevant for city flak hits 
     new.hitIDs = []
@@ -924,7 +925,8 @@ def spawn_small_bombs(x,y,num):
     '''
     for i in range(num):
         new = Circle(x,y,2, fill='cyan')
-        new.angle = angleTo(x,y,randrange(x-(app.width//10), x+(app.width//10)), app.height)
+        new.targetX = randrange(x-(app.width//10), x+(app.width//10))
+        new.angle = angleTo(x,y,new.targetX, app.height)
         new.next = getPointInDir(x,y,new.rotateAngle, app.bombSpeed)
         new.gravity = app.gravity
         new.type = 'bomb'
@@ -933,7 +935,7 @@ def spawn_small_bombs(x,y,num):
         new.flakHP = 1
         new.hitIDs = []
         allEnemies.add(new)
-        new.importance = 0.8 + app.level/100
+        new.importance = 0.5 + app.level/100
     if(app.muted == False):
         Sound("../../libraries/Audio/pop.mp3").play(restart = True)
     
@@ -947,7 +949,7 @@ def spawn_multi_bomb(x, detHeight):
     new = Circle(x,-10, 12, fill = 'cyan')
     new.detHeight = detHeight
     new.bombs = app.level//2 + 2 if app.level <= 18 else 20
-    new.importance = 1.6 + app.level/100
+    new.importance = 1.3 + app.level/100
     new.type = 'multi'
     new.score = 750 + (125 * new.bombs)
     new.speed = app.multiBombSpeed
@@ -965,21 +967,21 @@ def spawn_shots(x, y, angle):
     '''
     new = Oval(x,y,2,20, fill='white', rotateAngle = angle)
     new.angle = angle
-    new.importance = 0.8 + app.level/100
+    new.importance = 0.7 + app.level/100
     new.speed = app.ufoProjectileSpeed
     new.gravity = 0
     new.type = 'bomb'
     new.next = getPointInDir(x,y,angle,new.speed)
     new2 = Oval(x,y,2,20, fill='white', rotateAngle = angle+10)
     new2.angle = angle+10
-    new2.importance = 0.8 + app.level/100
+    new2.importance = 0.7 + app.level/100
     new2.speed = app.ufoProjectileSpeed
     new2.gravity = 0
     new2.type = 'bomb'
     new2.next = getPointInDir(x,y,angle+10,new.speed)
     new3 = Oval(x,y,2,20, fill='white', rotateAngle = angle-10)
     new3.angle = angle-10
-    new3.importance = 0.8 + app.level/100
+    new3.importance = 0.7 + app.level/100
     new3.speed = app.ufoProjectileSpeed
     new3.gravity = 0
     new3.type = 'bomb'
@@ -1006,7 +1008,7 @@ def spawn_fun_missile():
     new = Circle(randrange((app.width//10), (9*app.width//10)), -100, 6, fill='red')
     new.score = 1000
     new.num = app.munitionCounter
-    new.importance = 1.2 + app.level/100
+    new.importance = 1 + app.level/100
     new.speed = app.basicMissileSpeed
     new.gravity = app.gravity
     new.angle = angleTo(new.centerX, new.centerY, randrange(3*(app.width//40), 37*(app.width//40)), app.height)
@@ -1118,7 +1120,7 @@ def find_valuable_enemy(x,y, range):
     for enemy in allEnemies:
         dist = distance(x,y,enemy.centerX, enemy.centerY)
         if(dist<range):
-            if(enemy.type == 'basic'):
+            if(enemy.type == 'basic' or enemy.type == 'bomb'):
                 for city in cities:
                     willHit.append((city.left-7, city.right+7))
                 for bat in batteries:
@@ -1126,8 +1128,15 @@ def find_valuable_enemy(x,y, range):
             else:
                 willHit.append((batteries[0].left-7, batteries[2].right+7))
             for tuple in willHit:
-                if(enemy.centerX>tuple[0] and enemy.centerX<tuple[1]):
+                if(enemy.type != 'bomb'):
+                    if(enemy.centerX>tuple[0] and enemy.centerX<tuple[1]):
+                        options.append((enemy.centerX, enemy.centerY, dist, ((1000)/dist+1)*enemy.importance, enemy.importance))
+                elif(enemy.speed<app.ufoProjectileSpeed):
+                    if(enemy.targetX>tuple[0]+4 and enemy.targetX<tuple[1]-4):
+                        options.append((enemy.centerX, enemy.centerY, dist, ((1000)/dist+1)*enemy.importance, enemy.importance))
+                else:
                     options.append((enemy.centerX, enemy.centerY, dist, ((1000)/dist+1)*enemy.importance, enemy.importance))
+                        
     if(len(options)==0):
         return None
     for item in options[:]:
@@ -1150,6 +1159,8 @@ def fire_flak(building, xRange, yRange):
         building.flakTimer = app.stepsPerSecond//target[4]
         offsetX = randrange(-xRange, xRange, 1)
         offsetY = randrange(-yRange, yRange, 1)
+        while target[1]+offsetY > building.top:
+            offsetY-=10
         create_flak_target(target[0] + offsetX, target[1] + offsetY, app.flakNum)
         new = Circle(building.centerX, building.top, 2, fill = 'white')
         new.target = (target[0] + offsetX, target[1] + offsetY)
