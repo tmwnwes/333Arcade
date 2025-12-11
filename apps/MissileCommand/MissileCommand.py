@@ -348,7 +348,7 @@ def move_enemies():
                     spawn_bombs(enemy.centerX, enemy.centerY, True)
                 enemy.bombs-=1
             elif(enemy.left > app.width):
-                explode_object(enemy, False)
+                allEnemies.remove(enemy)
                 app.plane -=1
                 if(app.plane<1):
                     app.planeSound.play(restart=True)
@@ -357,16 +357,14 @@ def move_enemies():
             enemy.gravity+=app.gravity/2
             enemy.centerY+=enemy.gravity
         if(enemy.type == 'multi'):
-            enemy.speed+=app.gravity
             if(enemy.centerY>enemy.detHeight):
                 if(enemy.score == 0):
                     spawn_small_bombs((int)(enemy.centerX), (int)(enemy.centerY), enemy.bombs, False)
                 else:
                     spawn_small_bombs((int)(enemy.centerX), (int)(enemy.centerY), enemy.bombs, True)
-                enemy.hitIDs.clear()
                 allEnemies.remove(enemy)
         if(enemy.type == 'smart'):
-            enemy.gravity+=app.gravity/4
+            enemy.gravity+=app.gravity/5
             enemy.centerY+=enemy.gravity
             enemy.how_far = []
             for shape in explosion:
@@ -391,7 +389,7 @@ def move_enemies():
                 allEnemies.remove(enemy)
             if(enemy.centerX<=-200):
                 allEnemies.remove(enemy)
-            if(enemy.centerX>= (15/32)*app.width and enemy.centerX <= (17/32)*app.width and enemy.firing>=1):
+            while(enemy.centerX>= (15/32)*app.width and enemy.centerX <= (17/32)*app.width and enemy.firing>=1):
                 angle = angleTo(enemy.centerX, enemy.bottom, randrange(((int)(app.width/10)), (int)((app.width*(9/10)))), app.height)
                 if(enemy.score == 0):
                     spawn_shots(enemy.centerX, enemy.bottom, angle, False)
@@ -1160,20 +1158,21 @@ def find_valuable_enemy(x,y, range):
     willHit = []
     for enemy in allEnemies:
         dist = distance(x,y,enemy.centerX, enemy.centerY)
-        if(enemy.type == 'basic'):
-            for city in cities:
-                willHit.append((city.left-7, city.right+7))
-            for bat in batteries:
-                willHit.append((bat.left-7, bat.right+7))
-        else:
-            willHit.append((batteries[0].left-7, batteries[2].right+7))
-        for tuple in willHit:
-            if(enemy.centerX>tuple[0] and enemy.centerX<tuple[1] and dist<range):
-                options.append((enemy.centerX, enemy.centerY, dist, ((1000)/dist+1)*enemy.importance, enemy.importance))
+        if(dist<range):
+            if(enemy.type == 'basic'):
+                for city in cities:
+                    willHit.append((city.left-7, city.right+7))
+                for bat in batteries:
+                    willHit.append((bat.left-7, bat.right+7))
+            else:
+                willHit.append((batteries[0].left-7, batteries[2].right+7))
+            for tuple in willHit:
+                if(enemy.centerX>tuple[0] and enemy.centerX<tuple[1]):
+                    options.append((enemy.centerX, enemy.centerY, dist, ((1000)/dist+1)*enemy.importance, enemy.importance))
     if(len(options)==0):
         return None
     for item in options[:]:
-        if(item[1]>y ):
+        if(item[1]>y):
             options.remove(item)
     if(len(options)>0):    
         return max(options, key = lambda t: t[3])
@@ -1191,7 +1190,7 @@ def fire_flak(building, xRange, yRange):
     if(target!=None):
         building.flakTimer = app.stepsPerSecond//target[4]
         offsetX = randrange(-xRange, xRange, 1)
-        offsetY = randrange((int)(-0.5*yRange), (int)(1.5*yRange))
+        offsetY = randrange(-yRange, yRange, 1)
         create_flak_target(target[0] + offsetX, target[1] + offsetY, app.flakNum)
         new = Circle(building.centerX, building.top, 2, fill = 'white')
         new.target = (target[0] + offsetX, target[1] + offsetY)
