@@ -124,7 +124,7 @@ app.shotSpeedMid = ((width*height)**0.5)/66 ### Roughly around 20 on standard ma
 app.basicMissileSpeed = (1/525) * height ### Only vertical so more simple calculation
 app.multiBombSpeed = ((width*height)**0.5)/522 ### Roughly around 3 on standard macbook screen, but it is now relative to screen size
 app.planeSpeed = (1/280) * width ### Only horizontal so more simple calculation
-app.spawnTimer = app.stepsPerSecond * 5
+app.spawnTimer = app.stepsPerSecond * 4
 app.enemiesLeftToSpawn = (app.level*7) + 5
 app.bombSpeed = (1/210) * height ### Mostly vertical (some horizontal but not alot) so simpler calculation
 app.flakSpeed = ((width*height)**0.5)/25 ## Roughly around 63 on a standard macbook, but is now relative to screen size
@@ -248,7 +248,7 @@ def reset():
     '''
     info.clear()
     fullInfoList[1]+=1
-    app.spawnTimer = app.stepsPerSecond * 5
+    app.spawnTimer = app.stepsPerSecond * 4
     app.enemiesLeftToSpawn = 10
     app.score = 0
     score.value = "Score: %05d" %app.score
@@ -342,10 +342,7 @@ def move_enemies():
         if(enemy.type == 'plane'):
             if(enemy.bombs>0 and enemy.centerX>= enemy.dropZones[0]):
                 enemy.dropZones.pop(0)
-                if(enemy.score == 0):
-                    spawn_bombs(enemy.centerX, enemy.centerY, False)
-                else:
-                    spawn_bombs(enemy.centerX, enemy.centerY, True)
+                spawn_bombs(enemy.centerX, enemy.centerY)
                 enemy.bombs-=1
             elif(enemy.left > app.width):
                 allEnemies.remove(enemy)
@@ -358,10 +355,7 @@ def move_enemies():
             enemy.centerY+=enemy.gravity
         if(enemy.type == 'multi'):
             if(enemy.centerY>enemy.detHeight):
-                if(enemy.score == 0):
-                    spawn_small_bombs((int)(enemy.centerX), (int)(enemy.centerY), enemy.bombs, False)
-                else:
-                    spawn_small_bombs((int)(enemy.centerX), (int)(enemy.centerY), enemy.bombs, True)
+                spawn_small_bombs((int)(enemy.centerX), (int)(enemy.centerY), enemy.bombs)
                 allEnemies.remove(enemy)
         if(enemy.type == 'smart'):
             enemy.gravity+=app.gravity/5
@@ -391,15 +385,12 @@ def move_enemies():
                 allEnemies.remove(enemy)
             if(enemy.centerX>= (15/32)*app.width and enemy.centerX <= (17/32)*app.width and enemy.firing>=1):
                 angle = angleTo(enemy.centerX, enemy.bottom, randrange(((int)(app.width/10)), (int)((app.width*(9/10)))), app.height)
-                if(enemy.score == 0):
-                    spawn_shots(enemy.centerX, enemy.bottom, angle, False)
-                else:
-                    spawn_shots(enemy.centerX, enemy.bottom, angle, True)
+                spawn_shots(enemy.centerX, enemy.bottom, angle)
                 enemy.firing-=1
         enemy.next = getPointInDir(enemy.centerX, enemy.centerY, enemy.angle, enemy.speed)
                 
 
-def spawn_plane(y, canScore):
+def spawn_plane(y):
     '''
     Takes one positional arg and returns no values
     y represents the height on the screen that the shape will be spawned
@@ -412,12 +403,9 @@ def spawn_plane(y, canScore):
     hitbox.flakHP = hitbox.bombs//2 + 10 ### Only relevant for city flak hits 
     hitbox.type = 'plane'
     hitbox.speed = app.planeSpeed
-    hitbox.importance = 0.65
+    hitbox.importance = 0.65 + app.level/100
     hitbox.gravity=0
-    if(canScore == True):
-        hitbox.score = 625
-    else:
-        hitbox.score = 0
+    hitbox.score = 625
     spacing = app.width// hitbox.bombs
     for i in range(hitbox.bombs):
         hitbox.dropZones.append(spacing * (i) + randrange(-50, 51, 1))
@@ -485,7 +473,7 @@ def select_prev_bat(bat):
     else:
         return bat
 
-def spawn_bombs(x,y, canScore):
+def spawn_bombs(x,y):
     '''
     Takes 2 positional arguments, x and y for horizontal and vertical spawning respectively
     Creates a shape with specific attributes anf adds it to a shape group, returns no values
@@ -495,13 +483,10 @@ def spawn_bombs(x,y, canScore):
     bomb.speed = app.bombSpeed
     bomb.rotateAngle = angleTo(bomb.centerX, bomb.centerY, bomb.centerX + randrange(30, 80), app.height)
     bomb.angle = bomb.rotateAngle
-    bomb.importance = 1
+    bomb.importance = 1 + app.level/100
     bomb.next = getPointInDir(bomb.centerX, bomb.centerY, bomb.rotateAngle, bomb.speed)
     bomb.flakHP = 1 ### Only relevant for city flak hits 
-    if(canScore == True):
-        bomb.score = app.level * 50
-    else:
-        bomb.score = 0
+    bomb.score = app.level * 50
     bomb.hitIDs = []
     bomb.gravity = app.gravity
     bomb.type = 'bomb'
@@ -645,7 +630,7 @@ def reload_all():
         app.bat = select_next_bat(app.bat)
     bat_color_update()        
 
-def spawn_basic_missile(x,y, canScore):
+def spawn_basic_missile(x,y):
     '''
     Takes 2 args and returns no values
     Adds new shape with special attributes to shape group
@@ -654,11 +639,8 @@ def spawn_basic_missile(x,y, canScore):
     new = Circle(x,y, 6, fill = 'limeGreen')
     new.type = "basic"
     new.gravity = 0
-    new.importance = 0.8
-    if(canScore == True):
-        new.score = 100
-    else:
-        new.score = 0
+    new.importance = 0.8 + app.level/100
+    new.score = 100
     new.flakHP = 14 ### Only relevant for city flak hits 
     new.hitIDs = []
     new.speed = app.basicMissileSpeed
@@ -934,7 +916,7 @@ def check_win():
         for bat in batteries:
             bat.ammoCount+=(10 + app.level*2) 
         
-def spawn_small_bombs(x,y,num, canScore):
+def spawn_small_bombs(x,y,num):
     '''
     Takes 3 args, x and y for position, num for counting how many to spawn
     Spawns num many small bombs at the specified location
@@ -946,19 +928,16 @@ def spawn_small_bombs(x,y,num, canScore):
         new.next = getPointInDir(x,y,new.rotateAngle, app.bombSpeed)
         new.gravity = app.gravity
         new.type = 'bomb'
-        if(canScore == True):
-            new.score = 100
-        else:
-            new.score = 0
+        new.score = 100
         new.speed = app.bombSpeed
         new.flakHP = 1
         new.hitIDs = []
         allEnemies.add(new)
-        new.importance = 0.8
+        new.importance = 0.8 + app.level/100
     if(app.muted == False):
         Sound("../../libraries/Audio/pop.mp3").play(restart = True)
     
-def spawn_multi_bomb(x, detHeight, canScore):
+def spawn_multi_bomb(x, detHeight):
     '''
     Takes 2 args, x for horizontal location and detHeight for when the bomb should explode
     Returns no values but adds a shaoe with special attributes to the appropriate shape group
@@ -968,12 +947,9 @@ def spawn_multi_bomb(x, detHeight, canScore):
     new = Circle(x,-10, 12, fill = 'cyan')
     new.detHeight = detHeight
     new.bombs = app.level//2 + 2 if app.level <= 18 else 20
-    new.importance = 3
+    new.importance = 1.6 + app.level/100
     new.type = 'multi'
-    if(canScore == True):
-        new.score = 750 + (125 * new.bombs)
-    else:
-        new.score = 0
+    new.score = 750 + (125 * new.bombs)
     new.speed = app.multiBombSpeed
     new.angle = angleTo(new.centerX,new.centerY,randrange(app.width//4, 3*(app.width//4)),detHeight)
     new.gravity = app.gravity
@@ -982,40 +958,35 @@ def spawn_multi_bomb(x, detHeight, canScore):
     new.hitIDs = []
     allEnemies.add(new)
         
-def spawn_shots(x, y, angle, canScore):
+def spawn_shots(x, y, angle):
     '''
     Takes 3 args, x and y for horizontal and vertical positioning, and angle for direction
     Returns no values but does add shapes to appropriate shape groups
     '''
     new = Oval(x,y,2,20, fill='white', rotateAngle = angle)
     new.angle = angle
-    new.importance = 0.8
+    new.importance = 0.8 + app.level/100
     new.speed = app.ufoProjectileSpeed
     new.gravity = 0
     new.type = 'bomb'
     new.next = getPointInDir(x,y,angle,new.speed)
     new2 = Oval(x,y,2,20, fill='white', rotateAngle = angle+10)
     new2.angle = angle+10
-    new2.importance = 0.8
+    new2.importance = 0.8 + app.level/100
     new2.speed = app.ufoProjectileSpeed
     new2.gravity = 0
     new2.type = 'bomb'
     new2.next = getPointInDir(x,y,angle+10,new.speed)
     new3 = Oval(x,y,2,20, fill='white', rotateAngle = angle-10)
     new3.angle = angle-10
-    new3.importance = 0.8
+    new3.importance = 0.8 + app.level/100
     new3.speed = app.ufoProjectileSpeed
     new3.gravity = 0
     new3.type = 'bomb'
     new3.next = getPointInDir(x,y,angle-10,new.speed)
-    if(canScore == True):
-        new.score = 1000
-        new2.score = 1000
-        new3.score = 1000
-    else:
-        new.score = 0
-        new2.score = 0
-        new3.score = 0
+    new.score = 1000
+    new2.score = 1000
+    new3.score = 1000
     if(app.muted == False):
         Sound("../../libraries/Audio/UFO_shots.mp3").play(restart = True)
     new.flakHP = 2 ### Only relevant for city flak hits 
@@ -1026,19 +997,16 @@ def spawn_shots(x, y, angle, canScore):
     new3.hitIDs = []
     allEnemies.add(new, new2, new3)        
 
-def spawn_fun_missile(canScore):
+def spawn_fun_missile():
     '''
     Takes no args and returns no values
     Creates a shape with specific attributes and adds it to the appropriate shape group
     This enemy type is affected by horizontal motion and gravity
     '''
     new = Circle(randrange((app.width//10), (9*app.width//10)), -100, 6, fill='red')
-    if(canScore == True):
-        new.score = 1000
-    else:
-        new.score = 0
+    new.score = 1000
     new.num = app.munitionCounter
-    new.importance = 1.4
+    new.importance = 1.2 + app.level/100
     new.speed = app.basicMissileSpeed
     new.gravity = app.gravity
     new.angle = angleTo(new.centerX, new.centerY, randrange(3*(app.width//40), 37*(app.width//40)), app.height)
@@ -1048,7 +1016,7 @@ def spawn_fun_missile(canScore):
     new.hitIDs = []
     allEnemies.add(new)       
 
-def spawn_smart_bomb(canScore):
+def spawn_smart_bomb():
     '''
     Takes no args and returns no values
     Creates a shape with specific attributes and adds to appropriate shape group
@@ -1056,31 +1024,26 @@ def spawn_smart_bomb(canScore):
     new = Circle(randrange(app.width), -100, 6, fill='white')
     new.speed = 3
     new.type = 'smart'
-    new.importance = 1
+    new.importance = 1 + app.level/100
     new.gravity = 1
     new.howFar = []
-    if(canScore == True):
-        new.score = 1225
-    else:
-        new.score = 0
+    new.score = 1225
     new.angle = angleTo(new.centerX, new.centerY, randrange((int)((1/5)*app.width), (int)((4/5)*app.width)), app.height)
     new.next = getPointInDir(new.centerX, new.centerY, new.angle, new.speed)
-    new.flakHP = 10
+    new.flakHP = 12
     new.hitIDs = []
     allEnemies.add(new)
                 
-def spawn_ufo(canScore):
+def spawn_ufo():
     '''
     Takes no args and returns no values
     Creates shape and decides location for spawning, adding to appropriate shape group
     '''
     location = randrange(2)
     saucer = create_saucer(0, (app.height//10), location)
-    if(canScore == True):
-        saucer.score = 1450
-    else:
-        saucer.score = 0   
+    saucer.score = 0   
     saucer.firing = app.level//10 + 1 if app.level <= 50 else 6
+    saucer.score = 1450
     saucer.hitIDs =[]
     saucer.type = 'ufo'
     saucer.importance = 1 ## Avoids a crash relating to flak but ufos should never get shot by flak anyway
@@ -1092,59 +1055,55 @@ def spawn_handling():
     Takes no args and returns no values
     Handles spawning enemies, based on current game level
     '''
-    if(app.bat.top<=app.height):
-        canScore = True
-    else:
-        canScore = False
     app.spawnTimer = app.stepsPerSecond * 4
     app.enemiesLeftToSpawn-=1
     if(app.level == 1): ## Just straight missiles
-        spawn_basic_missile(randrange(0,app.width), -10, canScore)
+        spawn_basic_missile(randrange(0,app.width), -10)
     elif(app.level <= 3): ## missiles and bomber planes
         if(app.enemiesLeftToSpawn %8 ==0):
-            spawn_plane(randrange(app.height//4, app.height//2), canScore)
+            spawn_plane(randrange(app.height//4, app.height//2))
         else:
-            spawn_basic_missile(randrange(0,app.width), -10, canScore)
+            spawn_basic_missile(randrange(0,app.width), -10)
     elif(app.level <= 6): ## missiles, bomber planes higher up, non straight missiles
         if(app.enemiesLeftToSpawn%8 == 0):
-            spawn_plane(randrange(20, app.height//4), canScore)
+            spawn_plane(randrange(20, app.height//4))
         elif(app.enemiesLeftToSpawn%7 == 0):
-            spawn_fun_missile(canScore)
+            spawn_fun_missile()
         else:
-            spawn_basic_missile(randrange(0,app.width), -10, canScore)
+            spawn_basic_missile(randrange(0,app.width), -10)
     elif(app.level <= 9): ## missiles, bomber planes higher up, non straight missiles, multi bombs
         if(app.enemiesLeftToSpawn% 9 == 0):
-            spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8), canScore)
+            spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8))
         elif(app.enemiesLeftToSpawn%8 == 0):
-            spawn_plane(randrange(20, 3*app.height//4), canScore)
+            spawn_plane(randrange(20, 3*app.height//4))
         elif(app.enemiesLeftToSpawn%7 == 0):
-            spawn_fun_missile(canScore)
+            spawn_fun_missile()
         else:
-            spawn_basic_missile(randrange(0,app.width), -10, canScore)
+            spawn_basic_missile(randrange(0,app.width), -10)
     elif(app.level <=12 ): ## all of the above, plus smart bombs
         if(app.enemiesLeftToSpawn%11 == 0):
-            spawn_smart_bomb(canScore)
+            spawn_smart_bomb()
         elif(app.enemiesLeftToSpawn% 9 == 0):
-            spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8), canScore)
+            spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8))
         elif(app.enemiesLeftToSpawn%8 == 0):
-            spawn_plane(randrange(20, app.height//4), canScore)
+            spawn_plane(randrange(20, app.height//4))
         elif(app.enemiesLeftToSpawn%7 == 0):
-            spawn_fun_missile(canScore)
+            spawn_fun_missile()
         else:
-            spawn_basic_missile(randrange(0,app.width), -10, canScore)
+            spawn_basic_missile(randrange(0,app.width), -10)
     else:
         if(app.enemiesLeftToSpawn%23 == 0): ##Rare event, on purpose
-            spawn_ufo(canScore)
+            spawn_ufo()
         elif(app.enemiesLeftToSpawn%11 == 0):
-            spawn_smart_bomb(canScore)
+            spawn_smart_bomb()
         elif(app.enemiesLeftToSpawn% 9 == 0):
-            spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8), canScore)
+            spawn_multi_bomb(randrange(app.width), randrange(6*app.height//8, 7*app.height//8))
         elif(app.enemiesLeftToSpawn%8 == 0):
-            spawn_plane(randrange(20, app.height//4), canScore)
+            spawn_plane(randrange(20, app.height//4))
         elif(app.enemiesLeftToSpawn%7 == 0):
-            spawn_fun_missile(canScore)
+            spawn_fun_missile()
         else:
-            spawn_basic_missile(randrange(0,app.width), -10, canScore)
+            spawn_basic_missile(randrange(0,app.width), -10)
     newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
 
 def find_valuable_enemy(x,y, range):
