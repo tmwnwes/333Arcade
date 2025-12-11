@@ -117,7 +117,7 @@ nightSky = Rect(0,0,app.width, app.height)
 app.cities = 6
 app.gate = 3500
 app.generalReload = app.stepsPerSecond*2.5
-app.level = 1
+app.level = 98
 app.mult = app.level
 app.shotSpeedLR = ((width*height)**0.5)/88 ### Roughly around 15 on standard macbook screen, but it is now relative to screen size
 app.shotSpeedMid = ((width*height)**0.5)/66 ### Roughly around 20 on standard macbook screen, but it is now relative to screen size
@@ -389,7 +389,7 @@ def move_enemies():
                 allEnemies.remove(enemy)
             if(enemy.centerX<=-200):
                 allEnemies.remove(enemy)
-            while(enemy.centerX>= (15/32)*app.width and enemy.centerX <= (17/32)*app.width and enemy.firing>=1):
+            if(enemy.centerX>= (15/32)*app.width and enemy.centerX <= (17/32)*app.width and enemy.firing>=1):
                 angle = angleTo(enemy.centerX, enemy.bottom, randrange(((int)(app.width/10)), (int)((app.width*(9/10)))), app.height)
                 if(enemy.score == 0):
                     spawn_shots(enemy.centerX, enemy.bottom, angle, False)
@@ -407,7 +407,7 @@ def spawn_plane(y, canScore):
     Then adds that shape to an appropriate group
     '''
     hitbox = Oval(-20, y, 40, 10, border = 'white', fill='gray')
-    hitbox.bombs = app.level//2+1
+    hitbox.bombs = app.level//2+1 if app.level <= 48 else 25
     hitbox.dropZones = []
     hitbox.flakHP = hitbox.bombs//2 + 10 ### Only relevant for city flak hits 
     hitbox.type = 'plane'
@@ -967,7 +967,7 @@ def spawn_multi_bomb(x, detHeight, canScore):
     '''
     new = Circle(x,-10, 12, fill = 'cyan')
     new.detHeight = detHeight
-    new.bombs = app.level//2 + 2
+    new.bombs = app.level//2 + 2 if app.level <= 18 else 20
     new.importance = 3
     new.type = 'multi'
     if(canScore == True):
@@ -1080,7 +1080,7 @@ def spawn_ufo(canScore):
         saucer.score = 1450
     else:
         saucer.score = 0   
-    saucer.firing = app.level//10 + 1
+    saucer.firing = app.level//10 + 1 if app.level <= 50 else 6
     saucer.hitIDs =[]
     saucer.type = 'ufo'
     saucer.importance = 1 ## Avoids a crash relating to flak but ufos should never get shot by flak anyway
