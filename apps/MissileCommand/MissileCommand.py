@@ -140,8 +140,8 @@ app.plane = 0
 app.flakNum = 0
 app.maxSize = (1/125)*app.width
 app.sizeToShortenTime = (1/200)*app.width
-app.xRange = 68 - app.level*2 if app.level<12 else 44
-app.yRange = 50 - app.level if app.level<8 else 42
+app.xRange = 68 # Maximum horizontal dispersion for flak shots
+app.yRange = 50 #Maximum vertical dispersion for flak shots
 
 outerPause = Rect(app.width/2, app.height/2, app.width/5, app.width/10, fill=None, border = 'yellow', borderWidth = 2, align = 'center')
 pauseLabel = Label("Game Paused", app.width/2, app.height/2 -15, size = 30, fill= 'white')
@@ -215,7 +215,7 @@ def make_city(x, j):
     city.id = j
     city.health = 5
     cityids.append(city.id)
-    for i in range(12):
+    for i in range(14):
         tall = randrange(5,80)
         wide = randrange(4,15)
         lastWidth = wide
@@ -437,7 +437,6 @@ def get_next_index(list, current):
     This function specifially provides the index directly after the given index
     Will return 0 in the case that the next index would be out of bounds
     '''
-    
     return 0 if current == len(list)-1 else current + 1
 
 def select_next_bat(bat):
@@ -542,19 +541,12 @@ def advance_stage():
     Grants extra score based on certain game conditions
     '''
     app.score+=len(cities)*25*app.mult
-    sum = 0
-    for bat in batteries:
-        sum+= bat.ammoCount
-        if(bat.broken == False):
-            sum += 20
-    app.score+=sum*app.mult
     app.level+=1
     if(app.muted == False):
         Sound("../../libraries/Audio/levelup.mp3").play(restart = True)
     stage.value = "Level: %1d" %app.level
     app.mult = app.level   
     app.enemiesLeftToSpawn = (app.level*7) + 5
-    app.spawnTimer = app.stepsPerSecond*4
     newLevelWarning.value = "Enemies until next level: %d" % app.enemiesLeftToSpawn
     app.xRange = 68 - app.level*2 if app.level<12 else 44
     app.yRange = 50 - app.level if app.level<8 else 42
@@ -570,12 +562,9 @@ def kaboom_all():
     This function is crucial to ensuring that explosions can disrupt or destroy enemies
     '''
     for object in explosion:
-        if(object.time <= 0):
-            object.opacity-=10
+        object.opacity-=1
         if(object.radius<=app.maxSize): 
             object.radius+=1
-        if object.radius >=app.sizeToShortenTime:
-            object.time -= 1
         if object.opacity == 0:
             explosion.remove(object)
     for flakShot in flak:
@@ -593,8 +582,7 @@ def explode_object(shape, causedByPlayer):
     adds a new shape to an appropriate shape group
     New shape is based on the location of the given shape
     '''
-    new = Circle(shape.centerX, shape.centerY, 3, fill='yellow', border = 'orange')
-    new.time = app.stepsPerSecond * 3
+    new = Circle(shape.centerX, shape.centerY, 6, fill='yellow', border = 'orange')
     new.willScore = causedByPlayer
     explosion.add(new)
 
@@ -705,7 +693,6 @@ def explosion_vs_enemies():
                     create_scores(bomb.centerX, bomb.centerY, points)
                     fullInfoList[3]+=1
                 explode_object(bomb, shape.willScore)
-                bomb.hitIDs.clear()
                 allEnemies.remove(bomb)
                 fullInfoList[4]+=1
                 if(bomb.type == 'plane'):
@@ -751,7 +738,6 @@ def enemies_vs_bat():
         for enemy in allEnemies:
             if(enemy.hitsShape(bat) or bat.containsShape(enemy)):
                 explode_object(enemy, False)
-                enemy.hitIDs.clear()
                 allEnemies.remove(enemy)
                 bat.broken = True
                 if(enemy.type=='bomb'):
@@ -776,7 +762,6 @@ def missiles_vs_ground():
             explode_object(enemy, False)
             if(app.muted == False):
                 Sound("../../libraries/Audio/medium.mp3").play(restart = True)
-            enemy.hitIDs.clear()
             allEnemies.remove(enemy)
 
 def enemies_vs_cities():
@@ -795,7 +780,6 @@ def enemies_vs_cities():
                             building.note.play(restart = True)
                         explode_object(building, False)
                     explode_object(enemy, False)
-                    enemy.hitIDs.clear()
                     allEnemies.remove(enemy)
                     cities.remove(city)
                     app.cities-=1
@@ -821,7 +805,6 @@ def missiles_vs_anti_missiles():
     for anti in defense:
         for enemy in allEnemies:    
             if(enemy.hitsShape(anti)):
-                enemy.hitIDs.clear()
                 for target in targets:
                     if(target.num == anti.num):
                         targets.remove(target)
@@ -871,14 +854,14 @@ def flak_vs_enemies():
     Checks if flak explosions hit any of the shapes in the allEnemies group
     '''
     for enemy in allEnemies:
-        if(enemy.hitsShape(flak)):
-            for exp in flak:
-                if(not exp.id in enemy.hitIDs and enemy.hitsShape(exp)):
+        for exp in flak:
+            if(exp.hitsShape(enemy)):
+                if(not exp.id in enemy.hitIDs):
                     enemy.hitIDs.append(exp.id)
                     decrease_health(enemy, False)
-        if(enemy.hitsShape(flakShots)):
-            for thing in flakShots:
-                if(not thing.id in enemy.hitIDs and enemy.hitsShape(thing)):
+        for thing in flakShots:
+            if(thing.hitsShape(enemy)):
+                if(not thing.id in enemy.hitIDs):
                     enemy.hitIDs.append(thing.id)
                     decrease_health(enemy, True) 
                 for target in flakTargets:
