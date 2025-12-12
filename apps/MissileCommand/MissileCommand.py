@@ -357,7 +357,6 @@ def move_enemies():
         if(enemy.type == 'fun'):
             enemy.gravity+=app.gravity/2
             enemy.centerY+=enemy.gravity
-            print(enemy.centerX, enemy.centerY)
         if(enemy.type == 'multi'):
             if(enemy.centerY>enemy.detHeight):
                 spawn_small_bombs((int)(enemy.centerX), (int)(enemy.centerY), enemy.bombs)
@@ -497,7 +496,6 @@ def spawn_bombs(x,y):
     bomb.gravity = 0
     bomb.type = 'bomb'
     bomb.willHit = False
-    i = 0
     possible_loc = (x,y)
     while(bomb.willHit == False and possible_loc[1]<app.height):
         for bat in batteries:
@@ -507,7 +505,6 @@ def spawn_bombs(x,y):
             if(city.contains(possible_loc[0], possible_loc[1])):
                 bomb.willHit = True
         possible_loc = getPointInDir(possible_loc[0], possible_loc[1], bomb.angle, bomb.speed)
-        i+=1
     allEnemies.add(bomb)
 
 def bat_color_update():
@@ -953,7 +950,6 @@ def spawn_small_bombs(x,y,num):
         new.hitIDs = []
         new.importance = 0.5 + app.level/100
         new.willHit = False
-        i = 0
         possible_loc = (x,y)
         while(new.willHit == False and possible_loc[1]<app.height):
             for bat in batteries:
@@ -963,7 +959,6 @@ def spawn_small_bombs(x,y,num):
                 if(city.contains(possible_loc[0], possible_loc[1])):
                     new.willHit = True
             possible_loc = getPointInDir(possible_loc[0], possible_loc[1], new.angle, new.speed)
-            i+=1
         allEnemies.add(new)
     if(app.muted == False):
         Sound("../../libraries/Audio/pop.mp3").play(restart = True)
@@ -1090,7 +1085,6 @@ def spawn_fun_missile():
         possible_loc = (nextPoint[0], nextPoint[1]+ new.gravity + (app.gravity/2)*(i+1))
         locs.append(possible_loc)
         i+=1
-    print(locs)
     allEnemies.add(new)       
 
 def spawn_smart_bomb():
@@ -1388,7 +1382,5 @@ flakTargets.toBack()
 allEnemies.toFront()
 flak.toFront()
 update_stats()
-
-spawn_fun_missile()
 
 app.run()
