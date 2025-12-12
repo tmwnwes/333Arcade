@@ -335,6 +335,10 @@ def update_stats():
         gameInfo.write((str)(fullInfoList[i])+"\n")
 
 def move_enemies():
+    '''
+    Takes no args and returns no values
+    Handles all movement for all enemies
+    '''
     for enemy in allEnemies:
         if(enemy.type!="ufo"):
             spawn_trail(enemy.centerX, enemy.centerY, enemy.fill)
@@ -353,6 +357,7 @@ def move_enemies():
         if(enemy.type == 'fun'):
             enemy.gravity+=app.gravity/2
             enemy.centerY+=enemy.gravity
+            print(enemy.centerX, enemy.centerY)
         if(enemy.type == 'multi'):
             if(enemy.centerY>enemy.detHeight):
                 spawn_small_bombs((int)(enemy.centerX), (int)(enemy.centerY), enemy.bombs)
@@ -481,7 +486,7 @@ def spawn_bombs(x,y):
     '''
     bomb = Oval(x,y,2,8, fill = 'white')
     bomb.speed = app.bombSpeed
-    bomb.targetX = bomb.centerX + randrange(30, 80)
+    bomb.targetX = bomb.centerX + randrange(30, 80)        
     bomb.rotateAngle = angleTo(bomb.centerX, bomb.centerY, bomb.targetX, app.height)
     bomb.angle = bomb.rotateAngle
     bomb.importance = 0.5 + app.level/100
@@ -489,8 +494,20 @@ def spawn_bombs(x,y):
     bomb.flakHP = 1 ### Only relevant for city flak hits 
     bomb.score = app.level * 50
     bomb.hitIDs = []
-    bomb.gravity = app.gravity
+    bomb.gravity = 0
     bomb.type = 'bomb'
+    bomb.willHit = False
+    i = 0
+    possible_loc = (x,y)
+    while(bomb.willHit == False and possible_loc[1]<app.height):
+        for bat in batteries:
+            if bat.contains(possible_loc[0], possible_loc[1]):
+                bomb.willHit = True
+        for city in cities:
+            if(city.contains(possible_loc[0], possible_loc[1])):
+                bomb.willHit = True
+        possible_loc = getPointInDir(possible_loc[0], possible_loc[1], bomb.angle, bomb.speed)
+        i+=1
     allEnemies.add(bomb)
 
 def bat_color_update():
@@ -934,8 +951,20 @@ def spawn_small_bombs(x,y,num):
         new.speed = app.bombSpeed
         new.flakHP = 1
         new.hitIDs = []
-        allEnemies.add(new)
         new.importance = 0.5 + app.level/100
+        new.willHit = False
+        i = 0
+        possible_loc = (x,y)
+        while(new.willHit == False and possible_loc[1]<app.height):
+            for bat in batteries:
+                if bat.contains(possible_loc[0], possible_loc[1]):
+                    new.willHit = True
+            for city in cities:
+                if(city.contains(possible_loc[0], possible_loc[1])):
+                    new.willHit = True
+            possible_loc = getPointInDir(possible_loc[0], possible_loc[1], new.angle, new.speed)
+            i+=1
+        allEnemies.add(new)
     if(app.muted == False):
         Sound("../../libraries/Audio/pop.mp3").play(restart = True)
     
@@ -997,6 +1026,36 @@ def spawn_shots(x, y, angle):
     new.hitIDs = []
     new2.hitIDs = []
     new3.hitIDs = []
+    new.willHit = False
+    new2.willHit = False
+    new3.willHit = False
+    possible_loc1 = (x,y)
+    possible_loc2 = (x,y)
+    possible_loc3 = (x,y)
+    while(new.willHit == False and possible_loc1[1]<app.height):
+        for bat in batteries:
+            if bat.contains(possible_loc1[0], possible_loc1[1]):
+                new.willHit = True
+        for city in cities:
+            if(city.contains(possible_loc1[0], possible_loc1[1])):
+                new.willHit = True
+        possible_loc1 = getPointInDir(possible_loc1[0], possible_loc1[1], new.angle, new.speed)
+    while(new2.willHit == False and possible_loc2[1]<app.height):
+        for bat in batteries:
+            if bat.contains(possible_loc2[0], possible_loc2[1]):
+                new2.willHit = True
+        for city in cities:
+            if(city.contains(possible_loc2[0], possible_loc2[1])):
+                new2.willHit = True
+        possible_loc2 = getPointInDir(possible_loc2[0], possible_loc2[1], new2.angle, new2.speed)
+    while(new3.willHit == False and possible_loc3[1]<app.height):
+        for bat in batteries:
+            if bat.contains(possible_loc3[0], possible_loc3[1]):
+                new3.willHit = True
+        for city in cities:
+            if(city.contains(possible_loc3[0], possible_loc3[1])):
+                new3.willHit = True
+        possible_loc3 = getPointInDir(possible_loc3[0], possible_loc3[1], new3.angle, new3.speed)
     allEnemies.add(new, new2, new3)        
 
 def spawn_fun_missile():
@@ -1016,6 +1075,22 @@ def spawn_fun_missile():
     new.flakHP = 6 ### Only relevant for city flak hits 
     new.type = 'fun'
     new.hitIDs = []
+    possible_loc = (new.centerX, new.centerY)
+    new.willHit = False
+    locs = []
+    i = 0
+    while(new.willHit == False and possible_loc[1]<app.height):
+        for bat in batteries:
+            if(bat.contains(possible_loc[0], possible_loc[1])):
+                new.willHit = True
+        for city in cities:
+            if(city.contains(possible_loc[0], possible_loc[1])):
+                new.willHit = True
+        nextPoint = getPointInDir(possible_loc[0], possible_loc[1], new.angle, new.speed)
+        possible_loc = (nextPoint[0], nextPoint[1]+ new.gravity + (app.gravity/2)*(i+1))
+        locs.append(possible_loc)
+        i+=1
+    print(locs)
     allEnemies.add(new)       
 
 def spawn_smart_bomb():
@@ -1120,7 +1195,7 @@ def find_valuable_enemy(x,y, range):
     for enemy in allEnemies:
         dist = distance(x,y,enemy.centerX, enemy.centerY)
         if(dist<range):
-            if(enemy.type == 'basic' or enemy.type == 'bomb'):
+            if(enemy.type == 'basic'):
                 for city in cities:
                     willHit.append((city.left-7, city.right+7))
                 for bat in batteries:
@@ -1128,15 +1203,12 @@ def find_valuable_enemy(x,y, range):
             else:
                 willHit.append((batteries[0].left-7, batteries[2].right+7))
             for tuple in willHit:
-                if(enemy.type != 'bomb'):
+                if(enemy.type != 'bomb' and enemy.type!='fun'):
                     if(enemy.centerX>tuple[0] and enemy.centerX<tuple[1]):
                         options.append((enemy.centerX, enemy.centerY, dist, ((1000)/dist+1)*enemy.importance, enemy.importance))
-                elif(enemy.speed<app.ufoProjectileSpeed):
-                    if(enemy.targetX>tuple[0]+4 and enemy.targetX<tuple[1]-4):
-                        options.append((enemy.centerX, enemy.centerY, dist, ((1000)/dist+1)*enemy.importance, enemy.importance))
                 else:
-                    options.append((enemy.centerX, enemy.centerY, dist, ((1000)/dist+1)*enemy.importance, enemy.importance))
-                        
+                    if(enemy.willHit == True):
+                        options.append((enemy.centerX, enemy.centerY, dist, ((1000)/dist+1)*enemy.importance, enemy.importance))
     if(len(options)==0):
         return None
     for item in options[:]:
@@ -1230,6 +1302,9 @@ def onStep():
         move_enemies()
         if(app.infoTimer>0):               
             app.infoTimer-=1
+        if(app.plane < 1):
+            app.planeSound.play(restart = True)
+            app.planeSound.pause()
         else:
             info.clear()
 
@@ -1313,5 +1388,7 @@ flakTargets.toBack()
 allEnemies.toFront()
 flak.toFront()
 update_stats()
+
+spawn_fun_missile()
 
 app.run()
