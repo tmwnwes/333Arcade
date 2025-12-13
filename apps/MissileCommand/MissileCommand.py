@@ -353,7 +353,7 @@ def move_enemies():
                 app.plane -=1
                 if(app.plane<1):
                     app.planeSound.play(restart=True)
-                    app.planeSound.pause
+                    app.planeSound.pause()
         if(enemy.type == 'fun'):
             enemy.gravity+=app.gravity/2
             enemy.centerY+=enemy.gravity
@@ -407,7 +407,7 @@ def spawn_plane(y):
     hitbox.flakHP = hitbox.bombs//2 + 10 ### Only relevant for city flak hits 
     hitbox.type = 'plane'
     hitbox.speed = app.planeSpeed
-    hitbox.importance = 0.55 + app.level/100
+    hitbox.importance = 0.55 + app.level/100 if app.level<50 else 1.05
     hitbox.gravity=0
     hitbox.score = 625
     spacing = app.width// hitbox.bombs
@@ -488,7 +488,7 @@ def spawn_bombs(x,y):
     bomb.targetX = bomb.centerX + randrange(30, 80)        
     bomb.rotateAngle = angleTo(bomb.centerX, bomb.centerY, bomb.targetX, app.height)
     bomb.angle = bomb.rotateAngle
-    bomb.importance = 0.5 + app.level/100
+    bomb.importance = 0.5 + app.level/100 if app.level<50 else 1
     bomb.next = getPointInDir(bomb.centerX, bomb.centerY, bomb.rotateAngle, bomb.speed)
     bomb.flakHP = 1 ### Only relevant for city flak hits 
     bomb.score = app.level * 50
@@ -658,7 +658,7 @@ def spawn_basic_missile(x,y):
     new = Circle(x,y, 6, fill = 'limeGreen')
     new.type = "basic"
     new.gravity = 0
-    new.importance = 0.7 + app.level/100
+    new.importance = 0.7 + app.level/100 if app.level<50 else 1.2
     new.score = 100
     new.flakHP = 14 ### Only relevant for city flak hits 
     new.hitIDs = []
@@ -955,7 +955,7 @@ def spawn_small_bombs(x,y,num):
         new.speed = app.bombSpeed
         new.flakHP = 1
         new.hitIDs = []
-        new.importance = 0.5 + app.level/100
+        new.importance = 0.5 + app.level/100 if app.level<50 else 1
         new.willHit = False
         possible_loc = (x,y)
         fakeShape = Circle(x,y,2, fill='black', rotateAngle = new.rotateAngle)
@@ -984,7 +984,7 @@ def spawn_multi_bomb(x, detHeight):
     new = Circle(x,-10, 12, fill = 'cyan')
     new.detHeight = detHeight
     new.bombs = app.level//2 + 2 if app.level <= 18 else 20
-    new.importance = 1.3 + app.level/100
+    new.importance = 1.3 + app.level/100 if app.level < 50 else 1.8
     new.type = 'multi'
     new.score = 750 + (125 * new.bombs)
     new.speed = app.multiBombSpeed
@@ -1002,21 +1002,21 @@ def spawn_shots(x, y, angle):
     '''
     new = Oval(x,y,2,20, fill='white', rotateAngle = angle)
     new.angle = angle
-    new.importance = 0.7 + app.level/100
+    new.importance = 0.7 + app.level/100 if app.level<50 else 1.2
     new.speed = app.ufoProjectileSpeed
     new.gravity = 0
     new.type = 'bomb'
     new.next = getPointInDir(x,y,angle,new.speed)
     new2 = Oval(x,y,2,20, fill='white', rotateAngle = angle+10)
     new2.angle = angle+10
-    new2.importance = 0.7 + app.level/100
+    new2.importance = 0.7 + app.level/100 if app.level<50 else 1.2
     new2.speed = app.ufoProjectileSpeed
     new2.gravity = 0
     new2.type = 'bomb'
     new2.next = getPointInDir(x,y,angle+10,new.speed)
     new3 = Oval(x,y,2,20, fill='white', rotateAngle = angle-10)
     new3.angle = angle-10
-    new3.importance = 0.7 + app.level/100
+    new3.importance = 0.7 + app.level/100 if app.level<50 else 1.2
     new3.speed = app.ufoProjectileSpeed
     new3.gravity = 0
     new3.type = 'bomb'
@@ -1085,7 +1085,7 @@ def spawn_fun_missile():
     new = Circle(randrange((app.width//10), (9*app.width//10)), -100, 6, fill='red')
     new.score = 1000
     new.num = app.munitionCounter
-    new.importance = 1 + app.level/100
+    new.importance = 1 + app.level/100 if app.level<50 else 1.5
     new.speed = app.basicMissileSpeed
     new.gravity = app.gravity
     new.angle = angleTo(new.centerX, new.centerY, randrange(3*(app.width//40), 37*(app.width//40)), app.height)
@@ -1120,7 +1120,7 @@ def spawn_smart_bomb():
     new = Circle(randrange(app.width), -100, 6, fill='white')
     new.speed = 3
     new.type = 'smart'
-    new.importance = 1 + app.level/100
+    new.importance = 1 + app.level/100 if app.level<50 else 1.5
     new.gravity = 1
     new.howFar = []
     new.score = 1225
@@ -1224,10 +1224,10 @@ def find_valuable_enemy(x,y, range):
             for tuple in willHit:
                 if(enemy.type != 'bomb' and enemy.type!='fun'):
                     if(enemy.centerX>tuple[0] and enemy.centerX<tuple[1]):
-                        options.append((enemy.centerX, enemy.centerY, dist, ((1000)/dist+1)*enemy.importance, enemy.importance))
+                        options.append((enemy.centerX, enemy.centerY, dist, ((1000)/dist+1)*enemy.importance, enemy.importance, enemy.type))
                 else:
                     if(enemy.willHit == True):
-                        options.append((enemy.centerX, enemy.centerY, dist, ((1000)/dist+1)*enemy.importance, enemy.importance))
+                        options.append((enemy.centerX, enemy.centerY, dist, ((1000)/dist+1)*enemy.importance, enemy.importance, enemy.type))
     if(len(options)==0):
         return None
     for item in options[:]:
@@ -1245,10 +1245,14 @@ def fire_flak(building, xRange, yRange):
     flak will sometimes manage to save a city or a building but it is not powerful enough to rely heavily on
     Cities are no longer defenseless
     '''
-    target = find_valuable_enemy(building.centerX, building.top, (((width/4)**2 + (height/4)**2)**0.5)+app.level*2)
+    rangeBoost = app.level if app.level<75 else 75
+    target = find_valuable_enemy(building.centerX, building.top, (((width/4)**2 + (height/4)**2)**0.5)+rangeBoost)
     if(target!=None):
         building.flakTimer = app.stepsPerSecond//target[4]
-        offsetX = randrange(-xRange, xRange, 1)
+        if(target[5] == 'plane'):
+            offsetX = randrange(xRange, 2*xRange)
+        else:
+            offsetX = randrange(-xRange, xRange, 1)
         offsetY = randrange(-yRange, yRange, 1)
         while target[1]+offsetY > building.top:
             offsetY-=10
