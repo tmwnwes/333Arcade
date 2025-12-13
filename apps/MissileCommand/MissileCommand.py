@@ -117,7 +117,7 @@ nightSky = Rect(0,0,app.width, app.height)
 app.cities = 6
 app.gate = 3500
 app.generalReload = app.stepsPerSecond*2.5
-app.level = 1
+app.level = 100
 app.mult = app.level
 app.shotSpeedLR = ((width*height)**0.5)/88 ### Roughly around 15 on standard macbook screen, but it is now relative to screen size
 app.shotSpeedMid = ((width*height)**0.5)/66 ### Roughly around 20 on standard macbook screen, but it is now relative to screen size
@@ -497,14 +497,18 @@ def spawn_bombs(x,y):
     bomb.type = 'bomb'
     bomb.willHit = False
     possible_loc = (x,y)
+    fakeShape = Oval(x,y,2,8, fill='black', rotateAngle = bomb.rotateAngle)
+    fakeShape.toBack()
     while(bomb.willHit == False and possible_loc[1]<app.height):
+        fakeShape.centerX, fakeShape.centerY = possible_loc
         for bat in batteries:
-            if bat.contains(possible_loc[0], possible_loc[1]):
+            if bat.hitsShape(fakeShape):
                 bomb.willHit = True
         for city in cities:
-            if(city.contains(possible_loc[0], possible_loc[1])):
+            if(city.hitsShape(fakeShape)):
                 bomb.willHit = True
         possible_loc = getPointInDir(possible_loc[0], possible_loc[1], bomb.angle, bomb.speed)
+    del(fakeShape)
     allEnemies.add(bomb)
 
 def bat_color_update():
@@ -769,7 +773,10 @@ def enemies_vs_cities():
         for enemy in allEnemies:
             if(enemy.hitsShape(city)):
                 if(enemy.type!='bomb' or city.health<=1):
-                    cityids.remove(city.id)
+                    try: ## Fixing a near impossible crash which can only occur during testing when 2 enemies hit the same city on the same frame (only happens in testing when 50+ enemies are launched from the same place at the same time)
+                        cityids.remove(city.id)
+                    except:
+                        pass
                     for building in city.children:
                         if(app.muted == False):
                             building.note.play(restart = True)
@@ -951,14 +958,18 @@ def spawn_small_bombs(x,y,num):
         new.importance = 0.5 + app.level/100
         new.willHit = False
         possible_loc = (x,y)
+        fakeShape = Circle(x,y,2, fill='black', rotateAngle = new.rotateAngle)
+        fakeShape.toBack()
         while(new.willHit == False and possible_loc[1]<app.height):
+            fakeShape.centerX, fakeShape.centerY = possible_loc
             for bat in batteries:
-                if bat.contains(possible_loc[0], possible_loc[1]):
+                if bat.hitsShape(fakeShape):
                     new.willHit = True
             for city in cities:
-                if(city.contains(possible_loc[0], possible_loc[1])):
+                if(city.hitsShape(fakeShape)):
                     new.willHit = True
             possible_loc = getPointInDir(possible_loc[0], possible_loc[1], new.angle, new.speed)
+            del(fakeShape)
         allEnemies.add(new)
     if(app.muted == False):
         Sound("../../libraries/Audio/pop.mp3").play(restart = True)
@@ -1027,30 +1038,42 @@ def spawn_shots(x, y, angle):
     possible_loc1 = (x,y)
     possible_loc2 = (x,y)
     possible_loc3 = (x,y)
+    fakeShape1 = Oval(x,y,2,20, fill='black', rotateAngle = new.rotateAngle)
+    fakeShape1.toBack()
+    fakeShape2 = Oval(x,y,2,20, fill='black', rotateAngle = new2.rotateAngle)
+    fakeShape2.toBack()
+    fakeShape3 = Oval(x,y,2,20, fill='black', rotateAngle = new3.rotateAngle)
+    fakeShape3.toBack()
     while(new.willHit == False and possible_loc1[1]<app.height):
+        fakeShape1.centerX, fakeShape1.centerY = possible_loc1
         for bat in batteries:
-            if bat.contains(possible_loc1[0], possible_loc1[1]):
+            if bat.hitsShape(fakeShape1):
                 new.willHit = True
         for city in cities:
-            if(city.contains(possible_loc1[0], possible_loc1[1])):
+            if(city.hitsShape(fakeShape1)):
                 new.willHit = True
         possible_loc1 = getPointInDir(possible_loc1[0], possible_loc1[1], new.angle, new.speed)
     while(new2.willHit == False and possible_loc2[1]<app.height):
+        fakeShape2.centerX, fakeShape2.centerY = possible_loc2
         for bat in batteries:
-            if bat.contains(possible_loc2[0], possible_loc2[1]):
+            if bat.hitsShape(fakeShape2):
                 new2.willHit = True
         for city in cities:
-            if(city.contains(possible_loc2[0], possible_loc2[1])):
+            if(city.hitsShape(fakeShape2)):
                 new2.willHit = True
         possible_loc2 = getPointInDir(possible_loc2[0], possible_loc2[1], new2.angle, new2.speed)
     while(new3.willHit == False and possible_loc3[1]<app.height):
+        fakeShape3.centerX, fakeShape3.centerY = possible_loc3
         for bat in batteries:
-            if bat.contains(possible_loc3[0], possible_loc3[1]):
+            if bat.hitsShape(fakeShape3):
                 new3.willHit = True
         for city in cities:
-            if(city.contains(possible_loc3[0], possible_loc3[1])):
+            if(city.hitsShape(fakeShape3)):
                 new3.willHit = True
         possible_loc3 = getPointInDir(possible_loc3[0], possible_loc3[1], new3.angle, new3.speed)
+    del(fakeShape1)
+    del(fakeShape2)
+    del(fakeShape3)
     allEnemies.add(new, new2, new3)        
 
 def spawn_fun_missile():
@@ -1072,19 +1095,21 @@ def spawn_fun_missile():
     new.hitIDs = []
     possible_loc = (new.centerX, new.centerY)
     new.willHit = False
-    locs = []
     i = 0
+    fakeShape = Circle(new.centerX, new.centerY, 6, fill='black')
+    fakeShape.toBack()
     while(new.willHit == False and possible_loc[1]<app.height):
+        fakeShape.centerX, fakeShape.centerY = possible_loc
         for bat in batteries:
-            if(bat.contains(possible_loc[0], possible_loc[1])):
+            if bat.hitsShape(fakeShape):
                 new.willHit = True
         for city in cities:
-            if(city.contains(possible_loc[0], possible_loc[1])):
+            if(city.hitsShape(fakeShape)):
                 new.willHit = True
         nextPoint = getPointInDir(possible_loc[0], possible_loc[1], new.angle, new.speed)
         possible_loc = (nextPoint[0], nextPoint[1]+ new.gravity + (app.gravity/2)*(i+1))
-        locs.append(possible_loc)
         i+=1
+    del(fakeShape)
     allEnemies.add(new)       
 
 def spawn_smart_bomb():
@@ -1382,5 +1407,7 @@ flakTargets.toBack()
 allEnemies.toFront()
 flak.toFront()
 update_stats()
+
+spawn_plane(200)
 
 app.run()
