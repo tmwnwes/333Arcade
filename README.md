@@ -243,29 +243,15 @@ Available Actions:
 
 Attack:
 
-Select one of your hands, then select one of your opponent’s hands
-
-The opponent adds your finger count to the selected hand
-
-If a hand reaches 5 or more fingers, it becomes dead (0)
+Select one of your hands, then select one of your opponent’s hands. The opponent adds your finger count to the selected hand. If a hand reaches 5 or more fingers, it becomes dead (0)
 
 Split:
 
-Redistribute fingers between your own hands
-
-The total number of fingers must be even
-
-Both hands end with the same number
-
-Dead hands cannot be used in a split
+Redistribute fingers between your own hands. The total number of fingers must be even and then both hands should end with the same number. Dead hands cannot be used in a split
 
 Lastly you can Pass Or Skip your turn
 
-Winning the Game:
-
-A player wins when both of the opponent’s hands are dead
-
-The game displays the winner and disables further moves
+Winning the Game: A player wins when both of the opponent’s hands are dead. The game displays the winner and disables further moves
 
 Click New Game to reset and play again
 
