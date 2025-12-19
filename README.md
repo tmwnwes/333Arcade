@@ -237,5 +237,3 @@ How to Play
     * Draws
 After the game ends, a popup shows the result and the board resets automatically.
 If your version includes a Reset button, you can restart at any time.
-
-### ForCodeReviewers will explain what to do with these files but if you are only interested in playing the games, then ignore those files and just use the main branch. It is assumed that anybody on this branch is here for Comp 333 Milestone 4
