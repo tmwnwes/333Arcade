@@ -1,0 +1,7 @@
+idNum = "000100"
+name = "PretendLauncher"
+version = "1.0.0"
+exePath = "PretendLauncher.py" 
+exePath_win = ""
+exePath_mac = ""
+launchVersion = "python3"

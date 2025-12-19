@@ -1,0 +1,7 @@
+idNum = "000006"
+name = "Minesweeper"
+version = "1.0.0"
+exePath = "Minesweeper.py" 
+exePath_win = ""
+exePath_mac = ""
+launchVersion = "python3"

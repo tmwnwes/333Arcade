@@ -1,0 +1,7 @@
+idNum = "000003"
+name = "Fireworks"
+version = "1.0.0"
+exePath = "Fireworks.py" 
+exePath_win = ""
+exePath_mac = ""
+launchVersion = "python3"

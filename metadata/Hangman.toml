@@ -1,0 +1,7 @@
+idNum = "000005"
+name = "Hangman"
+version = "1.0.0"
+exePath = "Hangman.py" 
+exePath_win = ""
+exePath_mac = ""
+launchVersion = "python3"

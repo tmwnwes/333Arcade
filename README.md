@@ -1,35 +1,34 @@
 # 333Arcade
  Repository for COMP333 Fall Semester Project
 ________
-At Current Date (11/14/2025) the Assignment is Milestone 4. If you are a code reviewer for this project and you are reading this sentence, you are in the WRONG BRANCH
 
-It is imperative that you switch to the Milestone-4-Code-Review-Branch-(Never-Merge) branch
 
 # Python 3.14 is not currently supported. Please use Python 3.13*
 
 *You may download Python 3.13.9 at https://www.python.org/downloads/release/python-3139/ and then navigating to your specific platform and downloading the installer.
 
 
-This project is built using the Carnegie Mellon University graphics library. In order to run the launcher and games in their current state, the cmu_graphics folder must be in the same directory as the launcher and games. For your safety, you must download the graphics library yourself. The installer package for this library can be found at the following link: https://academy.cs.cmu.edu/desktop
-
-## UPDATE: place cmu_graphics inside the libraries folder as well for proper usage of the new launcher
+This project is built using the CMU graphics library which can be found at https://academy.cs.cmu.edu/desktop. The December 8th update now installs the graphics package for you on your 1st running of the pretend launcher or any game. If this process fails (which should not happen), then you should follow the above link, download the package as a zip, extract/expand, and then copy the cmu_graphics folder from the cmu_graphics_installer folder, and place it into the libraries folder of the project directory.
 
 # How to play
 
-Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplised by navigting to the named branch, and then clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Then download the CMU graphics library mentioned above directly from the source. Take the "cmu_graphics" folder from that download (not the entire installer folder, just the cmu_graphics folder) and put it in the same directory as the files from this repository. Then make sure you have pyautogui installed. This can be accomplished on Windows and Mac with pip or pip3 just by opening a terminal / command prompt and typing pip install pyautogui or pip3 pyautogui. If this function fails, instead type python3 -m pip install pyautogui or python3 -m pip3 install pyautogui.
+You can find a short video demo on YouTube at https://youtu.be/CQykV8IK4Tk. Note that it does not cover all of the games but shows a decent subset of the games and mechanics as well as a general guide for starting from the download to running the launcher. However, if you would prefer written step by step instructions from download to running, read below
 
-## MacOS Instructions for OLD LAUNCHER
+Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplished by navigting to the main branch, and then clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Running any of the games or the Pretend Launcher will install all dependencies, though you may need to allow certain bits of access and control, but these should come up automatically if applicable.
+
+## MacOS Instructions for OLD LAUNCHER (PretendLauncher.py)
 If you are on MacOS, you have 3 options for running the launcher:
 
-1. Open with VS code, and run through the play button at the top right  
+1. Open PretendLauncher.py with VS code, and run through the play button at the top right  
 or  
 2. Open in Python Launcher (NOT IDLE) and run the script  
 or  
-3. Open a terminal window, navigate to the directory the launcher is in and run the launcher*
+3. Open a terminal window, navigate to the directory the launcher is in and run the launcher. Note that the launcher is in 333Arcade/apps/PretendLauncher, so you will have to navigate to the location you placed this repository*
 
 
 ```bash
 cd path/to/this/repository
+cd apps/PretendLauncher
 python3 PretendLauncher.py
 ```
 Note that if you have multiple versions of python3 installed, (such as 3.6.4, 3.9.3, 3.13.7, 3.14.2), you may need to specify version in your command as shown below:
@@ -45,21 +44,24 @@ or
 python3 --vesion
 ```
 ____
-For example, if you have vesion 3.13.7, you would run:
+For example, if you have vesion 3.13.7 and 3.14.1 and 3.12.9, you would run:
 
 ```bash
 cd path/to/this/repository
+cd apps/PretendLauncher
 python3.13 PretendLauncher.py
 ```
 ____
 
-## Windows Instructions for OLD LAUNCHER
+## Windows Instructions for OLD LAUNCHER (PretendLauncher.py)
 
 If you are on Windows you have 2 simple options to run the launcher:
 
 1. Double click the PretendLauncher.py file as if it were an executable  
 or  
 2. Open the repository folder through VS code and click the play button at the top right while having the launcher file selected
+or
+3. Open command prompt and navigate to the directory PretendLauncher.py is stored in, type "python3 PretendLauncher.py" and press Enter
 ____
 
 ## INSTRUCTIONS FOR NEW LAUNCHER:
@@ -71,27 +73,14 @@ open a terminal in /333Arcade and run:
 python -m client.main
 ```
 
-#### This will prompt you to run two files:
-
-1. TestGame
-2. SubGameTest
-
-#### if you are on mac follow instructions in /333Arcade/apps/TestGame/run_test.sh This has only been tested on windows so it may not work correctly
+#### This will prompt you to run any found game files:
 
 
 # Included in this Repository
 
-## Files
+## libraries
 
-#### This folder will come populated with a slightly altered version of the words_alpha.txt file available at https://github.com/dwyl/english-words/blob/master/words_alpha.txt. The alterations are just the removal of words that are 4 letters or fewer, but you can feel free to look at the source or replace the file attached in this repository with that file instead. Upon running the launcher, Files will become populated with stats and key files for use by the game included with this project.
-
-## Audio
-
-#### This folder comes populated with mp3 files used in some of the games. Deleting this folder or files within the folder may cause game crashes as audio files are attempted to be played.
-
-## Images
-
-#### This folder contains thumbnail images for each of the created games as well as images for fruit ninja
+#### This folder will come populated with a slightly altered version of the words_alpha.txt file available at https://github.com/dwyl/english-words/blob/master/words_alpha.txt. The alterations are just the removal of words that are 4 letters or fewer, but you can feel free to look at the source or replace the file attached in this repository with that file instead. Upon running the launcher or any game, the libraries folder will become populated with the cmu_graphics package via an automatic download if it was not already added manually by the user. libraries also contains the Audio Folder. This folder comes populated with mp3 files used in some of the games. Deleting this folder or files within the folder may cause game crashes as audio files are attempted to be played. Additionally, there is a Thumbnails folder containing images used to represent games via the Pretend Lancher. Finally, there is a txt file called requirements.txt containing a list of required installations for the project to run. These packages will be installed upon running the Pretend Launcher or one of the games.
 
 ## Old Launcher
 
@@ -122,11 +111,6 @@ This is a mindless stress relief style of "game", where you click on the screen 
 <details>
 <summary>FlappyBat.py</summary>
 This is a knockoff of flappy bird, a popular phone app from the early 2010s. There are aspects of the game that set it apart, however. The creator of this game was bitten by a bat at Wesleyan and so chose to model a bat at the player character for this game. The game also takes place at night with a starry background, and the cities in the distance are generated from the same model that generates the cities in MissileCommand.py which is mentioned later in this document. You will select your difficulty from the main menu. Difficulty is relating to the speed at which the pipes move in the beginning. In all difficulty modes, speed will increase over time. Your bat is affected by gravity and you flap by pressing spacebar which will send you upwarards. Be careful to avoid the green pipes, the ground, and flying too high into the sky, as your bat will crash and your round will end. You may pause and unpause at any point with 'p' and you may reselect difficulty upon failure by pressing escape, or simply replay at the same difficulty upon failure with enter.
-</details>
-
-<details>
-<summary>FruitNinja.py</summary>
-This game is more of a joke than a real project. You can "slice" fruit that is launched from the bottom of the screen. You slice with the use of a mouse drag (meaning clicking, holding down, and moving, not just moving). There are 2 powerup types, freeze and double points, activated by special bananas. The countdown time is represented by a circular timer towards the top left of the screen visible when the powerups are active. Freeze will freeze all whole fruits powerups and bombs on the screen and still allow sliced items to fall away. Double points will score all slices as double (including negative point bombs). No combo system or fail system has been implemented at the time of this README but it is anticipated in the future, but it considered low priority as this game is just a joke inclusion.
 </details>
 
 <details>
@@ -170,3 +154,106 @@ This game places you as the commander of a submarine in an underwater minefield,
 <summary>Typespeed.py</summary>
 This game is a simple typing exercise in typing ability, as words move from left to right across the screen and it is the players job to type the words correctly. As you go on a streak, your score multiplier will increase which also leads to a higher frequency of word spawns. It is impossible to get every word, and that's why you are not severely penalized for words getting passed you. Depending on your multiplier, after a certain number of words pass by without you typing a correct word, your multiplier will decrease. Be careful, because typing an incorrect word will drop the muliplier by a lot more and reset your streak. The game is played using the keyboard to type the words. Your current typed word appears at the top of the screen, and you press enter to submit. Backspace works as expected, where 1 press deletes the most recent letter only.
 </details>
+
+## TicTacToe.java
+
+#### This game is a classic implementation of Tic-Tac-Toe using Java Swing. It features a simple 3×3 game board where two players alternate turns, attempting to get three in a row horizontally, vertically, or diagonally. The game automatically resets after each round. Game should be compatible with new launcher, if not instructions are below.
+
+How to Run the Game
+MacOS, Windows, and Linux
+You may run the game in any of the following ways:
+
+1. Run from an IDE (Recommended)
+Open the project in IntelliJ, Eclipse, or VS Code (with Java extensions).
+Then simply run:
+
+```bash
+GameMain.java
+```
+
+This will launch the Tic-Tac-Toe game window.
+
+2. Run from Terminal / Command Prompt
+Navigate to the folder containing the .java files:
+
+```bash
+cd path/to/tictactoe
+```
+Compile the game:
+
+```bash
+javac GameMain.java TicTacToeFrame.java
+```
+Run the game:
+
+```bash
+java GameMain
+```
+How to Play
+* Player X always goes first
+* Players alternate turns by clicking any empty square
+* The game automatically checks for:
+    * Horizontal wins
+    * Vertical wins
+    * Diagonal wins
+    * Draws
+After the game ends, a popup shows the result and the board resets automatically.
+If your version includes a Reset button, you can restart at any time.
+
+## ChopsticksGame.java
+
+#### This game is a graphical implementation of the classic Chopsticks finger game using Java Swing. Two players alternate turns attacking or splitting fingers between their hands. The game enforces standard Chopsticks rules and continues until one player eliminates both of their opponent’s hands. Game should be compatible with new launcher, if not instructions are below.
+
+How to Run the Game
+MacOS, Windows, and Linux
+You may run the game in any of the following ways:
+
+1. Run from an IDE (Recommended)
+Open the project in IntelliJ, Eclipse, or VS Code (with Java extensions).
+Then simply run:
+
+```bash
+ChopsticksGame.java
+```
+
+This will launch the Chopsticks game window.
+
+2. Run from Terminal / Command Prompt
+Navigate to the folder containing the chopstick package:
+
+```bash
+cd path/to/chopstick
+```
+Compile the game:
+
+```bash
+javac chopstick/ChopsticksGame.java
+```
+Run the game:
+
+```bash
+java chopstick.ChopsticksGame
+```
+How to Play:
+
+Player 1 always goes first. Each player starts with 1 finger on each hand 
+and players alternate turns by selecting an action.
+
+Available Actions:
+
+Attack:
+
+Select one of your hands, then select one of your opponent’s hands. The opponent adds your finger count to the selected hand. If a hand reaches 5 or more fingers, it becomes dead (0)
+
+Split:
+
+Redistribute fingers between your own hands. The total number of fingers must be even and then both hands should end with the same number. Dead hands cannot be used in a split
+
+Lastly you can Pass Or Skip your turn
+
+Winning the Game: A player wins when both of the opponent’s hands are dead. The game displays the winner and disables further moves
+
+Click New Game to reset and play again
+
+
+

@@ -1,0 +1,7 @@
+idNum = "000004"
+name = "FlappyBat"
+version = "1.0.0"
+exePath = "FlappyBat.py" 
+exePath_win = ""
+exePath_mac = ""
+launchVersion = "python3"

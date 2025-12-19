@@ -1,0 +1,7 @@
+idNum = "000009"
+name = "SubGame"
+version = "1.0.0"
+exePath = "SubGame.py" 
+exePath_win = ""
+exePath_mac = ""
+launchVersion = "python3"

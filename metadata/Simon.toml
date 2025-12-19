@@ -1,0 +1,7 @@
+idNum = "000008"
+name = "Simon"
+version = "1.0.0"
+exePath = "Simon.py" 
+exePath_win = ""
+exePath_mac = ""
+launchVersion = "python3"

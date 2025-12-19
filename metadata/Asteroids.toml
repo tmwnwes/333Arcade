@@ -1,0 +1,7 @@
+idNum = "000001"
+name = "Asteroids"
+version = "1.0.0"
+exePath = "Asteroids.py" 
+exePath_win = ""
+exePath_mac = ""
+launchVersion = "python3"

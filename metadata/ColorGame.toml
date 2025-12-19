@@ -1,0 +1,7 @@
+idNum = "000002"
+name = "ColorGame"
+version = "1.0.0"
+exePath = "ColorGame.py" 
+exePath_win = ""
+exePath_mac = ""
+launchVersion = "python3"
