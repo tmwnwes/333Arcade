@@ -162,7 +162,7 @@ def check_loss():
     When called, check if too many words have passed to the side of the screen
     If so, decrease multiplier. If that is impossible, the round is over.
     '''
-    if(app.runAway >= app.level*5 + 10):
+    if(app.runAway >= app.level*5):
         if(app.level == 1):
             app.failed = True
             background = Rect(0,0,app.width, app.height)

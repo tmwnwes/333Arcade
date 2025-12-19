@@ -486,7 +486,7 @@ def press_button(mouseX, mouseY):
             sys.exit(0)
         if(backToLauncher.contains(mouseX, mouseY)):
             update_stats()
-            os.chdir("../../")
+            os.chdir("../")
             subprocess.Popen([sys.executable, backToLauncher.game])
             sys.exit(0)     
 
