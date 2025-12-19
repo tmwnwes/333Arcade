@@ -21,7 +21,7 @@ class ProgramMetadata(BaseModel):
         base = get_exe_dir() / self.name
         os_name = platform.system()
 
-        # Normalize empty-string → None for ALL relevant fields
+        # Normalize empty-string -> None for relevant fields
         cleanup_fields = [
             "exePath",
             "exePath_win",
@@ -42,12 +42,19 @@ class ProgramMetadata(BaseModel):
         else:
             exe = self.exePath  # fallback for Linux/testing
 
-        # Build full path only if we have something
+        # Build full path only if something present
         if exe:
             self.fullExePath = base / exe
         else:
             print(f"No valid executable found for {self.name} on {os_name}")
             self.fullExePath = None
+
+        # Allow absolute paths anywhere
+        exe_path = Path(exe).expanduser()
+        if exe_path.is_absolute():
+            self.fullExePath = exe_path
+        else:
+            self.fullExePath = base / exe_path
 
         # Debug print
         if self.fullExePath:

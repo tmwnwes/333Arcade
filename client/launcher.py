@@ -9,18 +9,16 @@ from pathlib import Path
 def parse_launch_version(version: str | None):
     if version is None:
         return None, None
-    
+
     if "=" in version:
-        # format: python=C:/path/to/python.exe
         runtime, path = version.split("=", 1)
         return runtime.lower(), path.strip()
 
-    # format: python3.11, java17, etc
     return version.lower(), None
 
 
 def launch_app(path, launch_version=None):
-    full_path = Path(path).absolute()
+    full_path = Path(path).expanduser().absolute()
     ext = full_path.suffix.lower()
     os_name = platform.system()
 
@@ -30,22 +28,25 @@ def launch_app(path, launch_version=None):
 
     runtime, custom_path = parse_launch_version(launch_version)
 
-    # detect correct interpreter for .py files
+    # Compute repo root from this file location (stable even for absolute exe paths)
+    # client/launcher.py -> repo root is parent of "client"
+    repo_root = Path(__file__).resolve().parents[1]
+    libraries_path = repo_root / "libraries"
+
+    # Python
     if ext == ".py":
-
-        # set PYTHONPATH to include only the libraries folder
-        project_root = full_path.parents[2]     # <project_root>
-        libraries_path = project_root / "libraries"
-
         env = os.environ.copy()
-        env["PYTHONPATH"] = str(libraries_path)
+
+        # Prepend libraries/ to PYTHONPATH (do not overwrite)
+        if libraries_path.exists():
+            existing = env.get("PYTHONPATH", "")
+            if existing:
+                env["PYTHONPATH"] = str(libraries_path) + os.pathsep + existing
+            else:
+                env["PYTHONPATH"] = str(libraries_path)
 
         if runtime and runtime.startswith("python"):
-            if custom_path:
-                python_exec = custom_path
-            else:
-                python_exec = shutil.which(runtime) or sys.executable
-
+            python_exec = custom_path or shutil.which(runtime) or sys.executable
             print("Launching Python using:", python_exec)
             subprocess.Popen(
                 [python_exec, str(full_path)],
@@ -54,7 +55,6 @@ def launch_app(path, launch_version=None):
             )
             return
 
-        # fallback Python
         subprocess.Popen(
             [sys.executable, str(full_path)],
             cwd=str(full_path.parent),
@@ -62,11 +62,9 @@ def launch_app(path, launch_version=None):
         )
         return
 
-
-    # JAR files
+    # JAR
     if ext == ".jar":
         java_exec = None
-
         if runtime and runtime.startswith("java"):
             java_exec = custom_path or shutil.which(runtime)
 
@@ -80,7 +78,7 @@ def launch_app(path, launch_version=None):
         subprocess.Popen([java_exec, "-jar", str(full_path)], cwd=str(full_path.parent))
         return
 
-    # Windows batch/cmd scripts
+    # Windows batch/cmd
     if ext in [".bat", ".cmd"] and os_name == "Windows":
         subprocess.Popen([str(full_path)], cwd=str(full_path.parent), shell=True)
         return
@@ -90,7 +88,7 @@ def launch_app(path, launch_version=None):
         subprocess.Popen(["open", str(full_path)])
         return
 
-    # Shell scripts (.sh)
+    # Shell scripts
     if ext == ".sh" and os_name in ["Linux", "Darwin"]:
         os.chmod(full_path, 0o755)
         subprocess.Popen(["/bin/bash", str(full_path)], cwd=str(full_path.parent))
