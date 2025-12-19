@@ -5,7 +5,7 @@ import platform
 from .config import get_exe_dir
 
 class ProgramMetadata(BaseModel):
-    idNum: int
+    idNum: str
     name: str
     version: str | None = None
 
