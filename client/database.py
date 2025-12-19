@@ -3,6 +3,8 @@ from pathlib import Path
 
 DB_PATH = Path("client/db/programs.db")
 
+DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
