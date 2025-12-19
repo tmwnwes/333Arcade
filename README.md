@@ -154,3 +154,48 @@ This game places you as the commander of a submarine in an underwater minefield,
 <summary>Typespeed.py</summary>
 This game is a simple typing exercise in typing ability, as words move from left to right across the screen and it is the players job to type the words correctly. As you go on a streak, your score multiplier will increase which also leads to a higher frequency of word spawns. It is impossible to get every word, and that's why you are not severely penalized for words getting passed you. Depending on your multiplier, after a certain number of words pass by without you typing a correct word, your multiplier will decrease. Be careful, because typing an incorrect word will drop the muliplier by a lot more and reset your streak. The game is played using the keyboard to type the words. Your current typed word appears at the top of the screen, and you press enter to submit. Backspace works as expected, where 1 press deletes the most recent letter only.
 </details>
+
+## TicTacToe.java
+
+#### This game is a classic implementation of Tic-Tac-Toe using Java Swing. It features a simple 3×3 game board where two players alternate turns, attempting to get three in a row horizontally, vertically, or diagonally. The game automatically resets after each round.
+
+How to Run the Game
+MacOS, Windows, and Linux
+You may run the game in any of the following ways:
+
+1. Run from an IDE (Recommended)
+Open the project in IntelliJ, Eclipse, or VS Code (with Java extensions).
+Then simply run:
+
+```bash
+GameMain.java
+```
+
+This will launch the Tic-Tac-Toe game window.
+
+3. Run from Terminal / Command Prompt
+Navigate to the folder containing the .java files:
+
+```bash
+cd path/to/tictactoe
+```
+Compile the game:
+
+```bash
+javac GameMain.java TicTacToeFrame.java
+```
+Run the game:
+
+```bash
+java GameMain
+```
+How to Play
+* Player X always goes first
+* Players alternate turns by clicking any empty square
+* The game automatically checks for:
+    * Horizontal wins
+    * Vertical wins
+    * Diagonal wins
+    * Draws
+After the game ends, a popup shows the result and the board resets automatically.
+If your version includes a Reset button, you can restart at any time.
