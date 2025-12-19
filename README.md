@@ -259,9 +259,7 @@ Both hands end with the same number
 
 Dead hands cannot be used in a split
 
-Pass:
-
-Or Skip your turn
+Lastly you can Pass Or Skip your turn
 
 Winning the Game:
 
