@@ -12,6 +12,8 @@ This project is built using the CMU graphics library which can be found at https
 
 # How to play
 
+You can find a short video demo on YouTube at https://youtu.be/CQykV8IK4Tk. Note that it does not cover all of the games but shows a decent subset of the games and mechanics as well as a general guide for starting from the download to running the launcher. However, if you would prefer written step by step instructions from download to running, read below
+
 Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplished by navigting to the main branch, and then clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Running any of the games or the Pretend Launcher will install all dependencies, though you may need to allow certain bits of access and control, but these should come up automatically if applicable.
 
 ## MacOS Instructions for OLD LAUNCHER (PretendLauncher.py)
