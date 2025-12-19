@@ -157,7 +157,7 @@ This game is a simple typing exercise in typing ability, as words move from left
 
 ## TicTacToe.java
 
-#### This game is a classic implementation of Tic-Tac-Toe using Java Swing. It features a simple 3×3 game board where two players alternate turns, attempting to get three in a row horizontally, vertically, or diagonally. The game automatically resets after each round.
+#### This game is a classic implementation of Tic-Tac-Toe using Java Swing. It features a simple 3×3 game board where two players alternate turns, attempting to get three in a row horizontally, vertically, or diagonally. The game automatically resets after each round. Game should be compatible with new launcher, if not instructions are below.
 
 How to Run the Game
 MacOS, Windows, and Linux
@@ -173,7 +173,7 @@ GameMain.java
 
 This will launch the Tic-Tac-Toe game window.
 
-3. Run from Terminal / Command Prompt
+2. Run from Terminal / Command Prompt
 Navigate to the folder containing the .java files:
 
 ```bash
@@ -199,3 +199,77 @@ How to Play
     * Draws
 After the game ends, a popup shows the result and the board resets automatically.
 If your version includes a Reset button, you can restart at any time.
+
+## ChopsticksGame.java
+
+#### This game is a graphical implementation of the classic Chopsticks finger game using Java Swing. Two players alternate turns attacking or splitting fingers between their hands. The game enforces standard Chopsticks rules and continues until one player eliminates both of their opponent’s hands. Game should be compatible with new launcher, if not instructions are below.
+
+How to Run the Game
+MacOS, Windows, and Linux
+You may run the game in any of the following ways:
+
+1. Run from an IDE (Recommended)
+Open the project in IntelliJ, Eclipse, or VS Code (with Java extensions).
+Then simply run:
+
+```bash
+ChopsticksGame.java
+```
+
+This will launch the Chopsticks game window.
+
+2. Run from Terminal / Command Prompt
+Navigate to the folder containing the chopstick package:
+
+```bash
+cd path/to/chopstick
+```
+Compile the game:
+
+```bash
+javac chopstick/ChopsticksGame.java
+```
+Run the game:
+
+```bash
+java chopstick.ChopsticksGame
+```
+How to Play:
+
+Player 1 always goes first. Each player starts with 1 finger on each hand 
+and players alternate turns by selecting an action.
+
+Available Actions:
+
+Attack:
+
+Select one of your hands, then select one of your opponent’s hands
+
+The opponent adds your finger count to the selected hand
+
+If a hand reaches 5 or more fingers, it becomes dead (0)
+
+Split:
+
+Redistribute fingers between your own hands
+
+The total number of fingers must be even
+
+Both hands end with the same number
+
+Dead hands cannot be used in a split
+
+Pass:
+
+Or Skip your turn
+
+Winning the Game:
+
+A player wins when both of the opponent’s hands are dead
+
+The game displays the winner and disables further moves
+
+Click New Game to reset and play again
+
+
+
