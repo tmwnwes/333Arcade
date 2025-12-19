@@ -8,13 +8,11 @@ ________
 *You may download Python 3.13.9 at https://www.python.org/downloads/release/python-3139/ and then navigating to your specific platform and downloading the installer.
 
 
-This project is built using the CMU graphics library which can be found at https://academy.cs.cmu.edu/desktop. The December 8th update now installs the graphics package for you on your 1st running of the pretend launcher or any game. If this process fails (which should not happen), then you should follow the above link, download the package as a zip, extract/expand, and then copy the cmu_graphics folder from the cmu_graphics_installer folder, and place it into this project directory.
-
-## UPDATE: place cmu_graphics inside the libraries folder as well for proper usage of the new launcher
+This project is built using the CMU graphics library which can be found at https://academy.cs.cmu.edu/desktop. The December 8th update now installs the graphics package for you on your 1st running of the pretend launcher or any game. If this process fails (which should not happen), then you should follow the above link, download the package as a zip, extract/expand, and then copy the cmu_graphics folder from the cmu_graphics_installer folder, and place it into the libraries folder of the project directory.
 
 # How to play
 
-Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplised by navigting to the named branch, and then clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Running any of the games or the Pretend Launcher will install all dependencies, though you may need to allow certain bits of access and control, but these should come up automatically.
+Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplished by navigting to the main branch, and then clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Running any of the games or the Pretend Launcher will install all dependencies, though you may need to allow certain bits of access and control, but these should come up automatically if applicable.
 
 ## MacOS Instructions for OLD LAUNCHER (PretendLauncher.py)
 If you are on MacOS, you have 3 options for running the launcher:
@@ -28,6 +26,7 @@ or
 
 ```bash
 cd path/to/this/repository
+cd apps/PretendLauncher
 python3 PretendLauncher.py
 ```
 Note that if you have multiple versions of python3 installed, (such as 3.6.4, 3.9.3, 3.13.7, 3.14.2), you may need to specify version in your command as shown below:
@@ -43,10 +42,11 @@ or
 python3 --vesion
 ```
 ____
-For example, if you have vesion 3.13.7, you would run:
+For example, if you have vesion 3.13.7 and 3.14.1 and 3.12.9, you would run:
 
 ```bash
 cd path/to/this/repository
+cd apps/PretendLauncher
 python3.13 PretendLauncher.py
 ```
 ____
