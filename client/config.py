@@ -1,7 +1,7 @@
 from pathlib import Path
 import tomllib
 
-CONFIG_PATH = Path("config/settings.toml")
+CONFIG_PATH = (Path(__file__).resolve().parents[1] / "config" / "settings.toml")
 
 def get_metadata_dir() -> Path:
     with open(CONFIG_PATH, "rb") as f:
