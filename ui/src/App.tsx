@@ -299,7 +299,7 @@ export default function App() {
         <div style={styles.header}>
           <div>
             <div style={styles.title}>333Arcade</div>
-            <div style={styles.subtitle}>Local launcher • Python backend • Tauri + React UI</div>
+            <div style={styles.subtitle}>Python backend • Tauri + React UI</div>
           </div>
 
           <div style={styles.headerRight}>
@@ -460,13 +460,20 @@ const styles: any = {
     width: 36,
     height: 36,
     borderRadius: 12,
-    border: "1px solid rgba(255,255,255,0.16)",
-    background: "rgba(0,0,0,0.20)",
-    color: "#eaeaf0",
+
+    background: "rgba(120, 40, 40, 0.85)",
+    border: "1px solid rgba(255,255,255,0.25)",
+
+    backdropFilter: "blur(10px)",
+    WebkitBackdropFilter: "blur(10px)",
+
+    color: "#fff",
     cursor: "pointer",
-    fontWeight: 800,
+    fontWeight: 900,
     lineHeight: "36px",
     textAlign: "center",
+
+    boxShadow: "0 6px 22px rgba(0,0,0,0.55)",
   },
 
   statusBar: {
@@ -586,13 +593,20 @@ const styles: any = {
   },
   secondaryBtn: {
     borderRadius: 12,
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "rgba(0,0,0,0.18)",
+    border: "1px solid rgba(255,255,255,0.22)",
+
+    background: "rgba(12, 12, 20, 0.80)",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+
     color: "#eaeaf0",
     padding: "9px 12px",
     cursor: "pointer",
     fontWeight: 650,
+
+    boxShadow: "0 6px 20px rgba(0,0,0,0.45)",
   },
+
 
   modalOverlay: {
     position: "fixed",
