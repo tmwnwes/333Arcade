@@ -92,6 +92,25 @@ def add_manual_program(conn, name: str, full_exe_path: str, launch_version: str 
     conn.commit()
     return int(cursor.lastrowid)
 
+def is_manual_db_id(conn, db_id: int) -> bool:
+    cursor = conn.cursor()
+    cursor.execute("SELECT idNum FROM programs WHERE id = ? LIMIT 1", (db_id,))
+    row = cursor.fetchone()
+    if not row or not row[0]:
+        return False
+    return str(row[0]).startswith("M")
+
+
+def delete_program_by_db_id(conn, db_id: int) -> int:
+    """
+    Deletes a program row by DB primary key.
+    Returns number of rows deleted (0 or 1).
+    """
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM programs WHERE id = ?", (db_id,))
+    conn.commit()
+    return cursor.rowcount
+
 
 def add_program(conn, metadata):
     cursor = conn.cursor()

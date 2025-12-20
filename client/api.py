@@ -12,6 +12,8 @@ from .database import (
     list_programs,
     program_exists_by_idnum,
     add_manual_program,
+    is_manual_db_id,
+    delete_program_by_db_id
 )
 from .detection import detect_programs
 from .launcher import launch_app
@@ -186,6 +188,18 @@ def add_manual(name: str, full_path: str, launch_version: str | None = None) -> 
 
     return ok({"added": True, "dbId": new_db_id})
 
+def delete_manual(db_id: int) -> dict:
+    conn = init_db()
+
+    # Existence check + manual-only enforcement
+    if not is_manual_db_id(conn, db_id):
+        return fail("NOT_ALLOWED", f"dbId {db_id} is not a manual entry (or does not exist)")
+
+    deleted = delete_program_by_db_id(conn, db_id)
+    if deleted == 0:
+        return fail("NOT_FOUND", f"No program with id={db_id}")
+
+    return ok({"deleted": db_id})
 
 # -------------------------
 # CLI entry (for Tauri)
@@ -237,6 +251,15 @@ def main() -> None:
                 full_path = sys.argv[3]
                 launch_version = sys.argv[4] if len(sys.argv) >= 5 else None
                 resp = add_manual(name, full_path, launch_version)
+
+        elif cmd == "delete_manual":
+            if len(sys.argv) < 3:
+                resp = fail("INVALID_INPUT", "Missing program id")
+            else:
+                try:
+                    resp = delete_manual(int(sys.argv[2]))
+                except ValueError:
+                    resp = fail("INVALID_INPUT", "Program id must be an integer")
 
         else:
             resp = fail("INVALID_COMMAND", f"Unknown command: {cmd}")

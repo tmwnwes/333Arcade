@@ -1,14 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 
-type ApiOk<T> = { ok: true; data: T };
-type ApiErr = { ok: false; error: string };
+type ApiOk<T> = { ok: true; data: T; error: null; meta: { apiVersion: number; tookMs?: number } };
+type ApiErr = {
+  ok: false;
+  data: null;
+  error: { code: string; message: string };
+  meta: { apiVersion: number; tookMs?: number };
+};
 type ApiResp<T> = ApiOk<T> | ApiErr;
 
 type Program = {
   dbId: number;
-  idNum: number;
+  idNum: string; // NOTE: manual ids are "M000001" etc; official may be numeric-as-string
   name: string;
   version: string | null;
   fullExePath: string;
@@ -17,111 +22,166 @@ type Program = {
 
 async function pyCall(args: string[]) {
   const raw = (await invoke<string>("py_call", { args })).trim();
-  return JSON.parse(raw);
+  try {
+    return JSON.parse(raw);
+  } catch {
+    throw new Error(`Backend returned invalid JSON:\n${raw}`);
+  }
 }
 
 export default function App() {
   const [programs, setPrograms] = useState<Program[]>([]);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState<string>("");
 
   const [manualName, setManualName] = useState("");
   const [manualPath, setManualPath] = useState("");
   const [manualLaunchVersion, setManualLaunchVersion] = useState("");
 
-  /* ---------------- API actions ---------------- */
+  const official = useMemo(() => {
+    return [...programs]
+      .filter((p) => !String(p.idNum).startsWith("M"))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [programs]);
+
+  const manual = useMemo(() => {
+    return [...programs]
+      .filter((p) => String(p.idNum).startsWith("M"))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [programs]);
 
   async function refresh() {
     const resp: ApiResp<Program[]> = await pyCall(["list"]);
-    if (!resp.ok) return setStatus(resp.error);
+    if (!resp.ok) return setStatus(resp.error.message);
     setPrograms(resp.data);
+    setStatus(`Loaded ${resp.data.length} programs${resp.meta?.tookMs != null ? ` (${resp.meta.tookMs}ms)` : ""}`);
   }
 
   async function scan() {
     setStatus("Scanning...");
-    const resp: ApiResp<{ added: number; skipped: number }> =
-      await pyCall(["scan"]);
-    if (!resp.ok) return setStatus(resp.error);
-
+    const resp: ApiResp<{ added: number; skipped: number }> = await pyCall(["scan"]);
+    if (!resp.ok) return setStatus(resp.error.message);
     setStatus(
-      `Scan complete: added ${resp.data.added}, skipped ${resp.data.skipped}`
+      `Scan complete: added ${resp.data.added}, skipped ${resp.data.skipped}${
+        resp.meta?.tookMs != null ? ` (${resp.meta.tookMs}ms)` : ""
+      }`
     );
     await refresh();
   }
 
   async function launch(dbId: number) {
     setStatus(`Launching ${dbId}...`);
-    const resp: ApiResp<{ launched: number }> =
-      await pyCall(["launch", String(dbId)]);
-    if (!resp.ok) return setStatus(resp.error);
-    setStatus(`Launched ${dbId}`);
+    const resp: ApiResp<{ launched: number }> = await pyCall(["launch", String(dbId)]);
+    if (!resp.ok) return setStatus(resp.error.message);
+    setStatus(`Launched ${dbId}${resp.meta?.tookMs != null ? ` (${resp.meta.tookMs}ms)` : ""}`);
   }
-
-  async function addManual() {
-    if (!manualName || !manualPath) {
-      setStatus("Name and path are required");
-      return;
-    }
-
-    setStatus("Adding manual program...");
-
-    const args = ["add_manual", manualName, manualPath];
-    if (manualLaunchVersion.trim() !== "") {
-      args.push(manualLaunchVersion.trim());
-    }
-
-    const resp: ApiResp<{ added: boolean; dbId: number }> =
-      await pyCall(args);
-
-    if (!resp.ok) return setStatus(resp.error);
-
-    setStatus(`Added program (dbId ${resp.data.dbId})`);
-    setManualName("");
-    setManualPath("");
-    setManualLaunchVersion("");
-    await refresh();
-  }
-
-  /* ---------------- File picker ---------------- */
 
   async function browseForExecutable() {
     try {
-      setStatus("Opening file picker...");
       const result = await open({
         multiple: false,
         directory: false,
         title: "Select Program",
       });
 
-      console.log("Dialog result:", result);
-
       if (typeof result === "string") {
         setManualPath(result);
-        setStatus("Selected file.");
-      } else if (result === null) {
-        setStatus("Picker cancelled.");
-      } else {
-        setStatus("Multiple selection not supported here.");
       }
     } catch (e) {
-      console.error("Dialog failed:", e);
       setStatus(`Dialog failed: ${String(e)}`);
     }
   }
 
+  async function addManual() {
+    if (!manualName.trim() || !manualPath.trim()) {
+      setStatus("Name and path are required.");
+      return;
+    }
 
-  /* ---------------- Lifecycle ---------------- */
+    setStatus("Adding manual program...");
+
+    const args = ["add_manual", manualName.trim(), manualPath.trim()];
+    if (manualLaunchVersion.trim() !== "") args.push(manualLaunchVersion.trim());
+
+    const resp: ApiResp<{ added: boolean; dbId: number }> = await pyCall(args);
+    if (!resp.ok) return setStatus(resp.error.message);
+
+    setStatus(`Added manual program (dbId ${resp.data.dbId})`);
+    setManualName("");
+    setManualPath("");
+    setManualLaunchVersion("");
+    await refresh();
+  }
+
+  async function removeManual(dbId: number) {
+    setStatus(`Removing ${dbId}...`);
+    const resp: ApiResp<{ deleted: number }> = await pyCall(["delete_manual", String(dbId)]);
+    if (!resp.ok) return setStatus(resp.error.message);
+    setStatus(`Removed ${resp.data.deleted}`);
+    await refresh();
+  }
 
   useEffect(() => {
     refresh().catch((e) => setStatus(String(e)));
   }, []);
 
-  /* ---------------- UI ---------------- */
+  function ProgramTable({
+    title,
+    rows,
+    showRemove,
+  }: {
+    title: string;
+    rows: Program[];
+    showRemove: boolean;
+  }) {
+    return (
+      <div style={{ marginTop: 16 }}>
+        <h2 style={{ marginBottom: 8 }}>{title}</h2>
+
+        <table cellPadding={8} style={{ borderCollapse: "collapse", width: "100%" }}>
+          <thead>
+            <tr>
+              <th align="left">dbId</th>
+              <th align="left">idNum</th>
+              <th align="left">Name</th>
+              <th align="left">Version</th>
+              <th align="left">Launch</th>
+              {showRemove ? <th align="left">Remove</th> : null}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((p) => (
+              <tr key={p.dbId} style={{ borderTop: "1px solid #ddd" }}>
+                <td>{p.dbId}</td>
+                <td>{p.idNum}</td>
+                <td title={p.fullExePath}>{p.name}</td>
+                <td>{p.version ?? ""}</td>
+                <td>
+                  <button onClick={() => launch(p.dbId)}>Launch</button>
+                </td>
+                {showRemove ? (
+                  <td>
+                    <button onClick={() => removeManual(p.dbId)}>Remove</button>
+                  </td>
+                ) : null}
+              </tr>
+            ))}
+            {rows.length === 0 ? (
+              <tr style={{ borderTop: "1px solid #ddd" }}>
+                <td colSpan={showRemove ? 6 : 5} style={{ opacity: 0.7 }}>
+                  No entries.
+                </td>
+              </tr>
+            ) : null}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: 16, fontFamily: "sans-serif" }}>
-      <h1>333Arcade</h1>
+      <h1 style={{ marginTop: 0 }}>333Arcade</h1>
 
-      {/* Controls */}
       <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
         <button onClick={scan}>Scan</button>
         <button onClick={refresh}>Refresh</button>
@@ -129,65 +189,40 @@ export default function App() {
 
       <div style={{ marginBottom: 12 }}>{status}</div>
 
-      {/* Manual add */}
-      <h2>Add Manual Program</h2>
+      <div style={{ border: "1px solid #ddd", padding: 12, marginBottom: 12 }}>
+        <h2 style={{ marginTop: 0, marginBottom: 8 }}>Add Manual Program</h2>
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-        <input
-          placeholder="Program name"
-          value={manualName}
-          onChange={(e) => setManualName(e.target.value)}
-          style={{ width: 200 }}
-        />
+        <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+          <input
+            style={{ width: 220 }}
+            placeholder="Display name"
+            value={manualName}
+            onChange={(e) => setManualName(e.target.value)}
+          />
+          <input
+            style={{ flex: 1 }}
+            placeholder="Executable path (or Browse)"
+            value={manualPath}
+            onChange={(e) => setManualPath(e.target.value)}
+          />
+          <button onClick={browseForExecutable}>Browse</button>
+        </div>
 
-        <input
-          placeholder="Executable path"
-          value={manualPath}
-          onChange={(e) => setManualPath(e.target.value)}
-          style={{ flex: 1 }}
-        />
-
-        <button onClick={browseForExecutable}>Browse</button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <input
+            style={{ flex: 1 }}
+            placeholder='launchVersion (optional, ex: "python3.11" or "java")'
+            value={manualLaunchVersion}
+            onChange={(e) => setManualLaunchVersion(e.target.value)}
+          />
+          <button onClick={addManual} disabled={!manualName.trim() || !manualPath.trim()}>
+            Add
+          </button>
+        </div>
       </div>
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-        <input
-          placeholder='launchVersion (optional, e.g. "python3.11", "java")'
-          value={manualLaunchVersion}
-          onChange={(e) => setManualLaunchVersion(e.target.value)}
-          style={{ flex: 1 }}
-        />
-
-        <button onClick={addManual}>Add</button>
-      </div>
-
-      {/* Program list */}
-      <table
-        cellPadding={8}
-        style={{ borderCollapse: "collapse", width: "100%" }}
-      >
-        <thead>
-          <tr>
-            <th align="left">dbId</th>
-            <th align="left">Name</th>
-            <th align="left">Version</th>
-            <th align="left">Launch</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {programs.map((p) => (
-            <tr key={p.dbId} style={{ borderTop: "1px solid #ddd" }}>
-              <td>{p.dbId}</td>
-              <td>{p.name}</td>
-              <td>{p.version ?? ""}</td>
-              <td>
-                <button onClick={() => launch(p.dbId)}>Launch</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <ProgramTable title="Official Programs" rows={official} showRemove={false} />
+      <ProgramTable title="Manual Entries" rows={manual} showRemove={true} />
     </div>
   );
 }
