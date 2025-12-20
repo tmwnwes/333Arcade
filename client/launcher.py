@@ -28,7 +28,7 @@ def launch_app(path, launch_version=None):
 
     runtime, custom_path = parse_launch_version(launch_version)
 
-    # Compute repo root from this file location (stable even for absolute exe paths)
+    # Compute repo root from this file location
     # client/launcher.py -> repo root is parent of "client"
     repo_root = Path(__file__).resolve().parents[1]
     libraries_path = repo_root / "libraries"
@@ -95,7 +95,7 @@ def launch_app(path, launch_version=None):
 
         # Run from the folder containing the .class so it’s on the classpath
         class_dir = full_path.parent
-        class_name = full_path.stem  # e.g. Main.class -> Main
+        class_name = full_path.stem  # Main.class -> Main
 
         # Equivalent to: java -cp <dir> Main
         subprocess.Popen([java_exec, "-cp", str(class_dir), class_name], cwd=str(class_dir))
