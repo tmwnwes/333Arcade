@@ -4,6 +4,7 @@ import shutil
 import platform
 import os
 from pathlib import Path
+import webbrowser
 
 
 def parse_launch_version(version: str | None):
@@ -18,7 +19,15 @@ def parse_launch_version(version: str | None):
 
 
 def launch_app(path, launch_version=None):
-    full_path = Path(path).expanduser().absolute()
+    # Always normalize to string first
+    raw = str(path).strip()
+
+    # Steam URL (must be before Path())
+    if raw.startswith("steam://"):
+        webbrowser.open(raw)
+        return
+
+    full_path = Path(raw).expanduser().absolute()
     ext = full_path.suffix.lower()
     os_name = platform.system()
 

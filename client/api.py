@@ -12,17 +12,19 @@ from .database import (
     list_programs,
     program_exists_by_idnum,
     add_manual_program,
-    is_manual_db_id,
-    delete_program_by_db_id
+    is_external_db_id,
+    delete_program_by_db_id,
+    add_steam_program
 )
 from .detection import detect_programs
 from .launcher import launch_app
+from .steam import iter_installed_steam_games
 
 API_VERSION = 1
 
 
 # -------------------------
-# hardened IO helpers
+# IO helpers
 # -------------------------
 
 def log(*args: object) -> None:
@@ -118,8 +120,11 @@ def scan_programs() -> dict:
             skipped += 1
             continue
 
-        add_program(conn, meta)
-        added += 1
+        if add_program(conn, meta):
+            added += 1
+        else:
+            skipped += 1
+
 
     return ok({"added": added, "skipped": skipped})
 
@@ -188,18 +193,33 @@ def add_manual(name: str, full_path: str, launch_version: str | None = None) -> 
 
     return ok({"added": True, "dbId": new_db_id})
 
-def delete_manual(db_id: int) -> dict:
+def steam_scan() -> dict:
+    conn = init_db()
+    added = 0
+    skipped = 0
+
+    for g in iter_installed_steam_games():
+        # reuse your existing “exists by idNum” check
+        if program_exists_by_idnum(conn, f"S{g.appid}"):
+            skipped += 1
+            continue
+        add_steam_program(conn, g.appid, g.name)
+        added += 1
+
+    return ok({"added": added, "skipped": skipped})
+
+def delete_external(db_id: int) -> dict:
     conn = init_db()
 
-    # Existence check + manual-only enforcement
-    if not is_manual_db_id(conn, db_id):
-        return fail("NOT_ALLOWED", f"dbId {db_id} is not a manual entry (or does not exist)")
+    if not is_external_db_id(conn, db_id):
+        return fail("NOT_ALLOWED", f"dbId {db_id} is not removable (only Manual/Steam entries can be removed)")
 
     deleted = delete_program_by_db_id(conn, db_id)
     if deleted == 0:
         return fail("NOT_FOUND", f"No program with id={db_id}")
 
     return ok({"deleted": db_id})
+
 
 # -------------------------
 # CLI entry (for Tauri)
@@ -252,14 +272,17 @@ def main() -> None:
                 launch_version = sys.argv[4] if len(sys.argv) >= 5 else None
                 resp = add_manual(name, full_path, launch_version)
 
-        elif cmd == "delete_manual":
+        elif cmd == "delete_external":
             if len(sys.argv) < 3:
                 resp = fail("INVALID_INPUT", "Missing program id")
             else:
                 try:
-                    resp = delete_manual(int(sys.argv[2]))
+                    resp = delete_external(int(sys.argv[2]))
                 except ValueError:
                     resp = fail("INVALID_INPUT", "Program id must be an integer")
+
+        elif cmd == "steam_scan":
+            resp = steam_scan()
 
         else:
             resp = fail("INVALID_COMMAND", f"Unknown command: {cmd}")

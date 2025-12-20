@@ -3,7 +3,8 @@ import tomllib
 from pathlib import Path
 import platform
 from .config import get_exe_dir
-
+import sys
+import os
 class ProgramMetadata(BaseModel):
     idNum: str
     name: str
@@ -58,9 +59,9 @@ class ProgramMetadata(BaseModel):
 
         # Debug print
         if self.fullExePath:
-            print("Resolved full path:", self.fullExePath.absolute())
-            import os
-            print("Files in folder:", os.listdir(str(self.fullExePath.parent)))
+            print("Resolved full path:", self.fullExePath, file=sys.stderr)
+            print("Files in folder:", os.listdir(self.fullExePath.parent), file=sys.stderr)
+
 
 def load_metadata(path: Path) -> ProgramMetadata:
     with open(path, "rb") as f:

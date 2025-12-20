@@ -2,18 +2,25 @@ import { useEffect, useMemo, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 
-type ApiOk<T> = { ok: true; data: T; error: null; meta: { apiVersion: number; tookMs?: number } };
+type ApiOk<T> = {
+  ok: true;
+  data: T;
+  error: null;
+  meta: { apiVersion: number; tookMs?: number };
+};
+
 type ApiErr = {
   ok: false;
   data: null;
   error: { code: string; message: string };
   meta: { apiVersion: number; tookMs?: number };
 };
+
 type ApiResp<T> = ApiOk<T> | ApiErr;
 
 type Program = {
   dbId: number;
-  idNum: string; // NOTE: manual ids are "M000001" etc; official may be numeric-as-string
+  idNum: string;
   name: string;
   version: string | null;
   fullExePath: string;
@@ -39,7 +46,16 @@ export default function App() {
 
   const official = useMemo(() => {
     return [...programs]
-      .filter((p) => !String(p.idNum).startsWith("M"))
+      .filter((p) => {
+        const id = String(p.idNum);
+        return !id.startsWith("M") && !id.startsWith("S");
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [programs]);
+
+  const steam = useMemo(() => {
+    return [...programs]
+      .filter((p) => String(p.idNum).startsWith("S"))
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [programs]);
 
@@ -49,30 +65,73 @@ export default function App() {
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [programs]);
 
-  async function refresh() {
+  // IMPORTANT: refresh can be "silent" so scan messages don't get overwritten.
+  async function refresh(opts?: { silent?: boolean }) {
     const resp: ApiResp<Program[]> = await pyCall(["list"]);
-    if (!resp.ok) return setStatus(resp.error.message);
+    if (!resp.ok) {
+      if (!opts?.silent) setStatus(resp.error.message);
+      return;
+    }
     setPrograms(resp.data);
-    setStatus(`Loaded ${resp.data.length} programs${resp.meta?.tookMs != null ? ` (${resp.meta.tookMs}ms)` : ""}`);
+
+    if (!opts?.silent) {
+      setStatus(
+        `Loaded ${resp.data.length} programs${
+          resp.meta?.tookMs != null ? ` (${resp.meta.tookMs}ms)` : ""
+        }`
+      );
+    }
   }
 
   async function scan() {
-    setStatus("Scanning...");
-    const resp: ApiResp<{ added: number; skipped: number }> = await pyCall(["scan"]);
-    if (!resp.ok) return setStatus(resp.error.message);
-    setStatus(
-      `Scan complete: added ${resp.data.added}, skipped ${resp.data.skipped}${
-        resp.meta?.tookMs != null ? ` (${resp.meta.tookMs}ms)` : ""
-      }`
-    );
-    await refresh();
+    try {
+      setStatus("Scanning...");
+      const resp: ApiResp<{ added: number; skipped: number }> = await pyCall(["scan"]);
+      if (!resp.ok) return setStatus(resp.error.message);
+
+      setStatus(
+        `Scan complete: added ${resp.data.added}, skipped ${resp.data.skipped}${
+          resp.meta?.tookMs != null ? ` (${resp.meta.tookMs}ms)` : ""
+        }`
+      );
+
+      // Refresh list, but keep the scan status visible
+      await refresh({ silent: true });
+    } catch (e) {
+      setStatus(String(e));
+    }
+  }
+
+  async function steamScan() {
+    try {
+      setStatus("Scanning Steam libraries...");
+      const resp: ApiResp<{ added: number; skipped: number }> = await pyCall(["steam_scan"]);
+      if (!resp.ok) return setStatus(resp.error.message);
+
+      setStatus(
+        `Steam scan: added ${resp.data.added}, skipped ${resp.data.skipped}${
+          resp.meta?.tookMs != null ? ` (${resp.meta.tookMs}ms)` : ""
+        }`
+      );
+
+      // Refresh list, but keep the steam scan status visible
+      await refresh({ silent: true });
+    } catch (e) {
+      setStatus(String(e));
+    }
   }
 
   async function launch(dbId: number) {
-    setStatus(`Launching ${dbId}...`);
-    const resp: ApiResp<{ launched: number }> = await pyCall(["launch", String(dbId)]);
-    if (!resp.ok) return setStatus(resp.error.message);
-    setStatus(`Launched ${dbId}${resp.meta?.tookMs != null ? ` (${resp.meta.tookMs}ms)` : ""}`);
+    try {
+      setStatus(`Launching ${dbId}...`);
+      const resp: ApiResp<{ launched: number }> = await pyCall(["launch", String(dbId)]);
+      if (!resp.ok) return setStatus(resp.error.message);
+      setStatus(
+        `Launched ${dbId}${resp.meta?.tookMs != null ? ` (${resp.meta.tookMs}ms)` : ""}`
+      );
+    } catch (e) {
+      setStatus(String(e));
+    }
   }
 
   async function browseForExecutable() {
@@ -92,32 +151,43 @@ export default function App() {
   }
 
   async function addManual() {
-    if (!manualName.trim() || !manualPath.trim()) {
-      setStatus("Name and path are required.");
-      return;
+    try {
+      if (!manualName.trim() || !manualPath.trim()) {
+        setStatus("Name and path are required.");
+        return;
+      }
+
+      setStatus("Adding manual program...");
+
+      const args = ["add_manual", manualName.trim(), manualPath.trim()];
+      if (manualLaunchVersion.trim() !== "") args.push(manualLaunchVersion.trim());
+
+      const resp: ApiResp<{ added: boolean; dbId: number }> = await pyCall(args);
+      if (!resp.ok) return setStatus(resp.error.message);
+
+      setStatus(`Added manual program (dbId ${resp.data.dbId})`);
+      setManualName("");
+      setManualPath("");
+      setManualLaunchVersion("");
+
+      // Silent refresh so the "Added ..." status stays visible
+      await refresh({ silent: true });
+    } catch (e) {
+      setStatus(String(e));
     }
-
-    setStatus("Adding manual program...");
-
-    const args = ["add_manual", manualName.trim(), manualPath.trim()];
-    if (manualLaunchVersion.trim() !== "") args.push(manualLaunchVersion.trim());
-
-    const resp: ApiResp<{ added: boolean; dbId: number }> = await pyCall(args);
-    if (!resp.ok) return setStatus(resp.error.message);
-
-    setStatus(`Added manual program (dbId ${resp.data.dbId})`);
-    setManualName("");
-    setManualPath("");
-    setManualLaunchVersion("");
-    await refresh();
   }
 
-  async function removeManual(dbId: number) {
-    setStatus(`Removing ${dbId}...`);
-    const resp: ApiResp<{ deleted: number }> = await pyCall(["delete_manual", String(dbId)]);
-    if (!resp.ok) return setStatus(resp.error.message);
-    setStatus(`Removed ${resp.data.deleted}`);
-    await refresh();
+  async function removeExternal(dbId: number) {
+    try {
+      setStatus(`Removing ${dbId}...`);
+      const resp: ApiResp<{ deleted: number }> = await pyCall(["delete_external", String(dbId)]);
+      if (!resp.ok) return setStatus(resp.error.message);
+
+      setStatus(`Removed ${resp.data.deleted}`);
+      await refresh({ silent: true });
+    } catch (e) {
+      setStatus(String(e));
+    }
   }
 
   useEffect(() => {
@@ -160,7 +230,7 @@ export default function App() {
                 </td>
                 {showRemove ? (
                   <td>
-                    <button onClick={() => removeManual(p.dbId)}>Remove</button>
+                    <button onClick={() => removeExternal(p.dbId)}>Remove</button>
                   </td>
                 ) : null}
               </tr>
@@ -184,7 +254,8 @@ export default function App() {
 
       <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
         <button onClick={scan}>Scan</button>
-        <button onClick={refresh}>Refresh</button>
+        <button onClick={steamScan}>Steam Scan</button>
+        <button onClick={() => refresh()}>Refresh</button>
       </div>
 
       <div style={{ marginBottom: 12 }}>{status}</div>
@@ -222,6 +293,7 @@ export default function App() {
       </div>
 
       <ProgramTable title="Official Programs" rows={official} showRemove={false} />
+      <ProgramTable title="Steam Games" rows={steam} showRemove={true} />
       <ProgramTable title="Manual Entries" rows={manual} showRemove={true} />
     </div>
   );

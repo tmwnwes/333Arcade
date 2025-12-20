@@ -11,7 +11,7 @@ def init_db():
     cursor.execute(
         """CREATE TABLE IF NOT EXISTS programs (
             id INTEGER PRIMARY KEY,
-            idNum TEXT,
+            idNum TEXT UNIQUE,
             name TEXT,
             version TEXT,
             exePath TEXT,
@@ -92,13 +92,14 @@ def add_manual_program(conn, name: str, full_exe_path: str, launch_version: str 
     conn.commit()
     return int(cursor.lastrowid)
 
-def is_manual_db_id(conn, db_id: int) -> bool:
+def is_external_db_id(conn, db_id: int) -> bool:
     cursor = conn.cursor()
     cursor.execute("SELECT idNum FROM programs WHERE id = ? LIMIT 1", (db_id,))
     row = cursor.fetchone()
     if not row or not row[0]:
         return False
-    return str(row[0]).startswith("M")
+    idnum = str(row[0])
+    return idnum.startswith("M") or idnum.startswith("S")
 
 
 def delete_program_by_db_id(conn, db_id: int) -> int:
@@ -111,28 +112,49 @@ def delete_program_by_db_id(conn, db_id: int) -> int:
     conn.commit()
     return cursor.rowcount
 
+def add_steam_program(conn, appid: int, name: str) -> int:
+    """
+    Inserts a Steam game as a launcher entry.
+    idNum is 'S<appid>' so it won't collide with normal metadata ids.
+    fullExePath stores a steam://rungameid/<appid> URL.
+    """
+    idnum = f"S{appid}"
+    full = f"steam://rungameid/{appid}"
 
-def add_program(conn, metadata):
+    cur = conn.cursor()
+    cur.execute(
+        """
+        INSERT INTO programs (idNum, name, version, exePath, exePath_win, exePath_mac, fullExePath, launchVersion)
+        VALUES (?, ?, NULL, NULL, NULL, NULL, ?, NULL)
+        """,
+        (idnum, name, full),
+    )
+    conn.commit()
+    return int(cur.lastrowid)
+
+def add_program(conn, metadata) -> bool:
+    """
+    Insert a metadata-defined program.
+    Returns True if inserted, False if skipped due to duplicate idNum.
+    Never prints (stdout must stay clean for the JSON API).
+    """
     cursor = conn.cursor()
 
-    cursor.execute("SELECT idNum FROM programs WHERE idNum = ?", (metadata.idNum,))
-    exists = cursor.fetchone()
-
-    if exists:
-        print(f"Program with idNum {metadata.idNum} already exists, skipping.")
-        return
+    cursor.execute("SELECT 1 FROM programs WHERE idNum = ? LIMIT 1", (metadata.idNum,))
+    if cursor.fetchone():
+        return False
 
     cursor.execute(
-        """INSERT OR REPLACE INTO programs (
-        idNum,
-        name,
-        version,
-        exePath,
-        exePath_win,
-        exePath_mac,
-        fullExePath,
-        launchVersion)
-        VALUES (?,?,?,?,?,?,?,?)""",
+        """INSERT INTO programs (
+            idNum,
+            name,
+            version,
+            exePath,
+            exePath_win,
+            exePath_mac,
+            fullExePath,
+            launchVersion
+        ) VALUES (?,?,?,?,?,?,?,?)""",
         (
             metadata.idNum,
             metadata.name,
@@ -145,6 +167,7 @@ def add_program(conn, metadata):
         ),
     )
     conn.commit()
+    return True
 
 
 def list_programs(conn):
