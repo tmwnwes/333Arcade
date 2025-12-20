@@ -11,7 +11,7 @@ ________
 
 *You can install Java21 here: https://www.oracle.com/java/technologies/downloads/#java21
 
-The launcher should automatically select java when launching, however it technically checks if java is added to the path. To combat this, the launcher checks your OS and runs a command to temporarily allow the game to see java if its in the usual hardcoded directory. Maybe a bit of a lazy fix but should work in most cases. Not tested on mac but definetly works on windows. ALternatively you can add java to the path, but that's too much work for the average user.
+The launcher should automatically select java when launching, however it technically checks if java is added to the path. To combat this, the launcher checks your OS and runs a command to temporarily allow the game to see java if its in the usual  directory. Maybe a bit of a lazy fix but should work in most cases. Not tested on mac but definetly works on windows. ALternatively you can add java to the path, but that's too much work for the average user.
 
 
 This project is built using the CMU graphics library which can be found at https://academy.cs.cmu.edu/desktop. The December 8th update now installs the graphics package for you on your 1st running of the pretend launcher or any game. If this process fails (which should not happen), then you should follow the above link, download the package as a zip, extract/expand, and then copy the cmu_graphics folder from the cmu_graphics_installer folder, and place it into the libraries folder of the project directory.
