@@ -53,7 +53,17 @@ cd ui
 npm install
 npm run tauri dev
 ```
-This will open the new launcher. Press "scan metadata" to locate the games. This will allow you to launch them. You can also press "import steam" to import your steam library for launching. Adding a program will also allow for custom programs to be added.
+
+If this doesnt seem to be working on windows, you may need to open powershell as an administrator and run:
+```bash
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
+
+Type Y and hit enter, you can run this command again later to return it to N if you aren't comfortable leaving it off.
+
+
+If things go as planned, this will open the new launcher. Press "scan metadata" to locate the games. This will allow you to launch them. You can also press "import steam" to import your steam library for launching. Adding a program will also allow for custom programs to be added.
 
 ## MacOS Instructions for OLD LAUNCHER (PretendLauncher.py)
 If you are on MacOS, you have 3 options for running the launcher:
