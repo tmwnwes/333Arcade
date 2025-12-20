@@ -6,12 +6,13 @@ ________
 # Python 3.14 is not currently supported. Please use Python 3.13*
 
 *You may download Python 3.13.9 at https://www.python.org/downloads/release/python-3139/ and then navigating to your specific platform and downloading the installer.
+Make sure to "add Python to environmental variables"
 
 # Requires Java 21 for some games 
 
 *You can install Java21 here: https://www.oracle.com/java/technologies/downloads/#java21
 
-The launcher should automatically select java when launching, however it technically checks if java is added to the path. To combat this, the launcher checks your OS and runs a command to temporarily allow the game to see java if its in the usual  directory. Maybe a bit of a lazy fix but should work in most cases. Not tested on mac but definetly works on windows. ALternatively you can add java to the path, but that's too much work for the average user.
+The launcher should automatically select java when launching, however it technically checks if java is added to the path. To combat this, the launcher checks your OS and runs a command to temporarily allow the game to see java if its in the usual  directory. Maybe a bit of a lazy fix but should work in most cases. Not tested on mac but definetly works on windows. Alternatively you can add java to the path, but that's too much work for the average user.
 
 
 This project is built using the CMU graphics library which can be found at https://academy.cs.cmu.edu/desktop. The December 8th update now installs the graphics package for you on your 1st running of the pretend launcher or any game. If this process fails (which should not happen), then you should follow the above link, download the package as a zip, extract/expand, and then copy the cmu_graphics folder from the cmu_graphics_installer folder, and place it into the libraries folder of the project directory.
@@ -21,6 +22,38 @@ This project is built using the CMU graphics library which can be found at https
 You can find a short video demo on YouTube at https://youtu.be/CQykV8IK4Tk. Note that it does not cover all of the games but shows a decent subset of the games and mechanics as well as a general guide for starting from the download to running the launcher. However, if you would prefer written step by step instructions from download to running, read below
 
 Regardless of platform, please download or clone this entire project repository from the "main" branch. This can be accomplished by navigting to the main branch, and then clicking the green "code" button and either downloading as zip or copying the shown link and cloning via your favorite IDE with git cloning functionality, such as VS Code. Running any of the games or the Pretend Launcher will install all dependencies, though you may need to allow certain bits of access and control, but these should come up automatically if applicable.
+
+# INSTRUCTIONS FOR NEW LAUNCHER:
+
+## download and install: https://nodejs.org/en/download
+
+
+*scroll down to prebuild node js and select your operating system
+
+## for windows download and install: https://rustup.rs/
+
+
+## for mac, run:
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+if you do not have Xcode, you will need to install it first:
+```bash
+xcode-select --install
+```
+
+
+## launching:
+after cloning the repo, open a terminal in /333Arcade and run:
+
+```bash
+pip install pydantic
+cd ui
+npm install
+npm run tauri dev
+```
+This will open the new launcher. Press "scan metadata" to locate the games. This will allow you to launch them. You can also press "import steam" to import your steam library for launching. Adding a program will also allow for custom programs to be added.
 
 ## MacOS Instructions for OLD LAUNCHER (PretendLauncher.py)
 If you are on MacOS, you have 3 options for running the launcher:
@@ -47,6 +80,7 @@ which -a python3
 or 
 
 ```bash
+
 python3 --vesion
 ```
 ____
@@ -69,17 +103,6 @@ or
 or
 3. Open command prompt and navigate to the directory PretendLauncher.py is stored in, type "python3 PretendLauncher.py" and press Enter
 ____
-
-## INSTRUCTIONS FOR NEW LAUNCHER:
-
-## New Launcher
-
-open a terminal in /333Arcade and run:
-```bash
-python -m client.main
-```
-
-#### This will prompt you to run any found game files:
 
 
 # Included in this Repository
