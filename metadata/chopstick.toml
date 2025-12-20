@@ -1,0 +1,7 @@
+idNum = "003001"
+name = "chopstick"
+version = "1.0.0"
+exePath = "run_java.py" 
+exePath_win = ""
+exePath_mac = ""
+launchVersion = ""

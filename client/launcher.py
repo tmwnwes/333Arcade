@@ -78,6 +78,29 @@ def launch_app(path, launch_version=None):
         subprocess.Popen([java_exec, "-jar", str(full_path)], cwd=str(full_path.parent))
         return
 
+    # Java .class files
+    if ext == ".class":
+        java_exec = None
+
+        # Allow launchVersion overrides like: "java17" or "java=C:/path/to/java.exe"
+        if runtime and runtime.startswith("java"):
+            java_exec = custom_path or shutil.which(runtime)
+
+        if java_exec is None:
+            java_exec = shutil.which("java")
+
+        if java_exec is None:
+            print("ERROR: Java not available.")
+            return
+
+        # Run from the folder containing the .class so it’s on the classpath
+        class_dir = full_path.parent
+        class_name = full_path.stem  # e.g. Main.class -> Main
+
+        # Equivalent to: java -cp <dir> Main
+        subprocess.Popen([java_exec, "-cp", str(class_dir), class_name], cwd=str(class_dir))
+        return
+
     # Windows batch/cmd
     if ext in [".bat", ".cmd"] and os_name == "Windows":
         subprocess.Popen([str(full_path)], cwd=str(full_path.parent), shell=True)

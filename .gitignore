@@ -13,3 +13,7 @@ TESTSRESULTS/
 .vscode/
 
 client/db/programs.db
+
+
+/apps/chopstick/chopstick
+/apps/tictactoe/tictactoe
